@@ -34,3 +34,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+node-v18.20.8-darwin-x64/
+node.tar.gz
+package-lock.json
