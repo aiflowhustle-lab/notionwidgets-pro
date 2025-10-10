@@ -16,12 +16,12 @@ function convertCanvaUrlToImages(canvaUrl: string): NotionImage[] {
     const images: NotionImage[] = [];
     
     for (let i = 1; i <= numberOfImages; i++) {
-      // Use Canva's static image export format
-      // This format: https://www.canva.com/design/{designId}/view?page={pageNumber}&format=png
-      const staticImageUrl = `https://www.canva.com/design/${designId}/view?page=${i}&format=png`;
+      // Use Canva's embed format with page parameter
+      // This format: https://www.canva.com/design/{designId}/view?embed&page={pageNumber}
+      const embedUrl = `https://www.canva.com/design/${designId}/view?embed&page=${i}`;
       
       images.push({
-        url: staticImageUrl,
+        url: embedUrl,
         source: 'canva',
         originalUrl: canvaUrl,
         pageNumber: i,

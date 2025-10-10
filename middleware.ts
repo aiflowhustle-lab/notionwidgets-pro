@@ -15,7 +15,7 @@ export function middleware(request: NextRequest) {
   
   // Allow iframe embedding from multiple domains including Notion
   response.headers.set('X-Frame-Options', 'ALLOWALL')
-  response.headers.set('Content-Security-Policy', "frame-ancestors 'self' notion.so *.notion.so vercel.app *.vercel.app localhost:*")
+  response.headers.set('Content-Security-Policy', "frame-ancestors 'self' notion.so *.notion.so vercel.app *.vercel.app localhost:* canva.com *.canva.com")
   
   // Add additional headers for better iframe support
   response.headers.set('X-Content-Type-Options', 'nosniff')
