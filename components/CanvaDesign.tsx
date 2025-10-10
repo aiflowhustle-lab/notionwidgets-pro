@@ -18,15 +18,17 @@ export default function CanvaDesign({ canvaUrl, title, className = '', onClick, 
   const designIdMatch = canvaUrl.match(/\/design\/([^\/]+)\//);
   const designId = designIdMatch ? designIdMatch[1] : null;
   
-  // Check if this is an embed URL with page parameter
-  const isEmbedUrl = canvaUrl.includes('?embed');
+  // Check if this is a direct image URL with page parameter
+  const isImageUrl = canvaUrl.includes('format=png') || canvaUrl.includes('format=jpg');
   const pageMatch = canvaUrl.match(/[?&]page=(\d+)/);
   const pageNumber = pageMatch ? parseInt(pageMatch[1]) : 1;
   
-  // Create a preview URL using Canva's embed format
-  const previewUrl = designId 
-    ? `https://www.canva.com/design/${designId}/view?embed${pageNumber > 1 ? `&page=${pageNumber}` : ''}`
-    : canvaUrl;
+  // Use the URL as-is if it's already a direct image URL, otherwise convert to direct image
+  const imageUrl = isImageUrl 
+    ? canvaUrl 
+    : designId 
+      ? `https://www.canva.com/design/${designId}/view?page=${pageNumber}&format=png&width=800`
+      : canvaUrl;
 
   const handleClick = (e: React.MouseEvent) => {
     if (onClick) {
@@ -46,15 +48,12 @@ export default function CanvaDesign({ canvaUrl, title, className = '', onClick, 
       {/* Canva Design Preview */}
       <div className="relative w-full h-full bg-gradient-to-br from-orange-100 to-pink-100 rounded-lg overflow-hidden">
         {!imageError ? (
-          <iframe
-            src={previewUrl}
-            className="w-full h-full border-0"
-            title={title}
+          <img
+            src={imageUrl}
+            alt={title}
+            className="w-full h-full object-cover"
             onError={() => setImageError(true)}
-            sandbox="allow-scripts allow-same-origin allow-popups allow-forms"
-            allowFullScreen
             loading="lazy"
-            referrerPolicy="no-referrer-when-downgrade"
           />
         ) : (
           <div className="w-full h-full flex flex-col items-center justify-center p-4">
@@ -65,7 +64,7 @@ export default function CanvaDesign({ canvaUrl, title, className = '', onClick, 
               Canva Design
             </h3>
             <p className="text-xs text-gray-500 text-center mb-3">
-              Click to view in Canva
+              Canva Design
             </p>
             <div className="text-xs text-orange-600 font-mono bg-orange-50 px-2 py-1 rounded">
               {designId ? `ID: ${designId.substring(0, 8)}...` : 'Design Link'}
