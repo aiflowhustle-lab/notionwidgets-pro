@@ -45,7 +45,7 @@ export async function GET(
       console.log('Successfully fetched', posts.length, 'posts from Notion');
     } catch (error) {
       console.error('Error fetching from Notion:', error);
-      console.error('Error details:', error.message);
+      console.error('Error details:', error instanceof Error ? error.message : 'Unknown error');
       // Fallback to mock data if Notion fails
       posts = [
         {
@@ -61,7 +61,8 @@ export async function GET(
               source: 'attachment' as const,
               originalUrl: 'https://images.unsplash.com/photo-1611162616475-46b635cb6868?w=500&h=500&fit=crop'
             }
-          ]
+          ],
+          videos: []
         },
         {
           id: '2',
@@ -76,7 +77,8 @@ export async function GET(
               source: 'link' as const,
               originalUrl: 'https://images.unsplash.com/photo-1611605698335-8b1569810432?w=500&h=500&fit=crop'
             }
-          ]
+          ],
+          videos: []
         },
         {
           id: '3',
@@ -91,7 +93,8 @@ export async function GET(
               source: 'canva' as const,
               originalUrl: 'https://images.unsplash.com/photo-1611224923853-80b023f02d71?w=500&h=500&fit=crop'
             }
-          ]
+          ],
+          videos: []
         }
       ];
     }

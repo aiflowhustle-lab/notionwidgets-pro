@@ -39,8 +39,6 @@ const nextConfig = {
         hostname: '**.amazonaws.com',
       },
     ],
-    // Allow unoptimized images for external domains that don't work well with optimization
-    unoptimized: false,
   },
 }
 

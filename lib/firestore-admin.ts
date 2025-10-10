@@ -95,7 +95,7 @@ export async function getUserWidgets(userId: string): Promise<Widget[]> {
       .orderBy('createdAt', 'desc')
       .get();
     
-    const widgets = snapshot.docs.map(doc => {
+    const widgets = snapshot.docs.map((doc: any) => {
       const data = doc.data();
       return {
         id: doc.id,
@@ -112,7 +112,7 @@ export async function getUserWidgets(userId: string): Promise<Widget[]> {
       };
     });
     
-    return widgets.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+    return widgets.sort((a: any, b: any) => b.createdAt.getTime() - a.createdAt.getTime());
   } catch (error) {
     console.error('Error getting user widgets:', error);
     throw new Error('Failed to get user widgets');

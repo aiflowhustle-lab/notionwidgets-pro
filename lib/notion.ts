@@ -1,5 +1,5 @@
 import { Client } from '@notionhq/client';
-import { NotionPost, NotionImage, DatabaseColumn } from '@/types';
+import { NotionPost, NotionImage, NotionVideo, DatabaseColumn } from '@/types';
 
 // Convert Canva design URL to multiple image URLs
 function convertCanvaUrlToImages(canvaUrl: string): NotionImage[] {

@@ -3,18 +3,40 @@ import { getAuth } from 'firebase-admin/auth';
 import { getFirestore } from 'firebase-admin/firestore';
 
 let app: App;
+let adminAuth: any;
+let adminDb: any;
 
-if (!getApps().length) {
-  app = initializeApp({
-    credential: cert({
-      projectId: process.env.FIREBASE_PROJECT_ID,
-      clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-      privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n'),
-    }),
-  });
+// Only initialize Firebase Admin if we have the required environment variables
+if (process.env.FIREBASE_PROJECT_ID && process.env.FIREBASE_CLIENT_EMAIL && process.env.FIREBASE_PRIVATE_KEY) {
+  if (!getApps().length) {
+    app = initializeApp({
+      credential: cert({
+        projectId: process.env.FIREBASE_PROJECT_ID,
+        clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
+        privateKey: process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n'),
+      }),
+    });
+  } else {
+    app = getApps()[0];
+  }
+  
+  adminAuth = getAuth();
+  adminDb = getFirestore();
 } else {
-  app = getApps()[0];
+  // Mock objects for build time when env vars are not available
+  adminAuth = {
+    verifyIdToken: () => Promise.reject(new Error('Firebase Admin not initialized')),
+  };
+  adminDb = {
+    collection: () => ({
+      doc: () => ({
+        get: () => Promise.reject(new Error('Firebase Admin not initialized')),
+        set: () => Promise.reject(new Error('Firebase Admin not initialized')),
+        update: () => Promise.reject(new Error('Firebase Admin not initialized')),
+        delete: () => Promise.reject(new Error('Firebase Admin not initialized')),
+      }),
+    }),
+  };
 }
 
-export const adminAuth = getAuth();
-export const adminDb = getFirestore();
+export { adminAuth, adminDb };
