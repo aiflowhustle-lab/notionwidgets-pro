@@ -8,19 +8,26 @@ import { CreateWidgetRequest } from '@/types';
 
 export async function POST(request: NextRequest) {
   try {
+    console.log('Create widget API called');
+    
     // Get authorization header
     const authHeader = request.headers.get('authorization');
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      console.log('No authorization header found');
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     const token = authHeader.split('Bearer ')[1];
+    console.log('Token received, length:', token.length);
     
     // Verify Firebase token
     let decodedToken;
     try {
+      console.log('Verifying Firebase token...');
       decodedToken = await adminAuth.verifyIdToken(token);
+      console.log('Token verified successfully for user:', decodedToken.uid);
     } catch (error) {
+      console.error('Token verification failed:', error);
       return NextResponse.json({ error: 'Invalid token' }, { status: 401 });
     }
 
