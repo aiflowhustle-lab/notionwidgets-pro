@@ -105,21 +105,17 @@ export function useAuth() {
 
 // Conditional AuthProvider that only applies auth to non-public pages
 export function ConditionalAuthProvider({ children }: { children: React.ReactNode }) {
-  // Check if we're on a public widget page or in an iframe context
+  // Check if we're on a public widget page
   if (typeof window !== 'undefined') {
     const isPublicWidget = window.location.pathname.startsWith('/w/');
-    const isInIframe = window.self !== window.top;
-    const isNotionEmbed = window.location.search.includes('notion') || 
-                         window.location.href.includes('notion') ||
-                         document.referrer.includes('notion');
     
-    // Skip auth for public widget pages, iframe contexts, or Notion embeds
-    if (isPublicWidget || isInIframe || isNotionEmbed) {
-      console.log('Skipping auth for:', { isPublicWidget, isInIframe, isNotionEmbed });
+    // Only skip auth for actual public widget pages
+    if (isPublicWidget) {
+      console.log('Skipping auth for public widget page:', window.location.pathname);
       return <>{children}</>;
     }
   }
 
-  // For all other pages, use the full AuthProvider
+  // For all other pages (dashboard, auth, main), use the full AuthProvider
   return <AuthProvider>{children}</AuthProvider>;
 }

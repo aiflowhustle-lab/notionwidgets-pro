@@ -49,7 +49,11 @@ export default function PublicWidgetPage() {
       });
     };
 
+    // Check immediately and also after a short delay to catch iframe loading
     checkIframe();
+    const timeout = setTimeout(checkIframe, 100);
+    
+    return () => clearTimeout(timeout);
   }, []);
 
   const loadWidgetData = useCallback(async () => {
