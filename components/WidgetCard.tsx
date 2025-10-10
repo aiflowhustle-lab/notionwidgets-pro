@@ -153,7 +153,7 @@ export default function WidgetCard({ post, aspectRatio = 'square' }: WidgetCardP
   return (
     <>
       <div className="group cursor-pointer" onClick={handleMediaClick}>
-        <div className="bg-white rounded-lg overflow-hidden hover:shadow-lg transition-all duration-300">
+        <div className="bg-white rounded-lg overflow-hidden hover:shadow-md transition-all duration-200 border border-gray-100">
           {/* Media (Image or Video) */}
           <div className={`relative ${getAspectRatioClass()} overflow-hidden`}>
             {hasVideo ? (
@@ -213,11 +213,11 @@ export default function WidgetCard({ post, aspectRatio = 'square' }: WidgetCardP
             {/* Top-right icon and media count */}
             <div className="absolute top-2 right-2 flex gap-2">
               {hasMultipleMedia && (
-                <div className="bg-black bg-opacity-60 text-white text-xs px-2 py-1 rounded-full">
+                <div className="bg-white bg-opacity-90 text-gray-800 text-xs px-2 py-1 rounded-full font-medium shadow-sm">
                   {allMedia.length}
                 </div>
               )}
-              <div className="w-6 h-6 bg-white bg-opacity-90 rounded-full flex items-center justify-center">
+              <div className="w-6 h-6 bg-white bg-opacity-90 rounded-full flex items-center justify-center shadow-sm">
                 {hasVideo ? (
                   <Play className="w-3 h-3 text-gray-600" />
                 ) : (
