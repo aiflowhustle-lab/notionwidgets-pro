@@ -15,147 +15,129 @@ interface WidgetData {
   availableStatuses: string[];
 }
 
-async function getWidgetData(slug: string): Promise<WidgetData> {
-  try {
-    const baseUrl = process.env.VERCEL_URL 
-      ? `https://${process.env.VERCEL_URL}` 
-      : 'http://localhost:3000';
-    
-    const response = await fetch(`${baseUrl}/api/widgets/${slug}/data`, {
-      cache: 'no-store' // Ensure fresh data
-    });
-    
-    if (!response.ok) {
-      throw new Error('Failed to load widget data');
-    }
-    
-    return await response.json();
-  } catch (error) {
-    console.error('Error loading widget data:', error);
-    // Return mock data for development
-    return {
-      widget: {
-        id: slug,
-        name: 'Sample Widget',
-        slug: slug,
-        settings: { aspectRatio: 'square' },
-        views: 0
+function getMockWidgetData(slug: string): WidgetData {
+  return {
+    widget: {
+      id: slug,
+      name: 'Sample Widget',
+      slug: slug,
+      settings: { aspectRatio: 'square' },
+      views: 0
+    },
+    posts: [
+      {
+        id: '1',
+        title: 'Sample Image 1',
+        publishDate: new Date().toISOString(),
+        platform: 'Instagram',
+        status: 'Published',
+        imageSource: 'attachment',
+        images: [
+          {
+            url: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=400&fit=crop',
+            source: 'attachment' as const,
+            originalUrl: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=400&fit=crop'
+          }
+        ],
+        videos: []
       },
-      posts: [
-        {
-          id: '1',
-          title: 'Sample Image 1',
-          publishDate: new Date().toISOString(),
-          platform: 'Instagram',
-          status: 'Published',
-          imageSource: 'attachment',
-          images: [
-            {
-              url: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=400&fit=crop',
-              source: 'attachment' as const,
-              originalUrl: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=400&fit=crop'
-            }
-          ],
-          videos: []
-        },
-        {
-          id: '2',
-          title: 'Sample Image 2',
-          publishDate: new Date().toISOString(),
-          platform: 'Instagram',
-          status: 'Published',
-          imageSource: 'attachment',
-          images: [
-            {
-              url: 'https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=400&h=400&fit=crop',
-              source: 'attachment' as const,
-              originalUrl: 'https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=400&h=400&fit=crop'
-            }
-          ],
-          videos: []
-        },
-        {
-          id: '3',
-          title: 'Sample Image 3',
-          publishDate: new Date().toISOString(),
-          platform: 'Instagram',
-          status: 'Published',
-          imageSource: 'attachment',
-          images: [
-            {
-              url: 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=400&h=400&fit=crop',
-              source: 'attachment' as const,
-              originalUrl: 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=400&h=400&fit=crop'
-            }
-          ],
-          videos: []
-        },
-        {
-          id: '4',
-          title: 'Sample Image 4',
-          publishDate: new Date().toISOString(),
-          platform: 'Instagram',
-          status: 'Published',
-          imageSource: 'attachment',
-          images: [
-            {
-              url: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=400&fit=crop',
-              source: 'attachment' as const,
-              originalUrl: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=400&fit=crop'
-            }
-          ],
-          videos: []
-        },
-        {
-          id: '5',
-          title: 'Sample Image 5',
-          publishDate: new Date().toISOString(),
-          platform: 'Instagram',
-          status: 'Published',
-          imageSource: 'attachment',
-          images: [
-            {
-              url: 'https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=400&h=400&fit=crop',
-              source: 'attachment' as const,
-              originalUrl: 'https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=400&h=400&fit=crop'
-            }
-          ],
-          videos: []
-        },
-        {
-          id: '6',
-          title: 'Sample Image 6',
-          publishDate: new Date().toISOString(),
-          platform: 'Instagram',
-          status: 'Published',
-          imageSource: 'attachment',
-          images: [
-            {
-              url: 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=400&h=400&fit=crop',
-              source: 'attachment' as const,
-              originalUrl: 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=400&h=400&fit=crop'
-            }
-          ],
-          videos: []
-        }
-      ],
-      availablePlatforms: ['Instagram', 'TikTok', 'YouTube'],
-      availableStatuses: ['Published', 'Draft', 'Scheduled']
-    };
-  }
+      {
+        id: '2',
+        title: 'Sample Image 2',
+        publishDate: new Date().toISOString(),
+        platform: 'Instagram',
+        status: 'Published',
+        imageSource: 'attachment',
+        images: [
+          {
+            url: 'https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=400&h=400&fit=crop',
+            source: 'attachment' as const,
+            originalUrl: 'https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=400&h=400&fit=crop'
+          }
+        ],
+        videos: []
+      },
+      {
+        id: '3',
+        title: 'Sample Image 3',
+        publishDate: new Date().toISOString(),
+        platform: 'Instagram',
+        status: 'Published',
+        imageSource: 'attachment',
+        images: [
+          {
+            url: 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=400&h=400&fit=crop',
+            source: 'attachment' as const,
+            originalUrl: 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=400&h=400&fit=crop'
+          }
+        ],
+        videos: []
+      },
+      {
+        id: '4',
+        title: 'Sample Image 4',
+        publishDate: new Date().toISOString(),
+        platform: 'Instagram',
+        status: 'Published',
+        imageSource: 'attachment',
+        images: [
+          {
+            url: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=400&fit=crop',
+            source: 'attachment' as const,
+            originalUrl: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=400&fit=crop'
+          }
+        ],
+        videos: []
+      },
+      {
+        id: '5',
+        title: 'Sample Image 5',
+        publishDate: new Date().toISOString(),
+        platform: 'Instagram',
+        status: 'Published',
+        imageSource: 'attachment',
+        images: [
+          {
+            url: 'https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=400&h=400&fit=crop',
+            source: 'attachment' as const,
+            originalUrl: 'https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=400&h=400&fit=crop'
+          }
+        ],
+        videos: []
+      },
+      {
+        id: '6',
+        title: 'Sample Image 6',
+        publishDate: new Date().toISOString(),
+        platform: 'Instagram',
+        status: 'Published',
+        imageSource: 'attachment',
+        images: [
+          {
+            url: 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=400&h=400&fit=crop',
+            source: 'attachment' as const,
+            originalUrl: 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=400&h=400&fit=crop'
+          }
+        ],
+        videos: []
+      }
+    ],
+    availablePlatforms: ['Instagram', 'TikTok', 'YouTube'],
+    availableStatuses: ['Published', 'Draft', 'Scheduled']
+  };
 }
 
-export default async function PublicWidgetPage({ params }: { params: { slug: string } }) {
+export default function PublicWidgetPage({ params }: { params: { slug: string } }) {
   const { slug } = params;
-  const data = await getWidgetData(slug);
+  const data = getMockWidgetData(slug);
   const { widget, posts } = data;
 
   return (
     <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 max-w-4xl mx-auto">
       {/* Control Bar */}
       <div className="bg-gray-800 text-white rounded-t-lg -m-4 mb-4 p-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-3">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-3">
             <button
               onClick={() => window.location.reload()}
               className="px-3 py-1.5 bg-gray-700 hover:bg-gray-600 text-white text-sm rounded-md flex items-center space-x-1 transition-colors"
@@ -199,17 +181,17 @@ export default async function PublicWidgetPage({ params }: { params: { slug: str
             {widget.name}
           </div>
         </div>
-      </div>
+        </div>
 
-      {/* Images Grid */}
+        {/* Images Grid */}
       <div className="grid grid-cols-3 gap-2">
-        {posts.map((post) => (
+            {posts.map((post) => (
           <SimpleWidgetCard
-            key={post.id}
-            post={post}
-            aspectRatio={widget.settings?.aspectRatio || 'square'}
-          />
-        ))}
+                key={post.id}
+                post={post}
+                aspectRatio={widget.settings?.aspectRatio || 'square'}
+              />
+            ))}
       </div>
 
       {/* Footer */}
