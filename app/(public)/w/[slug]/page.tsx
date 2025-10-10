@@ -28,6 +28,29 @@ export default function PublicWidgetPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [filters, setFilters] = useState<WidgetFilters>({});
+  const [isInIframe, setIsInIframe] = useState(false);
+
+  // Detect if we're in an iframe context
+  useEffect(() => {
+    const checkIframe = () => {
+      const inIframe = window.self !== window.top;
+      const isNotionEmbed = window.location.search.includes('notion') || 
+                           window.location.href.includes('notion') ||
+                           document.referrer.includes('notion');
+      
+      setIsInIframe(inIframe || isNotionEmbed);
+      
+      console.log('Widget page context:', {
+        inIframe,
+        isNotionEmbed,
+        pathname: window.location.pathname,
+        referrer: document.referrer,
+        userAgent: navigator.userAgent
+      });
+    };
+
+    checkIframe();
+  }, []);
 
   const loadWidgetData = useCallback(async () => {
     try {
@@ -123,6 +146,14 @@ export default function PublicWidgetPage() {
           </div>
         </div>
       </div>
+
+      {/* Debug Info for iframe context */}
+      {isInIframe && (
+        <div className="bg-blue-100 border-l-4 border-blue-500 text-blue-700 p-4 mb-4">
+          <p className="font-bold">Debug: Running in iframe context</p>
+          <p className="text-sm">This widget is embedded in Notion</p>
+        </div>
+      )}
 
       {/* Main Content */}
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
