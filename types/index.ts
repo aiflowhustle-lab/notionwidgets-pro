@@ -40,6 +40,7 @@ export interface NotionImage {
   url: string;
   source: 'attachment' | 'link' | 'canva';
   originalUrl?: string;
+  pageNumber?: number;
 }
 
 export interface NotionVideo {

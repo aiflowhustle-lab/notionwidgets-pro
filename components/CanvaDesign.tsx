@@ -18,10 +18,14 @@ export default function CanvaDesign({ canvaUrl, title, className = '', onClick, 
   const designIdMatch = canvaUrl.match(/\/design\/([^\/]+)\//);
   const designId = designIdMatch ? designIdMatch[1] : null;
   
-  // Create a preview URL - this is a best-effort approach
-  // In production, you'd want to use Canva's API to get actual image URLs
+  // Check if this is an embed URL with page parameter
+  const isEmbedUrl = canvaUrl.includes('?embed');
+  const pageMatch = canvaUrl.match(/[?&]page=(\d+)/);
+  const pageNumber = pageMatch ? parseInt(pageMatch[1]) : 1;
+  
+  // Create a preview URL using Canva's embed format
   const previewUrl = designId 
-    ? `https://www.canva.com/design/${designId}/view?embed&t=${Date.now()}`
+    ? `https://www.canva.com/design/${designId}/view?embed${pageNumber > 1 ? `&page=${pageNumber}` : ''}`
     : canvaUrl;
 
   const handleClick = (e: React.MouseEvent) => {
@@ -47,7 +51,9 @@ export default function CanvaDesign({ canvaUrl, title, className = '', onClick, 
             className="w-full h-full border-0"
             title={title}
             onError={() => setImageError(true)}
-            sandbox="allow-scripts allow-same-origin"
+            sandbox="allow-scripts allow-same-origin allow-popups"
+            allowFullScreen
+            loading="lazy"
           />
         ) : (
           <div className="w-full h-full flex flex-col items-center justify-center p-4">
