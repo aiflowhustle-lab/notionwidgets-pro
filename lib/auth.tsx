@@ -84,7 +84,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 export function useAuth() {
   const context = useContext(AuthContext);
   if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider');
+    // Return a default auth context when no AuthProvider is present
+    // This allows components to work in public widget pages
+    console.log('useAuth called without AuthProvider - returning default context');
+    return {
+      user: null,
+      loading: false,
+      signInWithGoogle: async () => {
+        console.log('signInWithGoogle called without AuthProvider');
+        throw new Error('Authentication not available in public widget view');
+      },
+      signOut: async () => {
+        console.log('signOut called without AuthProvider');
+        throw new Error('Authentication not available in public widget view');
+      },
+    };
   }
   return context;
 }
