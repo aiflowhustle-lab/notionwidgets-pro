@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { adminAuth } from '@/lib/firebase-admin';
-import { getUserWidgets } from '@/lib/firestore';
+import { getUserWidgets } from '@/lib/firestore-admin';
 
 export async function GET(request: NextRequest) {
   try {

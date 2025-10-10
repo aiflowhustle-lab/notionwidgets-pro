@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { adminAuth } from '@/lib/firebase-admin';
-import { createWidget } from '@/lib/firestore';
+import { createWidget } from '@/lib/firestore-admin';
 import { testNotionConnection, detectDatabaseColumns } from '@/lib/notion';
-import { generateSlug } from '@/lib/utils';
-import bcrypt from 'bcryptjs';
+import { generateSlug, extractDatabaseId } from '@/lib/utils';
+import { encryptToken } from '@/lib/encryption';
 import { CreateWidgetRequest } from '@/types';
 
 export async function POST(request: NextRequest) {
@@ -26,14 +26,17 @@ export async function POST(request: NextRequest) {
 
     // Parse request body
     const body: CreateWidgetRequest = await request.json();
-    const { name, token: notionToken, databaseId, settings } = body;
+    const { name, token: notionToken, databaseId: rawDatabaseId, settings } = body;
 
     // Validate required fields
-    if (!name || !notionToken || !databaseId) {
+    if (!name || !notionToken || !rawDatabaseId) {
       return NextResponse.json({ 
         error: 'Missing required fields: name, token, databaseId' 
       }, { status: 400 });
     }
+
+    // Extract clean database ID from URL if needed
+    const databaseId = extractDatabaseId(rawDatabaseId);
 
     // Test Notion connection
     const isConnected = await testNotionConnection(notionToken, databaseId);
@@ -54,7 +57,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Encrypt Notion token
-    const encryptedToken = await bcrypt.hash(notionToken, 10);
+    const encryptedToken = encryptToken(notionToken);
 
     // Generate unique slug
     const slug = generateSlug(name);

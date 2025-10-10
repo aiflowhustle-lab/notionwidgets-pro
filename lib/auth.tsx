@@ -19,26 +19,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser: FirebaseUser | null) => {
+      console.log('Auth state changed:', firebaseUser ? 'User signed in' : 'User signed out');
+      
       if (firebaseUser) {
-        // Check if user exists in Firestore
-        let userData = await getUser(firebaseUser.uid);
+        // For now, just use Firebase Auth user data directly
+        // We'll add Firestore integration later
+        const userData: User = {
+          uid: firebaseUser.uid,
+          email: firebaseUser.email || '',
+          displayName: firebaseUser.displayName,
+          photoURL: firebaseUser.photoURL,
+          createdAt: new Date(),
+        };
         
-        if (!userData) {
-          // Create new user if doesn't exist
-          const newUser: Omit<User, 'uid'> = {
-            email: firebaseUser.email || '',
-            displayName: firebaseUser.displayName,
-            photoURL: firebaseUser.photoURL,
-            createdAt: new Date(),
-          };
-          
-          await createUser(firebaseUser.uid, newUser);
-          userData = {
-            uid: firebaseUser.uid,
-            ...newUser,
-          };
-        }
-        
+        console.log('Setting user data:', userData);
         setUser(userData);
       } else {
         setUser(null);

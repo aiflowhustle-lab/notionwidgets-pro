@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useParams } from 'next/navigation';
 import { NotionPost, WidgetFilters } from '@/types';
 import WidgetCard from '@/components/WidgetCard';
@@ -29,11 +29,7 @@ export default function PublicWidgetPage() {
   const [error, setError] = useState<string | null>(null);
   const [filters, setFilters] = useState<WidgetFilters>({});
 
-  useEffect(() => {
-    loadWidgetData();
-  }, [slug, filters]);
-
-  const loadWidgetData = async () => {
+  const loadWidgetData = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
@@ -59,7 +55,11 @@ export default function PublicWidgetPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [slug, filters.platform, filters.status]);
+
+  useEffect(() => {
+    loadWidgetData();
+  }, [loadWidgetData]);
 
   const handleFiltersChange = (newFilters: WidgetFilters) => {
     setFilters(newFilters);
@@ -101,46 +101,49 @@ export default function PublicWidgetPage() {
   const { widget, posts, availablePlatforms, availableStatuses } = data;
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-white">
       {/* Header */}
-      <div className="bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+      <div className="bg-white border-b border-gray-200">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
-                <Image className="w-6 h-6 text-white" />
+              <div className="w-8 h-8 bg-gray-800 rounded-lg flex items-center justify-center">
+                <Image className="w-5 h-5 text-white" />
               </div>
               <div>
-                <h1 className="text-2xl font-bold text-gray-900">{widget.name}</h1>
-                <p className="text-gray-600">Image Gallery Widget</p>
+                <h1 className="text-xl font-semibold text-gray-900">{widget.name}</h1>
+                <p className="text-sm text-gray-500">Image Gallery Widget</p>
               </div>
             </div>
             
             <div className="text-right">
-              <div className="text-sm text-gray-500">Powered by</div>
-              <div className="text-lg font-semibold gradient-text">NotionWidgets Pro</div>
+              <div className="text-xs text-gray-500">Powered by</div>
+              <div className="text-sm font-medium text-gray-900">NotionWidgets Pro</div>
             </div>
           </div>
         </div>
       </div>
 
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Filters */}
-        <div className="mb-8">
-          <FilterBar
-            onFiltersChange={handleFiltersChange}
-            availablePlatforms={availablePlatforms}
-            availableStatuses={availableStatuses}
-          />
-        </div>
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Filters and Results - Aligned with grid */}
+        <div className="max-w-4xl mx-auto">
+          {/* Filters */}
+          <div className="mb-6">
+            <FilterBar
+              onFiltersChange={handleFiltersChange}
+              availablePlatforms={availablePlatforms}
+              availableStatuses={availableStatuses}
+            />
+          </div>
 
-        {/* Results Count */}
-        <div className="mb-6">
-          <p className="text-gray-600">
-            Showing {posts.length} {posts.length === 1 ? 'image' : 'images'}
-            {Object.values(filters).some(v => v !== undefined) && ' (filtered)'}
-          </p>
+          {/* Results Count */}
+          <div className="mb-6">
+            <p className="text-sm text-gray-600">
+              Showing {posts.length} {posts.length === 1 ? 'image' : 'images'}
+              {Object.values(filters).some(v => v !== undefined) && ' (filtered)'}
+            </p>
+          </div>
         </div>
 
         {/* Images Grid */}
@@ -157,7 +160,7 @@ export default function PublicWidgetPage() {
             </p>
           </div>
         ) : (
-          <div className="masonry">
+          <div className="grid grid-cols-3 gap-1 max-w-4xl mx-auto">
             {posts.map((post) => (
               <WidgetCard
                 key={post.id}
@@ -169,23 +172,6 @@ export default function PublicWidgetPage() {
         )}
       </div>
 
-      {/* Footer */}
-      <div className="bg-white border-t mt-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div className="text-center text-gray-500 text-sm">
-            <p>
-              Created with{' '}
-              <a
-                href="/"
-                className="text-blue-600 hover:text-blue-800 font-medium"
-              >
-                NotionWidgets Pro
-              </a>
-              {' '}• Transform your Notion images into beautiful widgets
-            </p>
-          </div>
-        </div>
-      </div>
     </div>
   );
 }

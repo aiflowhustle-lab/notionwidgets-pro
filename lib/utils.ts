@@ -57,3 +57,19 @@ export function copyToClipboard(text: string): Promise<void> {
     });
   }
 }
+
+export function extractDatabaseId(urlOrId: string): string {
+  // If it's already just an ID (32 characters), return as is
+  if (urlOrId.length === 32 && !urlOrId.includes('/')) {
+    return urlOrId;
+  }
+  
+  // Extract from Notion URL
+  const match = urlOrId.match(/([a-f0-9]{32})/i);
+  if (match) {
+    return match[1];
+  }
+  
+  // If no match found, return the original string
+  return urlOrId;
+}

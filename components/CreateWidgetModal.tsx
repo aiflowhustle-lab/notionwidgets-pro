@@ -3,6 +3,8 @@
 import { useState } from 'react';
 import { X, Eye, EyeOff, HelpCircle, ExternalLink } from 'lucide-react';
 import { CreateWidgetRequest } from '@/types';
+import { useAuth } from '@/lib/auth';
+import { auth } from '@/lib/firebase';
 
 interface CreateWidgetModalProps {
   onClose: () => void;
@@ -10,6 +12,7 @@ interface CreateWidgetModalProps {
 }
 
 export default function CreateWidgetModal({ onClose, onSuccess }: CreateWidgetModalProps) {
+  const { user } = useAuth();
   const [formData, setFormData] = useState<CreateWidgetRequest>({
     name: '',
     token: '',
@@ -32,10 +35,18 @@ export default function CreateWidgetModal({ onClose, onSuccess }: CreateWidgetMo
     setError('');
 
     try {
+      // Get Firebase ID token
+      const token = await auth.currentUser?.getIdToken();
+      
+      if (!token) {
+        throw new Error('User not authenticated');
+      }
+      
       const response = await fetch('/api/widgets/create', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
         },
         body: JSON.stringify(formData),
       });
@@ -157,9 +168,12 @@ export default function CreateWidgetModal({ onClose, onSuccess }: CreateWidgetMo
                 value={formData.databaseId}
                 onChange={(e) => handleInputChange('databaseId', e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="abc123def456..."
+                placeholder="286696474ba4818e9699c5e4a99f410a"
                 required
               />
+              <p className="text-xs text-gray-500 mt-1">
+                Extract from your Notion database URL: https://www.notion.so/[DATABASE_ID]
+              </p>
             </div>
 
             {/* Advanced Settings Toggle */}

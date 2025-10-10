@@ -33,12 +33,20 @@ export interface NotionPost {
   status: string | null;
   imageSource: string | null;
   images: NotionImage[];
+  videos: NotionVideo[];
 }
 
 export interface NotionImage {
   url: string;
   source: 'attachment' | 'link' | 'canva';
   originalUrl?: string;
+}
+
+export interface NotionVideo {
+  url: string;
+  source: 'attachment' | 'link' | 'canva';
+  originalUrl?: string;
+  type: 'video/mp4' | 'video/webm' | 'video/ogg' | string;
 }
 
 export interface DatabaseColumn {
