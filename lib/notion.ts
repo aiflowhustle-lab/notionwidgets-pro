@@ -10,28 +10,21 @@ function convertCanvaUrlToImages(canvaUrl: string): NotionImage[] {
   if (designIdMatch) {
     const designId = designIdMatch[1];
     
-    // Extract multiple images from Canva design using embed format
-    // Canva designs can be accessed as individual pages using embed URLs
-    const numberOfImages = 3;
-    const images: NotionImage[] = [];
+    // For now, use Canva's embed URL format which works better
+    // Canva provides embed URLs that can be used in iframes
+    const embedUrl = `https://www.canva.com/design/${designId}/view?embed`;
     
-    for (let i = 1; i <= numberOfImages; i++) {
-      // Use Canva's embed format with page parameter
-      // This format: https://www.canva.com/design/{designId}/view?embed&page={pageNumber}
-      const embedUrl = `https://www.canva.com/design/${designId}/view?embed&page=${i}`;
-      
-      images.push({
-        url: embedUrl,
-        source: 'canva',
-        originalUrl: canvaUrl,
-        pageNumber: i,
-      });
-    }
-    
-    return images;
+    // Return the embed URL as a single image for now
+    // This will be handled specially in the WidgetCard component
+    return [{
+      url: embedUrl,
+      source: 'canva',
+      originalUrl: canvaUrl,
+      isEmbed: true, // Flag to indicate this needs special handling
+    }];
   }
   
-  // Fallback to single placeholder if URL doesn't match expected pattern
+  // Fallback to placeholder images if URL doesn't match expected pattern
   const placeholders = [
     'https://images.unsplash.com/photo-1557804506-669a67965ba0?w=500&h=500&fit=crop&auto=format', // Business/office
     'https://images.unsplash.com/photo-1551434678-e076c223a692?w=500&h=500&fit=crop&auto=format', // Team meeting

@@ -43,9 +43,20 @@ export async function GET(
       console.log('Database ID:', widget.databaseId);
       posts = await fetchNotionDatabase(decryptedToken, widget.databaseId, platformFilter, statusFilter);
       console.log('Successfully fetched', posts.length, 'posts from Notion');
+      
+      // Log media information for debugging
+      posts.forEach((post, index) => {
+        console.log(`Post ${index + 1}: ${post.title}`);
+        console.log(`  - Images: ${post.images.length}`);
+        console.log(`  - Videos: ${post.videos.length}`);
+        post.images.forEach((img, imgIndex) => {
+          console.log(`    Image ${imgIndex + 1}: ${img.source} - ${img.url.substring(0, 50)}...`);
+        });
+      });
     } catch (error) {
       console.error('Error fetching from Notion:', error);
       console.error('Error details:', error instanceof Error ? error.message : 'Unknown error');
+      console.log('Falling back to mock data...');
       // Fallback to mock data if Notion fails
       posts = [
         {

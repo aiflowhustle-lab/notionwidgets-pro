@@ -5,7 +5,6 @@ import Image from 'next/image';
 import { ExternalLink, Calendar, BarChart3, Tag, Play, X, ChevronLeft, ChevronRight } from 'lucide-react';
 import { NotionPost } from '@/types';
 import { formatDate } from '@/lib/utils';
-import CanvaDesign from './CanvaDesign';
 
 interface WidgetCardProps {
   post: NotionPost;
@@ -165,15 +164,16 @@ export default function WidgetCard({ post, aspectRatio = 'square' }: WidgetCardP
                 loop
                 playsInline
                 preload="metadata"
+                onError={() => setImageError(true)}
               />
             ) : hasImage && !imageError ? (
-              // Image display
-              mainImage.source === 'canva' ? (
-                <CanvaDesign
-                  canvaUrl={mainImage.originalUrl || mainImage.url}
+              // Image display - handle Canva embeds specially
+              mainImage.source === 'canva' && mainImage.isEmbed ? (
+                <iframe
+                  src={mainImage.url}
+                  className="w-full h-full border-0"
                   title={post.title}
-                  className="w-full h-full"
-                  onClick={handleMediaClick}
+                  onError={() => setImageError(true)}
                 />
               ) : (
                 <Image
@@ -186,7 +186,14 @@ export default function WidgetCard({ post, aspectRatio = 'square' }: WidgetCardP
               )
             ) : (
               <div className="w-full h-full bg-gray-200 flex items-center justify-center">
-                <span className="text-gray-500 text-sm">Media not available</span>
+                <div className="text-center">
+                  <span className="text-gray-500 text-sm">Media not available</span>
+                  {mainImage && (
+                    <div className="text-xs text-gray-400 mt-1">
+                      Source: {mainImage.source}
+                    </div>
+                  )}
+                </div>
               </div>
             )}
             
@@ -260,29 +267,24 @@ export default function WidgetCard({ post, aspectRatio = 'square' }: WidgetCardP
                   className="max-w-full max-h-full object-contain rounded-lg"
                   onClick={(e) => e.stopPropagation()}
                 />
+              ) : allMedia[currentImageIndex]?.source === 'canva' && allMedia[currentImageIndex]?.isEmbed ? (
+                // Handle Canva embeds in gallery
+                <iframe
+                  src={allMedia[currentImageIndex].url}
+                  className="max-w-full max-h-full rounded-lg shadow-2xl"
+                  title={post.title}
+                  onClick={(e) => e.stopPropagation()}
+                />
               ) : (
-                allMedia[currentImageIndex]?.source === 'canva' ? (
-                  <div 
-                    onClick={(e) => e.stopPropagation()}
-                    className="w-full h-full"
-                  >
-                    <CanvaDesign
-                      canvaUrl={allMedia[currentImageIndex].originalUrl || allMedia[currentImageIndex].url}
-                      title={post.title}
-                      className="w-full h-full"
-                      disableExternalLink={true}
-                    />
-                  </div>
-                ) : (
-                  <Image
-                    src={allMedia[currentImageIndex].url}
-                    alt={post.title}
-                    width={800}
-                    height={600}
-                    className="max-w-full max-h-full object-contain rounded-lg shadow-2xl"
-                    onClick={(e) => e.stopPropagation()}
-                  />
-                )
+                // Regular images
+                <Image
+                  src={allMedia[currentImageIndex].url}
+                  alt={post.title}
+                  width={800}
+                  height={600}
+                  className="max-w-full max-h-full object-contain rounded-lg shadow-2xl"
+                  onClick={(e) => e.stopPropagation()}
+                />
               )}
             </div>
 
@@ -332,16 +334,26 @@ export default function WidgetCard({ post, aspectRatio = 'square' }: WidgetCardP
                         className="w-full h-full object-cover"
                         muted
                       />
-                    ) : media.source === 'canva' ? (
+                    ) : media.source === 'canva' && media.isEmbed ? (
                       <div className="w-full h-full bg-gradient-to-br from-orange-100 to-pink-100 flex items-center justify-center">
                         <ExternalLink className="w-4 h-4 text-orange-600" />
                       </div>
                     ) : (
-                      <img
-                        src={media.url}
-                        alt={`Thumbnail ${index + 1}`}
-                        className="w-full h-full object-cover"
-                      />
+                      <>
+                        <img
+                          src={media.url}
+                          alt={`Thumbnail ${index + 1}`}
+                          className="w-full h-full object-cover"
+                          onError={(e) => {
+                            // Show placeholder if image fails to load
+                            e.currentTarget.style.display = 'none';
+                            e.currentTarget.nextElementSibling?.classList.remove('hidden');
+                          }}
+                        />
+                        <div className="w-full h-full bg-gray-200 flex items-center justify-center hidden">
+                          <span className="text-xs text-gray-500">Error</span>
+                        </div>
+                      </>
                     )}
                   </button>
                 ))}
