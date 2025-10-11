@@ -16,12 +16,12 @@ function convertCanvaUrlToImages(canvaUrl: string): NotionImage[] {
     const images: NotionImage[] = [];
     
     for (let i = 1; i <= numberOfImages; i++) {
-      // Use Canva's direct image export format that works in any context
-      // This format: https://www.canva.com/design/{designId}/view?page={pageNumber}&format=png&width=800
-      const imageUrl = `https://www.canva.com/design/${designId}/view?page=${i}&format=png&width=800`;
+      // Use original Canva URL with page parameter - hybrid approach will handle processing
+      // This format: https://www.canva.com/design/{designId}/view#page={pageNumber}
+      const pageUrl = canvaUrl.replace(/#\d*$/, '') + `#${i}`;
       
       images.push({
-        url: imageUrl,
+        url: pageUrl,
         source: 'canva',
         originalUrl: canvaUrl,
         pageNumber: i,
