@@ -167,23 +167,14 @@ export default function WidgetCard({ post, aspectRatio = 'square' }: WidgetCardP
                 onError={() => setImageError(true)}
               />
             ) : hasImage && !imageError ? (
-              // Image display - all URLs are now proxied, handle Canva embeds as iframes
-              mainImage.source === 'canva' && mainImage.isEmbed ? (
-                <iframe
-                  src={mainImage.url}
-                  className="w-full h-full border-0"
-                  title={post.title}
-                  onError={() => setImageError(true)}
-                />
-              ) : (
-                <Image
-                  src={mainImage.url}
-                  alt={post.title}
-                  fill
-                  className="object-cover group-hover:scale-105 transition-transform duration-300"
-                  onError={() => setImageError(true)}
-                />
-              )
+              // Image display - all URLs are now proxied
+              <Image
+                src={mainImage.url}
+                alt={post.title}
+                fill
+                className="object-cover group-hover:scale-105 transition-transform duration-300"
+                onError={() => setImageError(true)}
+              />
             ) : (
               <div className="w-full h-full bg-gray-200 flex items-center justify-center">
                 <div className="text-center">
@@ -267,16 +258,8 @@ export default function WidgetCard({ post, aspectRatio = 'square' }: WidgetCardP
                   className="max-w-full max-h-full object-contain rounded-lg"
                   onClick={(e) => e.stopPropagation()}
                 />
-              ) : allMedia[currentImageIndex]?.source === 'canva' && allMedia[currentImageIndex]?.isEmbed ? (
-                // Handle Canva embeds in gallery - all URLs are now proxied
-                <iframe
-                  src={allMedia[currentImageIndex].url}
-                  className="max-w-full max-h-full rounded-lg shadow-2xl"
-                  title={post.title}
-                  onClick={(e) => e.stopPropagation()}
-                />
               ) : (
-                // Regular images - all URLs are now proxied
+                // All images - all URLs are now proxied
                 <Image
                   src={allMedia[currentImageIndex].url}
                   alt={post.title}
@@ -334,7 +317,8 @@ export default function WidgetCard({ post, aspectRatio = 'square' }: WidgetCardP
                         className="w-full h-full object-cover"
                         muted
                       />
-                    ) : media.source === 'canva' && media.isEmbed ? (
+                    ) : media.source === 'canva' ? (
+                      // Canva placeholder with icon
                       <div className="w-full h-full bg-gradient-to-br from-orange-100 to-pink-100 flex items-center justify-center">
                         <ExternalLink className="w-4 h-4 text-orange-600" />
                       </div>

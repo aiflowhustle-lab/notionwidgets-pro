@@ -19,15 +19,30 @@ function convertCanvaUrlToImages(canvaUrl: string): NotionImage[] {
   if (designIdMatch) {
     const designId = designIdMatch[1];
     
-    // Use Canva's embed URL format but proxy it
-    const embedUrl = `https://www.canva.com/design/${designId}/view?embed`;
-    const proxyUrl = convertToProxyUrl(embedUrl, 'iframe');
+    // Since Canva embeds are blocked, use a placeholder approach
+    // Create a consistent placeholder based on the design ID
+    const placeholders = [
+      'https://images.unsplash.com/photo-1557804506-669a67965ba0?w=500&h=500&fit=crop&auto=format', // Business/office
+      'https://images.unsplash.com/photo-1551434678-e076c223a692?w=500&h=500&fit=crop&auto=format', // Team meeting
+      'https://images.unsplash.com/photo-1552664730-d307ca884978?w=500&h=500&fit=crop&auto=format', // Business strategy
+      'https://images.unsplash.com/photo-1553877522-43269d4ea984?w=500&h=500&fit=crop&auto=format', // Creative workspace
+      'https://images.unsplash.com/photo-1559136555-9303baea8ebd?w=500&h=500&fit=crop&auto=format'  // Professional woman
+    ];
+    
+    // Use design ID to pick a consistent placeholder
+    let hash = 0;
+    for (let i = 0; i < designId.length; i++) {
+      const char = designId.charCodeAt(i);
+      hash = ((hash << 5) - hash) + char;
+      hash = hash & hash;
+    }
+    const index = Math.abs(hash) % placeholders.length;
     
     return [{
-      url: proxyUrl,
+      url: convertToProxyUrl(placeholders[index], 'image'),
       source: 'canva',
       originalUrl: canvaUrl,
-      isEmbed: true, // Flag to indicate this needs special handling
+      isEmbed: false, // No longer an embed, just a placeholder image
     }];
   }
   
