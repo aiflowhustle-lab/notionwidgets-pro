@@ -204,21 +204,17 @@ export default function WidgetCard({ post, aspectRatio = 'square' }: WidgetCardP
               </div>
             )}
             
-            {/* Overlay with content on hover */}
-            <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-60 transition-all duration-300 flex flex-col justify-end p-4">
-              {/* Title and date overlay */}
-              <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                <div className="flex items-center justify-between text-white">
-                  <div className="flex items-center">
-                    <h3 className="font-medium text-sm line-clamp-2">
-                      {post.title}
-                    </h3>
+            {/* Overlay with content on hover - Bottom 20% */}
+            <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-60 transition-all duration-300 flex flex-col justify-end">
+              {/* Title and date overlay - Bottom 20% of card */}
+              <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-black bg-opacity-80 h-[20%] flex flex-col justify-center p-4">
+                <div className="text-white">
+                  <div className="text-xs text-white/70 mb-1">
+                    {post.publishDate ? formatDate(post.publishDate) : 'No date'}
                   </div>
-                  {post.publishDate && (
-                    <div className="text-sm">
-                      {formatDate(post.publishDate)}
-                    </div>
-                  )}
+                  <h3 className="text-sm font-medium line-clamp-2">
+                    {post.title || 'Untitled'}
+                  </h3>
                 </div>
               </div>
             </div>
@@ -240,15 +236,6 @@ export default function WidgetCard({ post, aspectRatio = 'square' }: WidgetCardP
             </div> */}
           </div>
 
-          {/* Date and Title Display */}
-          <div className="p-3 bg-white">
-            <div className="text-xs text-gray-500 mb-1">
-              {post.publishDate ? formatDate(post.publishDate) : 'No date'}
-            </div>
-            <h3 className="text-sm font-medium text-gray-900 line-clamp-2">
-              {post.title || 'Untitled'}
-            </h3>
-          </div>
 
         </div>
       </div>
