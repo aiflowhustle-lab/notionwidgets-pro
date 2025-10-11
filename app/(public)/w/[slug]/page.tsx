@@ -182,7 +182,7 @@ export default function PublicWidgetPage() {
       )}
 
       {/* Debug Information */}
-      <DebugInfo posts={posts} isVisible={true} />
+      <DebugInfo posts={posts} isVisible={process.env.NODE_ENV === 'development'} />
 
       {/* Main Content */}
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
