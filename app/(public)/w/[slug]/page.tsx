@@ -39,7 +39,7 @@ export default function PublicWidgetPage() {
       if (filters.platform) searchParams.set('platform', filters.platform);
       if (filters.status) searchParams.set('status', filters.status);
       
-      const response = await fetch(`/api/widgets/${slug}/data?${searchParams.toString()}`);
+      const response = await fetch(`${window.location.origin}/api/widgets/${slug}/data?${searchParams.toString()}`);
       
       if (!response.ok) {
         if (response.status === 404) {
