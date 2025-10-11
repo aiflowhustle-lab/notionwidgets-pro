@@ -1,11 +1,11 @@
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'NotionWidgets Pro - Image Gallery Widget',
-  description: 'Beautiful image gallery widgets powered by NotionWidgets Pro',
+  title: 'Image Gallery Widget - NotionWidgets Pro',
+  description: 'Beautiful image gallery widget with filtering and gallery modal',
   other: {
-    'X-Frame-Options': 'ALLOWALL',
-    'Content-Security-Policy': "frame-ancestors 'self' notion.so *.notion.so https://notion.so https://*.notion.so",
+    'X-Frame-Options': 'SAMEORIGIN',
+    'Content-Security-Policy': "frame-ancestors 'self' notion.so *.notion.so",
   },
 }
 
@@ -14,16 +14,5 @@ export default function WidgetLayout({
 }: {
   children: React.ReactNode
 }) {
-  return (
-    <html>
-      <head>
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <meta httpEquiv="X-Frame-Options" content="ALLOWALL" />
-        <meta httpEquiv="Content-Security-Policy" content="frame-ancestors 'self' notion.so *.notion.so https://notion.so https://*.notion.so" />
-      </head>
-      <body>
-        {children}
-      </body>
-    </html>
-  )
+  return children
 }

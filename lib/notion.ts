@@ -10,21 +10,19 @@ function convertCanvaUrlToImages(canvaUrl: string): NotionImage[] {
   if (designIdMatch) {
     const designId = designIdMatch[1];
     
-    // Extract multiple images from Canva design using embed format
-    // Canva designs can be accessed as individual pages using embed URLs
+    // Extract multiple images from Canva design using proper image URLs
+    // Canva designs can be accessed as individual pages/slides
     const numberOfImages = 3;
     const images: NotionImage[] = [];
     
     for (let i = 1; i <= numberOfImages; i++) {
-      // Use Canva's embed format with page parameter
-      // This format: https://www.canva.com/design/{designId}/view?embed&page={pageNumber}
-      const embedUrl = `https://www.canva.com/design/${designId}/view?embed&page=${i}`;
+      // Use the original Canva URL with page parameter
+      const pageUrl = canvaUrl.replace(/#\d*$/, '') + `#${i}`;
       
       images.push({
-        url: embedUrl,
+        url: pageUrl,
         source: 'canva',
         originalUrl: canvaUrl,
-        pageNumber: i,
       });
     }
     
