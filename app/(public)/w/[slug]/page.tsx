@@ -28,7 +28,7 @@ export default function PublicWidgetPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [filters, setFilters] = useState<WidgetFilters>({});
-  const [isInIframe, setIsInIframe] = useState(true); // Assume iframe by default for cleaner display
+  const [isInIframe, setIsInIframe] = useState(false);
 
   const loadWidgetData = useCallback(async () => {
     try {
@@ -62,10 +62,10 @@ export default function PublicWidgetPage() {
     loadWidgetData();
   }, [loadWidgetData]);
 
-  // Always assume iframe for cleaner display in Notion
-  // useEffect(() => {
-  //   setIsInIframe(window !== window.top);
-  // }, []);
+  // Detect if we're in an iframe
+  useEffect(() => {
+    setIsInIframe(window !== window.top);
+  }, []);
 
   const handleFiltersChange = (newFilters: WidgetFilters) => {
     setFilters(newFilters);
@@ -107,16 +107,33 @@ export default function PublicWidgetPage() {
   const { widget, posts, availablePlatforms, availableStatuses } = data;
 
   return (
-    <div className="bg-white min-h-screen">
-      {/* Widget Content - Always show for Iframely compatibility */}
-      <div className="p-4">
-        <div className="max-w-4xl mx-auto">
-          {/* Widget Title */}
-          <div className="mb-4 text-center">
-            <h1 className="text-lg font-semibold text-gray-900">{widget.name}</h1>
-            <p className="text-sm text-gray-500">Image Gallery Widget</p>
+    <div className="min-h-screen bg-white">
+      {/* Header */}
+      <div className="bg-white border-b border-gray-200">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-3">
+              <div className="w-8 h-8 bg-gray-800 rounded-lg flex items-center justify-center">
+                <Image className="w-5 h-5 text-white" />
+              </div>
+              <div>
+                <h1 className="text-xl font-semibold text-gray-900">{widget.name}</h1>
+                <p className="text-sm text-gray-500">Image Gallery Widget</p>
+              </div>
+            </div>
+            
+            <div className="text-right">
+              <div className="text-xs text-gray-500">Powered by</div>
+              <div className="text-sm font-medium text-gray-900">NotionWidgets Pro</div>
+            </div>
           </div>
+        </div>
+      </div>
 
+      {/* Main Content */}
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Filters and Results - Aligned with grid */}
+        <div className="max-w-4xl mx-auto">
           {/* Filters */}
           <div className="mb-6">
             <FilterBar
@@ -133,33 +150,34 @@ export default function PublicWidgetPage() {
               {Object.values(filters).some(v => v !== undefined) && ' (filtered)'}
             </p>
           </div>
-
-          {/* Images Grid */}
-          {posts.length === 0 ? (
-            <div className="text-center py-12">
-              <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Image className="w-12 h-12 text-gray-400" />
-              </div>
-              <h3 className="text-lg font-medium text-gray-900 mb-2">No images found</h3>
-              <p className="text-gray-600">
-                {Object.values(filters).some(v => v !== undefined)
-                  ? 'Try adjusting your filters to see more images.'
-                  : 'This widget doesn\'t have any images yet.'}
-              </p>
-            </div>
-          ) : (
-            <div className="grid grid-cols-3 gap-1">
-              {posts.map((post) => (
-                <WidgetCard
-                  key={post.id}
-                  post={post}
-                  aspectRatio={widget.settings?.aspectRatio || 'square'}
-                />
-              ))}
-            </div>
-          )}
         </div>
+
+        {/* Images Grid */}
+        {posts.length === 0 ? (
+          <div className="text-center py-12">
+            <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <Image className="w-12 h-12 text-gray-400" />
+            </div>
+            <h3 className="text-lg font-medium text-gray-900 mb-2">No images found</h3>
+            <p className="text-gray-600">
+              {Object.values(filters).some(v => v !== undefined)
+                ? 'Try adjusting your filters to see more images.'
+                : 'This widget doesn\'t have any images yet.'}
+            </p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-3 gap-1 max-w-4xl mx-auto">
+            {posts.map((post) => (
+              <WidgetCard
+                key={post.id}
+                post={post}
+                aspectRatio={widget.settings?.aspectRatio || 'square'}
+              />
+            ))}
+          </div>
+        )}
       </div>
+
     </div>
   );
 }
