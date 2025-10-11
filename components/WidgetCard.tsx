@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
-import { ExternalLink, Calendar, BarChart3, Tag, Play, X, ChevronLeft, ChevronRight, Image as ImageIcon } from 'lucide-react';
+import { Calendar, BarChart3, Tag, Play, X, ChevronLeft, ChevronRight, Image as ImageIcon } from 'lucide-react';
 import { NotionPost } from '@/types';
 import { formatDate } from '@/lib/utils';
 import CanvaDesign from './CanvaDesign';
@@ -210,7 +210,6 @@ export default function WidgetCard({ post, aspectRatio = 'square' }: WidgetCardP
               <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                 <div className="flex items-center justify-between text-white">
                   <div className="flex items-center">
-                    <ExternalLink className="w-4 h-4 mr-2" />
                     <h3 className="font-medium text-sm line-clamp-2">
                       {post.title}
                     </h3>
@@ -239,6 +238,16 @@ export default function WidgetCard({ post, aspectRatio = 'square' }: WidgetCardP
                 )}
               </div>
             </div> */}
+          </div>
+
+          {/* Date and Title Display */}
+          <div className="p-3 bg-white">
+            <div className="text-xs text-gray-500 mb-1">
+              {post.publishDate ? formatDate(post.publishDate) : 'No date'}
+            </div>
+            <h3 className="text-sm font-medium text-gray-900 line-clamp-2">
+              {post.title || 'Untitled'}
+            </h3>
           </div>
 
         </div>
