@@ -19,9 +19,10 @@ export default function CanvaDesign({ canvaUrl, title, className = '', onClick, 
   const designIdMatch = canvaUrl.match(/\/design\/([^\/]+)\//);
   const designId = designIdMatch ? designIdMatch[1] : null;
   
-  // Canva's public image APIs are unreliable, so we'll show a placeholder
-  // that links to the actual Canva design
-  const imageUrl = null; // Disable direct image loading for now
+  // Use Canva's actual embed URL that works in Notion and other devices
+  const embedUrl = canvaUrl.includes('?') 
+    ? canvaUrl 
+    : `${canvaUrl}?embed`;
 
   const handleClick = (e: React.MouseEvent) => {
     if (onClick) {
@@ -40,20 +41,31 @@ export default function CanvaDesign({ canvaUrl, title, className = '', onClick, 
     >
       {/* Canva Design Preview */}
       <div className="relative w-full h-full bg-gradient-to-br from-orange-100 to-pink-100 rounded-lg overflow-hidden">
-        <div className="w-full h-full flex flex-col items-center justify-center p-4 bg-gradient-to-br from-orange-100 to-pink-100">
-          <div className="w-16 h-16 bg-orange-200 rounded-full flex items-center justify-center mb-3">
-            <ExternalLink className="w-8 h-8 text-orange-600" />
+        {!imageError ? (
+          <iframe
+            src={embedUrl}
+            className="w-full h-full border-0"
+            title={title}
+            onError={() => setImageError(true)}
+            sandbox="allow-scripts allow-same-origin allow-popups"
+            loading="lazy"
+          />
+        ) : (
+          <div className="w-full h-full flex flex-col items-center justify-center p-4 bg-gradient-to-br from-orange-100 to-pink-100">
+            <div className="w-16 h-16 bg-orange-200 rounded-full flex items-center justify-center mb-3">
+              <ExternalLink className="w-8 h-8 text-orange-600" />
+            </div>
+            <h3 className="text-sm font-medium text-gray-700 text-center mb-2">
+              Canva Design
+            </h3>
+            <p className="text-xs text-gray-500 text-center mb-3">
+              Click to view in Canva
+            </p>
+            <div className="text-xs text-orange-600 font-mono bg-orange-50 px-2 py-1 rounded">
+              {designId ? `ID: ${designId.substring(0, 8)}...` : 'Design Link'}
+            </div>
           </div>
-          <h3 className="text-sm font-medium text-gray-700 text-center mb-2">
-            Canva Design
-          </h3>
-          <p className="text-xs text-gray-500 text-center mb-3">
-            Click to view in Canva
-          </p>
-          <div className="text-xs text-orange-600 font-mono bg-orange-50 px-2 py-1 rounded">
-            {designId ? `ID: ${designId.substring(0, 8)}...` : 'Design Link'}
-          </div>
-        </div>
+        )}
         
       </div>
     </div>
