@@ -8,6 +8,7 @@ import { testNotionConnection, detectDatabaseColumns } from '@/lib/notion';
 import { generateSlug, extractDatabaseId } from '@/lib/utils';
 import { encryptToken } from '@/lib/encryption';
 import { CreateWidgetRequest } from '@/types';
+import { cacheService } from '@/lib/cache';
 
 export async function POST(request: NextRequest) {
   try {
@@ -82,6 +83,9 @@ export async function POST(request: NextRequest) {
     };
 
     const widgetId = await createWidget(decodedToken.uid, widgetData);
+
+    // Invalidate cache for this widget (in case it was cached before)
+    await cacheService.invalidate(widgetId);
 
     // Return widget data (without encrypted token)
     const widget = {

@@ -26,6 +26,7 @@
     "next": "14.2.5",
     "react": "^18",
     "react-dom": "^18",
+    "redis": "^4.6.12",
     "tailwind-merge": "^2.2.0",
     "zod": "^3.22.4"
   },
@@ -34,6 +35,7 @@
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
+    "@types/redis": "^4.0.10",
     "eslint": "^8",
     "eslint-config-next": "14.2.5",
     "firebase-tools": "^14.19.1",

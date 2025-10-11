@@ -2,9 +2,65 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getWidget, incrementWidgetViews } from '@/lib/firestore-admin';
 import { fetchNotionDatabase } from '@/lib/notion';
 import { decryptToken } from '@/lib/encryption';
+import { cacheService } from '@/lib/cache';
+import { rateLimiter } from '@/lib/rate-limiter';
 
 // Force this route to be dynamic
 export const dynamic = 'force-dynamic';
+
+// Fallback data function
+function getFallbackData() {
+  return [
+    {
+      id: '1',
+      title: 'Sample Instagram Post',
+      publishDate: '2024-01-15',
+      platform: 'Instagram',
+      status: 'Done',
+      imageSource: 'attachment',
+      images: [
+        {
+          url: 'https://images.unsplash.com/photo-1611162616475-46b635cb6868?w=500&h=500&fit=crop',
+          source: 'attachment' as const,
+          originalUrl: 'https://images.unsplash.com/photo-1611162616475-46b635cb6868?w=500&h=500&fit=crop'
+        }
+      ],
+      videos: []
+    },
+    {
+      id: '2',
+      title: 'TikTok Video Thumbnail',
+      publishDate: '2024-01-14',
+      platform: 'TikTok',
+      status: 'In progress',
+      imageSource: 'link',
+      images: [
+        {
+          url: 'https://images.unsplash.com/photo-1611605698335-8b1569810432?w=500&h=500&fit=crop',
+          source: 'link' as const,
+          originalUrl: 'https://images.unsplash.com/photo-1611605698335-8b1569810432?w=500&h=500&fit=crop'
+        }
+      ],
+      videos: []
+    },
+    {
+      id: '3',
+      title: 'Canva Design',
+      publishDate: '2024-01-13',
+      platform: 'Others',
+      status: 'Done',
+      imageSource: 'canva',
+      images: [
+        {
+          url: 'https://images.unsplash.com/photo-1611224923853-80b023f02d71?w=500&h=500&fit=crop',
+          source: 'canva' as const,
+          originalUrl: 'https://images.unsplash.com/photo-1611224923853-80b023f02d71?w=500&h=500&fit=crop'
+        }
+      ],
+      videos: []
+    }
+  ];
+}
 
 export async function GET(
   request: NextRequest,
@@ -29,77 +85,54 @@ export async function GET(
       return NextResponse.json({ error: 'Widget not found' }, { status: 404, headers });
     }
 
-    // Decrypt the Notion token
-    let decryptedToken: string;
-    try {
-      decryptedToken = decryptToken(widget.token);
-    } catch (error) {
-      console.error('Error decrypting token:', error);
-      // Fallback to using token as-is for backward compatibility
-      decryptedToken = widget.token;
-    }
+    // Check cache first
+    let posts = await cacheService.get(widget.id, platformFilter, statusFilter);
     
-    // Fetch real data from Notion
-    let posts;
-    try {
-      console.log('Attempting to fetch from Notion with token:', decryptedToken.substring(0, 10) + '...');
-      console.log('Database ID:', widget.databaseId);
-      posts = await fetchNotionDatabase(decryptedToken, widget.databaseId, platformFilter, statusFilter);
-      console.log('Successfully fetched', posts.length, 'posts from Notion');
-    } catch (error) {
-      console.error('Error fetching from Notion:', error);
-      console.error('Error details:', error instanceof Error ? error.message : 'Unknown error');
-      // Fallback to mock data if Notion fails
-      posts = [
-        {
-          id: '1',
-          title: 'Sample Instagram Post',
-          publishDate: '2024-01-15',
-          platform: 'Instagram',
-          status: 'Done',
-          imageSource: 'attachment',
-          images: [
-            {
-              url: 'https://images.unsplash.com/photo-1611162616475-46b635cb6868?w=500&h=500&fit=crop',
-              source: 'attachment' as const,
-              originalUrl: 'https://images.unsplash.com/photo-1611162616475-46b635cb6868?w=500&h=500&fit=crop'
-            }
-          ],
-          videos: []
-        },
-        {
-          id: '2',
-          title: 'TikTok Video Thumbnail',
-          publishDate: '2024-01-14',
-          platform: 'TikTok',
-          status: 'In progress',
-          imageSource: 'link',
-          images: [
-            {
-              url: 'https://images.unsplash.com/photo-1611605698335-8b1569810432?w=500&h=500&fit=crop',
-              source: 'link' as const,
-              originalUrl: 'https://images.unsplash.com/photo-1611605698335-8b1569810432?w=500&h=500&fit=crop'
-            }
-          ],
-          videos: []
-        },
-        {
-          id: '3',
-          title: 'Canva Design',
-          publishDate: '2024-01-13',
-          platform: 'Others',
-          status: 'Done',
-          imageSource: 'canva',
-          images: [
-            {
-              url: 'https://images.unsplash.com/photo-1611224923853-80b023f02d71?w=500&h=500&fit=crop',
-              source: 'canva' as const,
-              originalUrl: 'https://images.unsplash.com/photo-1611224923853-80b023f02d71?w=500&h=500&fit=crop'
-            }
-          ],
-          videos: []
+    if (!posts) {
+      // Cache miss - fetch from Notion with rate limiting
+      console.log('Cache miss - fetching from Notion');
+      
+      // Wait for rate limit availability
+      await rateLimiter.waitForNextAvailable();
+      
+      // Check if we can make the request
+      const canMakeRequest = await rateLimiter.canMakeRequest();
+      if (!canMakeRequest) {
+        console.log('Rate limit exceeded, using fallback data');
+        posts = getFallbackData();
+      } else {
+        // Decrypt the Notion token
+        let decryptedToken: string;
+        try {
+          decryptedToken = decryptToken(widget.token);
+        } catch (error) {
+          console.error('Error decrypting token:', error);
+          // Fallback to using token as-is for backward compatibility
+          decryptedToken = widget.token;
         }
-      ];
+        
+        // Fetch real data from Notion
+        try {
+          console.log('Attempting to fetch from Notion with token:', decryptedToken.substring(0, 10) + '...');
+          console.log('Database ID:', widget.databaseId);
+          
+          // Record the request for rate limiting
+          await rateLimiter.recordRequest();
+          
+          posts = await fetchNotionDatabase(decryptedToken, widget.databaseId, platformFilter, statusFilter);
+          console.log('Successfully fetched', posts.length, 'posts from Notion');
+          
+          // Cache the result
+          await cacheService.set(widget.id, posts, platformFilter, statusFilter);
+        } catch (error) {
+          console.error('Error fetching from Notion:', error);
+          console.error('Error details:', error instanceof Error ? error.message : 'Unknown error');
+          // Fallback to mock data if Notion fails
+          posts = getFallbackData();
+        }
+      }
+    } else {
+      console.log('Cache hit - using cached data');
     }
 
     // Apply filters
