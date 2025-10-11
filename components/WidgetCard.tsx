@@ -167,15 +167,26 @@ export default function WidgetCard({ post, aspectRatio = 'square' }: WidgetCardP
                 onError={() => setImageError(true)}
               />
             ) : hasImage && !imageError ? (
-              // Image display - handle Canva embeds specially
+              // Image display - handle different Canva approaches
               mainImage.source === 'canva' && mainImage.isEmbed ? (
+                // Canva embed (likely blocked in Notion)
                 <iframe
                   src={mainImage.url}
                   className="w-full h-full border-0"
                   title={post.title}
                   onError={() => setImageError(true)}
                 />
+              ) : mainImage.source === 'canva' && mainImage.isDirectImage ? (
+                // Canva direct image (CSP-safe for Notion)
+                <Image
+                  src={mainImage.url}
+                  alt={post.title}
+                  fill
+                  className="object-cover group-hover:scale-105 transition-transform duration-300"
+                  onError={() => setImageError(true)}
+                />
               ) : (
+                // Regular images
                 <Image
                   src={mainImage.url}
                   alt={post.title}

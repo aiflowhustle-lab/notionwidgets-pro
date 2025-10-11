@@ -10,18 +10,37 @@ function convertCanvaUrlToImages(canvaUrl: string): NotionImage[] {
   if (designIdMatch) {
     const designId = designIdMatch[1];
     
-    // For now, use Canva's embed URL format which works better
-    // Canva provides embed URLs that can be used in iframes
-    const embedUrl = `https://www.canva.com/design/${designId}/view?embed`;
+    // Try multiple approaches for Notion compatibility
+    const approaches = [
+      // Approach 1: Direct image URL (most likely to work in Notion)
+      {
+        url: `https://media.canva.com/design/${designId}/image/0/0/800x600.png`,
+        source: 'canva',
+        originalUrl: canvaUrl,
+        isDirectImage: true,
+        approach: 'direct-image'
+      },
+      // Approach 2: Canva's public image URL
+      {
+        url: `https://www.canva.com/design/${designId}/view?format=png&width=800`,
+        source: 'canva',
+        originalUrl: canvaUrl,
+        isDirectImage: true,
+        approach: 'public-image'
+      },
+      // Approach 3: Embed URL (fallback, likely blocked in Notion)
+      {
+        url: `https://www.canva.com/design/${designId}/view?embed`,
+        source: 'canva',
+        originalUrl: canvaUrl,
+        isEmbed: true,
+        approach: 'embed'
+      }
+    ];
     
-    // Return the embed URL as a single image for now
-    // This will be handled specially in the WidgetCard component
-    return [{
-      url: embedUrl,
-      source: 'canva',
-      originalUrl: canvaUrl,
-      isEmbed: true, // Flag to indicate this needs special handling
-    }];
+    // Return the first approach (direct image) for now
+    // The WidgetCard will handle fallbacks if this fails
+    return [approaches[0]];
   }
   
   // Fallback to placeholder images if URL doesn't match expected pattern

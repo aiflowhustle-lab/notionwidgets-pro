@@ -42,6 +42,8 @@ export interface NotionImage {
   originalUrl?: string;
   pageNumber?: number;
   isEmbed?: boolean; // Flag for Canva embeds that need special handling
+  isDirectImage?: boolean; // Flag for direct image URLs (CSP-safe)
+  approach?: string; // Debug info about URL generation approach
 }
 
 export interface NotionVideo {
