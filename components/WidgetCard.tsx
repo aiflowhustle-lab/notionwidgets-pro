@@ -164,19 +164,36 @@ export default function WidgetCard({ post, aspectRatio = 'square' }: WidgetCardP
                 loop
                 playsInline
                 preload="metadata"
-              />
-            ) : hasImage && !imageError ? (
-              // Image display - treat Canva as regular images
-              <Image
-                src={mainImage.url}
-                alt={post.title}
-                fill
-                className="object-cover group-hover:scale-105 transition-transform duration-300"
                 onError={() => setImageError(true)}
               />
+            ) : hasImage && !imageError ? (
+              // Image display - handle Canva embeds specially
+              mainImage.source === 'canva' && mainImage.isEmbed ? (
+                <iframe
+                  src={mainImage.url}
+                  className="w-full h-full border-0"
+                  title={post.title}
+                  onError={() => setImageError(true)}
+                />
+              ) : (
+                <Image
+                  src={mainImage.url}
+                  alt={post.title}
+                  fill
+                  className="object-cover group-hover:scale-105 transition-transform duration-300"
+                  onError={() => setImageError(true)}
+                />
+              )
             ) : (
               <div className="w-full h-full bg-gray-200 flex items-center justify-center">
-                <span className="text-gray-500 text-sm">Media not available</span>
+                <div className="text-center">
+                  <span className="text-gray-500 text-sm">Media not available</span>
+                  {mainImage && (
+                    <div className="text-xs text-gray-400 mt-1">
+                      Source: {mainImage.source}
+                    </div>
+                  )}
+                </div>
               </div>
             )}
             
@@ -250,8 +267,16 @@ export default function WidgetCard({ post, aspectRatio = 'square' }: WidgetCardP
                   className="max-w-full max-h-full object-contain rounded-lg"
                   onClick={(e) => e.stopPropagation()}
                 />
+              ) : allMedia[currentImageIndex]?.source === 'canva' && allMedia[currentImageIndex]?.isEmbed ? (
+                // Handle Canva embeds in gallery
+                <iframe
+                  src={allMedia[currentImageIndex].url}
+                  className="max-w-full max-h-full rounded-lg shadow-2xl"
+                  title={post.title}
+                  onClick={(e) => e.stopPropagation()}
+                />
               ) : (
-                // Treat all media as images (including Canva)
+                // Regular images
                 <Image
                   src={allMedia[currentImageIndex].url}
                   alt={post.title}
@@ -309,16 +334,26 @@ export default function WidgetCard({ post, aspectRatio = 'square' }: WidgetCardP
                         className="w-full h-full object-cover"
                         muted
                       />
-                    ) : media.source === 'canva' ? (
+                    ) : media.source === 'canva' && media.isEmbed ? (
                       <div className="w-full h-full bg-gradient-to-br from-orange-100 to-pink-100 flex items-center justify-center">
                         <ExternalLink className="w-4 h-4 text-orange-600" />
                       </div>
                     ) : (
-                      <img
-                        src={media.url}
-                        alt={`Thumbnail ${index + 1}`}
-                        className="w-full h-full object-cover"
-                      />
+                      <>
+                        <img
+                          src={media.url}
+                          alt={`Thumbnail ${index + 1}`}
+                          className="w-full h-full object-cover"
+                          onError={(e) => {
+                            // Show placeholder if image fails to load
+                            e.currentTarget.style.display = 'none';
+                            e.currentTarget.nextElementSibling?.classList.remove('hidden');
+                          }}
+                        />
+                        <div className="w-full h-full bg-gray-200 flex items-center justify-center hidden">
+                          <span className="text-xs text-gray-500">Error</span>
+                        </div>
+                      </>
                     )}
                   </button>
                 ))}
