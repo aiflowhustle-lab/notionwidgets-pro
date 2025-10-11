@@ -85,6 +85,12 @@ export default function WidgetCard({ post, aspectRatio = 'square' }: WidgetCardP
       setMediaType('video');
       setIsGalleryOpen(true);
     } else if (hasImage) {
+      // If it's a Canva embed, open in new tab instead of gallery
+      if (mainImage.source === 'canva' && mainImage.isEmbed) {
+        window.open(mainImage.originalUrl || mainImage.url, '_blank');
+        return;
+      }
+      
       setSelectedMedia(mainImage.url);
       setMediaType('image');
       setCurrentImageIndex(0);
@@ -169,12 +175,23 @@ export default function WidgetCard({ post, aspectRatio = 'square' }: WidgetCardP
             ) : hasImage && !imageError ? (
               // Image display - handle Canva embeds specially
               mainImage.source === 'canva' && mainImage.isEmbed ? (
-                <iframe
-                  src={mainImage.url}
-                  className="w-full h-full border-0"
-                  title={post.title}
-                  onError={() => setImageError(true)}
-                />
+                <div className="w-full h-full bg-gradient-to-br from-orange-100 to-pink-100 flex flex-col items-center justify-center p-4">
+                  <div className="w-16 h-16 bg-orange-200 rounded-full flex items-center justify-center mb-3">
+                    <ExternalLink className="w-8 h-8 text-orange-600" />
+                  </div>
+                  <h3 className="text-sm font-medium text-gray-700 text-center mb-2">
+                    Canva Design
+                  </h3>
+                  <p className="text-xs text-gray-500 text-center mb-3">
+                    Click to view in Canva
+                  </p>
+                  <div className="text-xs text-orange-600 font-mono bg-orange-50 px-2 py-1 rounded">
+                    {mainImage.originalUrl ? 
+                      `ID: ${mainImage.originalUrl.match(/\/design\/([^\/]+)\//)?.[1]?.substring(0, 8)}...` : 
+                      'Design Link'
+                    }
+                  </div>
+                </div>
               ) : (
                 <Image
                   src={mainImage.url}
@@ -269,12 +286,29 @@ export default function WidgetCard({ post, aspectRatio = 'square' }: WidgetCardP
                 />
               ) : allMedia[currentImageIndex]?.source === 'canva' && allMedia[currentImageIndex]?.isEmbed ? (
                 // Handle Canva embeds in gallery
-                <iframe
-                  src={allMedia[currentImageIndex].url}
-                  className="max-w-full max-h-full rounded-lg shadow-2xl"
-                  title={post.title}
-                  onClick={(e) => e.stopPropagation()}
-                />
+                <div 
+                  className="max-w-full max-h-full bg-gradient-to-br from-orange-100 to-pink-100 rounded-lg shadow-2xl flex flex-col items-center justify-center p-8 cursor-pointer hover:from-orange-200 hover:to-pink-200 transition-colors"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    window.open(allMedia[currentImageIndex].originalUrl || allMedia[currentImageIndex].url, '_blank');
+                  }}
+                >
+                  <div className="w-24 h-24 bg-orange-200 rounded-full flex items-center justify-center mb-4">
+                    <ExternalLink className="w-12 h-12 text-orange-600" />
+                  </div>
+                  <h3 className="text-lg font-medium text-gray-700 text-center mb-2">
+                    Canva Design
+                  </h3>
+                  <p className="text-sm text-gray-500 text-center mb-4">
+                    Click to view in Canva
+                  </p>
+                  <div className="text-sm text-orange-600 font-mono bg-orange-50 px-3 py-2 rounded">
+                    {allMedia[currentImageIndex].originalUrl ? 
+                      `ID: ${allMedia[currentImageIndex].originalUrl.match(/\/design\/([^\/]+)\//)?.[1]?.substring(0, 8)}...` : 
+                      'Design Link'
+                    }
+                  </div>
+                </div>
               ) : (
                 // Regular images
                 <Image
