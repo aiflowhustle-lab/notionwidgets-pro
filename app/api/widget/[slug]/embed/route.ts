@@ -121,7 +121,7 @@ export async function GET(
     headers: {
       'Content-Type': 'text/html',
       // Do not use X-Frame-Options; use CSP frame-ancestors instead
-      'Content-Security-Policy': "frame-ancestors 'self' https://www.notion.so https://notion.so https://*.notion.so;",
+      'Content-Security-Policy': "frame-ancestors *;",
       'Cache-Control': 'public, max-age=3600',
     },
   });

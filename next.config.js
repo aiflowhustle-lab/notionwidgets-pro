@@ -47,7 +47,7 @@ const nextConfig = {
         headers: [
           {
             key: 'Content-Security-Policy',
-            value: "frame-ancestors 'self' https://www.notion.so https://notion.so https://*.notion.so; object-src 'none';",
+            value: "frame-ancestors 'self' https://www.notion.so https://notion.so https://*.notion.so https://*.vercel.app https://vercel.app; object-src 'none';",
           },
         ],
       },

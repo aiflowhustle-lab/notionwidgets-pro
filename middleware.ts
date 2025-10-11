@@ -7,7 +7,7 @@ export function middleware(request: NextRequest) {
   // Allow iframe embedding from Notion domains
   // Do NOT set X-Frame-Options; CSP frame-ancestors controls embedding
   response.headers.delete('X-Frame-Options')
-  response.headers.set('Content-Security-Policy', "frame-ancestors 'self' https://www.notion.so https://notion.so https://*.notion.so;")
+  response.headers.set('Content-Security-Policy', "frame-ancestors *;")
   
   return response
 }

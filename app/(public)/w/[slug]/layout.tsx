@@ -9,7 +9,7 @@ export const metadata: Metadata = {
   description: 'Beautiful image gallery widget with filtering and gallery modal',
   other: {
     // Do not set X-Frame-Options at page level; CSP controls embedding
-    'Content-Security-Policy': "frame-ancestors 'self' https://www.notion.so https://notion.so https://*.notion.so;",
+    'Content-Security-Policy': "frame-ancestors 'self' https://www.notion.so https://notion.so https://*.notion.so https://*.vercel.app https://vercel.app;",
   },
 }
 
