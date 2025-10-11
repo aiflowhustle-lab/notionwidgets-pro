@@ -121,13 +121,7 @@ export default function PublicWidgetPage() {
             />
           </div>
 
-          {/* Results Count */}
-          <div className="mb-6">
-            <p className="text-sm text-gray-600">
-              Showing {posts.length} {posts.length === 1 ? 'image' : 'images'}
-              {Object.values(filters).some(v => v !== undefined) && ' (filtered)'}
-            </p>
-          </div>
+          {/* Results Count - Hidden */}
         </div>
 
         {/* Images Grid */}
