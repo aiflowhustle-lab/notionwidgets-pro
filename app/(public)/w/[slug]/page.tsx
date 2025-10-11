@@ -108,49 +108,9 @@ export default function PublicWidgetPage() {
 
   return (
     <div className="min-h-screen bg-white">
-      {/* Header */}
-      <div className="bg-white border-b border-gray-200">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-3">
-              <div className="w-8 h-8 bg-gray-800 rounded-lg flex items-center justify-center">
-                <Image className="w-5 h-5 text-white" />
-              </div>
-              <div>
-                <h1 className="text-xl font-semibold text-gray-900">{widget.name}</h1>
-                <p className="text-sm text-gray-500">Image Gallery Widget</p>
-              </div>
-            </div>
-            
-            <div className="text-right">
-              <div className="text-xs text-gray-500">Powered by</div>
-              <div className="text-sm font-medium text-gray-900">NotionWidgets Pro</div>
-            </div>
-          </div>
-        </div>
-      </div>
-
       {/* Main Content */}
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Filters and Results - Aligned with grid */}
-        <div className="max-w-4xl mx-auto">
-          {/* Filters */}
-          <div className="mb-6">
-            <FilterBar
-              onFiltersChange={handleFiltersChange}
-              availablePlatforms={availablePlatforms}
-              availableStatuses={availableStatuses}
-            />
-          </div>
-
-          {/* Results Count */}
-          <div className="mb-6">
-            <p className="text-sm text-gray-600">
-              Showing {posts.length} {posts.length === 1 ? 'image' : 'images'}
-              {Object.values(filters).some(v => v !== undefined) && ' (filtered)'}
-            </p>
-          </div>
-        </div>
+        {/* Images Grid - Direct display without filters or header */}
 
         {/* Images Grid */}
         {posts.length === 0 ? (
