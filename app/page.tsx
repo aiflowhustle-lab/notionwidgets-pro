@@ -4,6 +4,7 @@ import { useAuth } from '@/lib/auth';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { ArrowRight, CheckCircle, Image, Filter, RefreshCw, Zap } from 'lucide-react';
+import { ConditionalAuthProvider } from '@/lib/auth';
 
 export default function LandingPage() {
   const { user, signInWithGoogle, loading } = useAuth();

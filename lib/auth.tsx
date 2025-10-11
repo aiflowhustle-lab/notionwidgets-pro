@@ -1,6 +1,7 @@
 'use client';
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
+import { usePathname } from 'next/navigation';
 import { 
   signInWithPopup, 
   signOut as firebaseSignOut, 
@@ -91,6 +92,6 @@ export function useAuth() {
 
 // Conditional AuthProvider that only applies auth to non-public pages
 export function ConditionalAuthProvider({ children }: { children: React.ReactNode }) {
-  // For now, always use AuthProvider but make it more resilient
+  // Always use AuthProvider but make it not redirect on public pages
   return <AuthProvider>{children}</AuthProvider>;
 }
