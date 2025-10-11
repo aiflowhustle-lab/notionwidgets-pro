@@ -16,12 +16,12 @@ function convertCanvaUrlToImages(canvaUrl: string): NotionImage[] {
     const images: NotionImage[] = [];
     
     for (let i = 1; i <= numberOfImages; i++) {
-      // Use our server-side proxy to fetch Canva images
-      // This bypasses CORS restrictions and works reliably in Notion embeds
-      const proxyUrl = `/api/canva-image?url=${encodeURIComponent(canvaUrl)}&page=${i}`;
+      // Use Canva's embed format with page parameter
+      // This format: https://www.canva.com/design/{designId}/view?embed&page={pageNumber}
+      const embedUrl = `https://www.canva.com/design/${designId}/view?embed&page=${i}`;
       
       images.push({
-        url: proxyUrl,
+        url: embedUrl,
         source: 'canva',
         originalUrl: canvaUrl,
         pageNumber: i,

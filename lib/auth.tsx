@@ -84,21 +84,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 export function useAuth() {
   const context = useContext(AuthContext);
   if (context === undefined) {
-    // Return a default auth context when no AuthProvider is present
-    // This allows components to work in public widget pages
-    console.log('useAuth called without AuthProvider - returning default context');
-    return {
-      user: null,
-      loading: false,
-      signInWithGoogle: async () => {
-        console.log('signInWithGoogle called without AuthProvider');
-        throw new Error('Authentication not available in public widget view');
-      },
-      signOut: async () => {
-        console.log('signOut called without AuthProvider');
-        throw new Error('Authentication not available in public widget view');
-      },
-    };
+    throw new Error('useAuth must be used within an AuthProvider');
   }
   return context;
 }
@@ -108,14 +94,12 @@ export function ConditionalAuthProvider({ children }: { children: React.ReactNod
   // Check if we're on a public widget page
   if (typeof window !== 'undefined') {
     const isPublicWidget = window.location.pathname.startsWith('/w/');
-    
-    // Only skip auth for actual public widget pages
     if (isPublicWidget) {
-      console.log('Skipping auth for public widget page:', window.location.pathname);
+      // For public widget pages, don't initialize auth
       return <>{children}</>;
     }
   }
 
-  // For all other pages (dashboard, auth, main), use the full AuthProvider
+  // For all other pages, use the full AuthProvider
   return <AuthProvider>{children}</AuthProvider>;
 }

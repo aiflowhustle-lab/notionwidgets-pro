@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { ExternalLink } from 'lucide-react';
 
 interface CanvaDesignProps {
@@ -13,15 +13,6 @@ interface CanvaDesignProps {
 
 export default function CanvaDesign({ canvaUrl, title, className = '', onClick, disableExternalLink = false }: CanvaDesignProps) {
   const [imageError, setImageError] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
-  const [isInIframe, setIsInIframe] = useState(false);
-  
-  // Detect if we're in an iframe (like when embedded in Notion)
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      setIsInIframe(window.self !== window.top);
-    }
-  }, []);
   
   // Extract design ID from Canva URL
   const designIdMatch = canvaUrl.match(/\/design\/([^\/]+)\//);
@@ -32,10 +23,9 @@ export default function CanvaDesign({ canvaUrl, title, className = '', onClick, 
   const pageMatch = canvaUrl.match(/[?&]page=(\d+)/);
   const pageNumber = pageMatch ? parseInt(pageMatch[1]) : 1;
   
-  // Create a preview URL using Canva's Smart Embed format
-  // This works better with Notion embedding
+  // Create a preview URL using Canva's embed format
   const previewUrl = designId 
-    ? `https://www.canva.com/design/${designId}/view?embed`
+    ? `https://www.canva.com/design/${designId}/view?embed${pageNumber > 1 ? `&page=${pageNumber}` : ''}`
     : canvaUrl;
 
   const handleClick = (e: React.MouseEvent) => {
@@ -56,24 +46,15 @@ export default function CanvaDesign({ canvaUrl, title, className = '', onClick, 
       {/* Canva Design Preview */}
       <div className="relative w-full h-full bg-gradient-to-br from-orange-100 to-pink-100 rounded-lg overflow-hidden">
         {!imageError ? (
-          <>
-            {isLoading && (
-              <div className="absolute inset-0 flex items-center justify-center bg-orange-50">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-500"></div>
-              </div>
-            )}
-            <img
-              src={canvaUrl}
-              alt={title}
-              className="w-full h-full object-cover"
-              onLoad={() => setIsLoading(false)}
-              onError={() => {
-                setImageError(true);
-                setIsLoading(false);
-              }}
-              loading="lazy"
-            />
-          </>
+          <iframe
+            src={previewUrl}
+            className="w-full h-full border-0"
+            title={title}
+            onError={() => setImageError(true)}
+            sandbox="allow-scripts allow-same-origin allow-popups"
+            allowFullScreen
+            loading="lazy"
+          />
         ) : (
           <div className="w-full h-full flex flex-col items-center justify-center p-4">
             <div className="w-16 h-16 bg-orange-200 rounded-full flex items-center justify-center mb-3">
