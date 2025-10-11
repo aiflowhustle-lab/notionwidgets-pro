@@ -110,7 +110,25 @@ export default function PublicWidgetPage() {
     <div className="min-h-screen bg-white">
       {/* Main Content */}
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Images Grid - Direct display without filters or header */}
+        {/* Filters and Results - Aligned with grid */}
+        <div className="max-w-4xl mx-auto">
+          {/* Filters */}
+          <div className="mb-6">
+            <FilterBar
+              onFiltersChange={handleFiltersChange}
+              availablePlatforms={availablePlatforms}
+              availableStatuses={availableStatuses}
+            />
+          </div>
+
+          {/* Results Count */}
+          <div className="mb-6">
+            <p className="text-sm text-gray-600">
+              Showing {posts.length} {posts.length === 1 ? 'image' : 'images'}
+              {Object.values(filters).some(v => v !== undefined) && ' (filtered)'}
+            </p>
+          </div>
+        </div>
 
         {/* Images Grid */}
         {posts.length === 0 ? (
