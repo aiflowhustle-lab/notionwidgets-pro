@@ -74,12 +74,6 @@ export default function LandingPage() {
               {loading || isSigningIn ? 'Signing in...' : 'Get Started Free'}
               <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
             </button>
-            <button
-              onClick={() => router.push('/w/demo')}
-              className="px-6 py-3 border border-white/20 bg-transparent text-white hover:bg-white hover:text-black transition-all"
-            >
-              View Demo
-            </button>
           </div>
 
         </div>
