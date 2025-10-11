@@ -28,6 +28,7 @@ export default function PublicWidgetPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [filters, setFilters] = useState<WidgetFilters>({});
+  const [isInIframe, setIsInIframe] = useState(false);
 
   const loadWidgetData = useCallback(async () => {
     try {
@@ -60,6 +61,11 @@ export default function PublicWidgetPage() {
   useEffect(() => {
     loadWidgetData();
   }, [loadWidgetData]);
+
+  // Detect if we're in an iframe
+  useEffect(() => {
+    setIsInIframe(window !== window.top);
+  }, []);
 
   const handleFiltersChange = (newFilters: WidgetFilters) => {
     setFilters(newFilters);
@@ -101,31 +107,33 @@ export default function PublicWidgetPage() {
   const { widget, posts, availablePlatforms, availableStatuses } = data;
 
   return (
-    <div className="min-h-screen bg-white">
-      {/* Header */}
-      <div className="bg-white border-b border-gray-200">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-3">
-              <div className="w-8 h-8 bg-gray-800 rounded-lg flex items-center justify-center">
-                <Image className="w-5 h-5 text-white" />
+    <div className={`bg-white ${isInIframe ? 'min-h-0' : 'min-h-screen'}`}>
+      {/* Header - Hide in iframe for cleaner embedding */}
+      {!isInIframe && (
+        <div className="bg-white border-b border-gray-200">
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-3">
+                <div className="w-8 h-8 bg-gray-800 rounded-lg flex items-center justify-center">
+                  <Image className="w-5 h-5 text-white" />
+                </div>
+                <div>
+                  <h1 className="text-xl font-semibold text-gray-900">{widget.name}</h1>
+                  <p className="text-sm text-gray-500">Image Gallery Widget</p>
+                </div>
               </div>
-              <div>
-                <h1 className="text-xl font-semibold text-gray-900">{widget.name}</h1>
-                <p className="text-sm text-gray-500">Image Gallery Widget</p>
+              
+              <div className="text-right">
+                <div className="text-xs text-gray-500">Powered by</div>
+                <div className="text-sm font-medium text-gray-900">NotionWidgets Pro</div>
               </div>
-            </div>
-            
-            <div className="text-right">
-              <div className="text-xs text-gray-500">Powered by</div>
-              <div className="text-sm font-medium text-gray-900">NotionWidgets Pro</div>
             </div>
           </div>
         </div>
-      </div>
+      )}
 
       {/* Main Content */}
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className={`max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 ${isInIframe ? 'py-4' : 'py-8'}`}>
         {/* Filters and Results - Aligned with grid */}
         <div className="max-w-4xl mx-auto">
           {/* Filters */}
