@@ -22,13 +22,13 @@ export default function WidgetCard({ post, aspectRatio = 'square' }: WidgetCardP
   const getAspectRatioClass = () => {
     switch (aspectRatio) {
       case 'portrait':
-        return 'aspect-[3/3]'; // Reduced from 3/4 to 3/3 (20% height reduction)
+        return 'aspect-[2.55/3]'; // Reduced width by 15%: 3/3 → 2.55/3
       case 'landscape':
-        return 'aspect-[4/2.4]'; // Reduced from 4/3 to 4/2.4 (20% height reduction)
+        return 'aspect-[3.4/2.4]'; // Reduced width by 15%: 4/2.4 → 3.4/2.4
       case 'auto':
         return 'aspect-auto';
       default:
-        return 'aspect-[3/3]'; // Reduced from 3/4 to 3/3 (20% height reduction)
+        return 'aspect-[2.55/3]'; // Reduced width by 15%: 3/3 → 2.55/3
     }
   };
 
