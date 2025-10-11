@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { ExternalLink } from 'lucide-react';
 
 interface CanvaDesignProps {
@@ -13,6 +13,14 @@ interface CanvaDesignProps {
 
 export default function CanvaDesign({ canvaUrl, title, className = '', onClick, disableExternalLink = false }: CanvaDesignProps) {
   const [imageError, setImageError] = useState(false);
+  const [isInIframe, setIsInIframe] = useState(false);
+  
+  // Detect if we're in an iframe (like when embedded in Notion)
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      setIsInIframe(window.self !== window.top);
+    }
+  }, []);
   
   // Extract design ID from Canva URL
   const designIdMatch = canvaUrl.match(/\/design\/([^\/]+)\//);
@@ -23,9 +31,10 @@ export default function CanvaDesign({ canvaUrl, title, className = '', onClick, 
   const pageMatch = canvaUrl.match(/[?&]page=(\d+)/);
   const pageNumber = pageMatch ? parseInt(pageMatch[1]) : 1;
   
-  // Create a preview URL using Canva's embed format
+  // Create a preview URL using Canva's Smart Embed format
+  // This works better with Notion embedding
   const previewUrl = designId 
-    ? `https://www.canva.com/design/${designId}/view?embed${pageNumber > 1 ? `&page=${pageNumber}` : ''}`
+    ? `https://www.canva.com/design/${designId}/view?embed`
     : canvaUrl;
 
   const handleClick = (e: React.MouseEvent) => {
@@ -45,7 +54,7 @@ export default function CanvaDesign({ canvaUrl, title, className = '', onClick, 
     >
       {/* Canva Design Preview */}
       <div className="relative w-full h-full bg-gradient-to-br from-orange-100 to-pink-100 rounded-lg overflow-hidden">
-        {!imageError ? (
+        {!imageError && !isInIframe ? (
           <iframe
             src={previewUrl}
             className="w-full h-full border-0"
@@ -64,7 +73,7 @@ export default function CanvaDesign({ canvaUrl, title, className = '', onClick, 
               Canva Design
             </h3>
             <p className="text-xs text-gray-500 text-center mb-3">
-              Click to view in Canva
+              {isInIframe ? 'Click to view in Canva (iframe restricted)' : 'Click to view in Canva'}
             </p>
             <div className="text-xs text-orange-600 font-mono bg-orange-50 px-2 py-1 rounded">
               {designId ? `ID: ${designId.substring(0, 8)}...` : 'Design Link'}
