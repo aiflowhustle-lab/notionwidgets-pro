@@ -10,23 +10,13 @@ function convertCanvaUrlToImages(canvaUrl: string): NotionImage[] {
   if (designIdMatch) {
     const designId = designIdMatch[1];
     
-    // Extract multiple images from Canva design using proper image URLs
-    // Canva designs can be accessed as individual pages/slides
-    const numberOfImages = 3;
-    const images: NotionImage[] = [];
-    
-    for (let i = 1; i <= numberOfImages; i++) {
-      // Use the original Canva URL with page parameter
-      const pageUrl = canvaUrl.replace(/#\d*$/, '') + `#${i}`;
-      
-      images.push({
-        url: pageUrl,
-        source: 'canva',
-        originalUrl: canvaUrl,
-      });
-    }
-    
-    return images;
+    // For now, return the original Canva URL as a single image
+    // Canva designs are typically single items, not multiple pages
+    return [{
+      url: canvaUrl,
+      source: 'canva',
+      originalUrl: canvaUrl,
+    }];
   }
   
   // Fallback to single placeholder if URL doesn't match expected pattern
