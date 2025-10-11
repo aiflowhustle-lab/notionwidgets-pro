@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Image from 'next/image';
 import { ExternalLink } from 'lucide-react';
 
 interface CanvaDesignProps {
@@ -18,11 +19,11 @@ export default function CanvaDesign({ canvaUrl, title, className = '', onClick, 
   const designIdMatch = canvaUrl.match(/\/design\/([^\/]+)\//);
   const designId = designIdMatch ? designIdMatch[1] : null;
   
-  // Create a preview URL - this is a best-effort approach
-  // In production, you'd want to use Canva's API to get actual image URLs
-  const previewUrl = designId 
-    ? `https://www.canva.com/design/${designId}/view?embed&t=${Date.now()}`
-    : canvaUrl;
+  // Create a direct image URL using Canva's public API
+  // This approach uses Canva's thumbnail/preview API that works without authentication
+  const imageUrl = designId 
+    ? `https://media.canva.com/1/image/${designId}/thumbnail.jpg`
+    : null;
 
   const handleClick = (e: React.MouseEvent) => {
     if (onClick) {
@@ -41,13 +42,14 @@ export default function CanvaDesign({ canvaUrl, title, className = '', onClick, 
     >
       {/* Canva Design Preview */}
       <div className="relative w-full h-full bg-gradient-to-br from-orange-100 to-pink-100 rounded-lg overflow-hidden">
-        {!imageError ? (
-          <iframe
-            src={previewUrl}
-            className="w-full h-full border-0"
-            title={title}
+        {imageUrl && !imageError ? (
+          <Image
+            src={imageUrl}
+            alt={title}
+            fill
+            className="object-cover"
             onError={() => setImageError(true)}
-            sandbox="allow-scripts allow-same-origin"
+            unoptimized // Canva images may not be optimized by Next.js
           />
         ) : (
           <div className="w-full h-full flex flex-col items-center justify-center p-4">

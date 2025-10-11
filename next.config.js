@@ -28,6 +28,10 @@ const nextConfig = {
       },
       {
         protocol: 'https',
+        hostname: 'media.canva.com',
+      },
+      {
+        protocol: 'https',
         hostname: 'i.pinimg.com',
       },
       {
