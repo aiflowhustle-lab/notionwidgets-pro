@@ -100,9 +100,27 @@ export async function GET(
           imageSource: 'canva',
           images: [
             {
-              url: 'https://images.unsplash.com/photo-1611224923853-80b023f02d71?w=500&h=500&fit=crop',
+              url: 'https://www.canva.com/design/DAGiPMnfawk/view?embed',
               source: 'canva' as const,
-              originalUrl: 'https://images.unsplash.com/photo-1611224923853-80b023f02d71?w=500&h=500&fit=crop'
+              originalUrl: 'https://www.canva.com/design/DAGiPMnfawk/p4ZSR2b2w14NgJ9m4dSYrg/view',
+              isEmbed: true
+            }
+          ],
+          videos: []
+        },
+        {
+          id: '4',
+          title: 'Another Canva Design',
+          publishDate: '2024-01-12',
+          platform: 'Instagram',
+          status: 'Done',
+          imageSource: 'canva',
+          images: [
+            {
+              url: 'https://www.canva.com/design/DAG01F_i.../view?embed',
+              source: 'canva' as const,
+              originalUrl: 'https://www.canva.com/design/DAG01F_i.../view',
+              isEmbed: true
             }
           ],
           videos: []
