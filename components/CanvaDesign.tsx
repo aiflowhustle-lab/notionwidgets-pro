@@ -13,6 +13,7 @@ interface CanvaDesignProps {
 
 export default function CanvaDesign({ canvaUrl, title, className = '', onClick, disableExternalLink = false }: CanvaDesignProps) {
   const [imageError, setImageError] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [isInIframe, setIsInIframe] = useState(false);
   
   // Detect if we're in an iframe (like when embedded in Notion)
@@ -55,13 +56,24 @@ export default function CanvaDesign({ canvaUrl, title, className = '', onClick, 
       {/* Canva Design Preview */}
       <div className="relative w-full h-full bg-gradient-to-br from-orange-100 to-pink-100 rounded-lg overflow-hidden">
         {!imageError ? (
-          <img
-            src={canvaUrl}
-            alt={title}
-            className="w-full h-full object-cover"
-            onError={() => setImageError(true)}
-            loading="lazy"
-          />
+          <>
+            {isLoading && (
+              <div className="absolute inset-0 flex items-center justify-center bg-orange-50">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-500"></div>
+              </div>
+            )}
+            <img
+              src={canvaUrl}
+              alt={title}
+              className="w-full h-full object-cover"
+              onLoad={() => setIsLoading(false)}
+              onError={() => {
+                setImageError(true);
+                setIsLoading(false);
+              }}
+              loading="lazy"
+            />
+          </>
         ) : (
           <div className="w-full h-full flex flex-col items-center justify-center p-4">
             <div className="w-16 h-16 bg-orange-200 rounded-full flex items-center justify-center mb-3">
