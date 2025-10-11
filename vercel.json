@@ -1,0 +1,41 @@
+{
+  "functions": {
+    "app/api/widget/[slug]/embed/route.ts": {
+      "maxDuration": 10
+    }
+  },
+  "headers": [
+    {
+      "source": "/api/widget/(.*)/embed",
+      "headers": [
+        {
+          "key": "X-Frame-Options",
+          "value": "SAMEORIGIN"
+        },
+        {
+          "key": "Content-Security-Policy",
+          "value": "frame-ancestors 'self' notion.so *.notion.so"
+        }
+      ]
+    },
+    {
+      "source": "/embed/(.*)",
+      "headers": [
+        {
+          "key": "X-Frame-Options",
+          "value": "SAMEORIGIN"
+        },
+        {
+          "key": "Content-Security-Policy",
+          "value": "frame-ancestors 'self' notion.so *.notion.so"
+        }
+      ]
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/embed/:slug",
+      "destination": "/api/widget/:slug/embed"
+    }
+  ]
+}
