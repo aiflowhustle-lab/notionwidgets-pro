@@ -157,15 +157,29 @@ export default function WidgetCard({ post, aspectRatio = 'square' }: WidgetCardP
           {/* Media (Image or Video) */}
           <div className={`relative ${getAspectRatioClass()} overflow-hidden`}>
             {hasVideo ? (
-              // Video display
-              <video
-                src={mainVideo.url}
-                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                muted
-                loop
-                playsInline
-                preload="metadata"
-              />
+              // Video display with proper thumbnail
+              <div className="relative w-full h-full">
+                <video
+                  src={mainVideo.url}
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                  muted
+                  loop
+                  playsInline
+                  preload="metadata"
+                  poster={post.images?.[0]?.url || undefined}
+                  onLoadedMetadata={(e) => {
+                    // Set video to first frame for thumbnail
+                    const video = e.target as HTMLVideoElement;
+                    video.currentTime = 0.1;
+                  }}
+                />
+                {/* Play button overlay */}
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <div className="w-12 h-12 bg-black bg-opacity-60 rounded-full flex items-center justify-center">
+                    <Play className="w-6 h-6 text-white ml-1" />
+                  </div>
+                </div>
+              </div>
             ) : hasImage && !imageError ? (
               // Image display
               mainImage.source === 'canva' ? (
