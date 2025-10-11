@@ -40,6 +40,19 @@ const nextConfig = {
       },
     ],
   },
+  async headers() {
+    return [
+      {
+        source: '/w/:path*',
+        headers: [
+          {
+            key: 'Content-Security-Policy',
+            value: "frame-ancestors *; object-src 'none';",
+          },
+        ],
+      },
+    ]
+  },
 }
 
 module.exports = nextConfig
