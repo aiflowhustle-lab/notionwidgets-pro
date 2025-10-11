@@ -4,8 +4,8 @@ export const metadata: Metadata = {
   title: 'NotionWidgets Pro - Image Gallery Widget',
   description: 'Beautiful image gallery widgets powered by NotionWidgets Pro',
   other: {
-    'X-Frame-Options': 'SAMEORIGIN',
-    'Content-Security-Policy': "frame-ancestors 'self' notion.so *.notion.so",
+    'X-Frame-Options': 'ALLOWALL',
+    'Content-Security-Policy': "frame-ancestors 'self' notion.so *.notion.so https://notion.so https://*.notion.so",
   },
 }
 
