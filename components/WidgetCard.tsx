@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { ExternalLink, Calendar, BarChart3, Tag, Play, X, ChevronLeft, ChevronRight } from 'lucide-react';
 import { NotionPost } from '@/types';
 import { formatDate } from '@/lib/utils';
+import CanvaDesign from './CanvaDesign';
 
 interface WidgetCardProps {
   post: NotionPost;
@@ -156,7 +157,7 @@ export default function WidgetCard({ post, aspectRatio = 'square' }: WidgetCardP
           {/* Media (Image or Video) */}
           <div className={`relative ${getAspectRatioClass()} overflow-hidden`}>
             {hasVideo ? (
-              // Video display - all URLs are now proxied
+              // Video display
               <video
                 src={mainVideo.url}
                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
@@ -164,27 +165,28 @@ export default function WidgetCard({ post, aspectRatio = 'square' }: WidgetCardP
                 loop
                 playsInline
                 preload="metadata"
-                onError={() => setImageError(true)}
               />
             ) : hasImage && !imageError ? (
-              // Image display - all URLs are now proxied
-              <Image
-                src={mainImage.url}
-                alt={post.title}
-                fill
-                className="object-cover group-hover:scale-105 transition-transform duration-300"
-                onError={() => setImageError(true)}
-              />
+              // Image display
+              mainImage.source === 'canva' ? (
+                <CanvaDesign
+                  canvaUrl={mainImage.originalUrl || mainImage.url}
+                  title={post.title}
+                  className="w-full h-full"
+                  onClick={handleMediaClick}
+                />
+              ) : (
+                <Image
+                  src={mainImage.url}
+                  alt={post.title}
+                  fill
+                  className="object-cover group-hover:scale-105 transition-transform duration-300"
+                  onError={() => setImageError(true)}
+                />
+              )
             ) : (
               <div className="w-full h-full bg-gray-200 flex items-center justify-center">
-                <div className="text-center">
-                  <span className="text-gray-500 text-sm">Media not available</span>
-                  {mainImage && (
-                    <div className="text-xs text-gray-400 mt-1">
-                      Source: {mainImage.source}
-                    </div>
-                  )}
-                </div>
+                <span className="text-gray-500 text-sm">Media not available</span>
               </div>
             )}
             
@@ -259,15 +261,28 @@ export default function WidgetCard({ post, aspectRatio = 'square' }: WidgetCardP
                   onClick={(e) => e.stopPropagation()}
                 />
               ) : (
-                // All images - all URLs are now proxied
-                <Image
-                  src={allMedia[currentImageIndex].url}
-                  alt={post.title}
-                  width={800}
-                  height={600}
-                  className="max-w-full max-h-full object-contain rounded-lg shadow-2xl"
-                  onClick={(e) => e.stopPropagation()}
-                />
+                allMedia[currentImageIndex]?.source === 'canva' ? (
+                  <div 
+                    onClick={(e) => e.stopPropagation()}
+                    className="w-full h-full"
+                  >
+                    <CanvaDesign
+                      canvaUrl={allMedia[currentImageIndex].originalUrl || allMedia[currentImageIndex].url}
+                      title={post.title}
+                      className="w-full h-full"
+                      disableExternalLink={true}
+                    />
+                  </div>
+                ) : (
+                  <Image
+                    src={allMedia[currentImageIndex].url}
+                    alt={post.title}
+                    width={800}
+                    height={600}
+                    className="max-w-full max-h-full object-contain rounded-lg shadow-2xl"
+                    onClick={(e) => e.stopPropagation()}
+                  />
+                )
               )}
             </div>
 
@@ -318,26 +333,15 @@ export default function WidgetCard({ post, aspectRatio = 'square' }: WidgetCardP
                         muted
                       />
                     ) : media.source === 'canva' ? (
-                      // Canva placeholder with icon
                       <div className="w-full h-full bg-gradient-to-br from-orange-100 to-pink-100 flex items-center justify-center">
                         <ExternalLink className="w-4 h-4 text-orange-600" />
                       </div>
                     ) : (
-                      <>
-                        <img
-                          src={media.url}
-                          alt={`Thumbnail ${index + 1}`}
-                          className="w-full h-full object-cover"
-                          onError={(e) => {
-                            // Show placeholder if image fails to load
-                            e.currentTarget.style.display = 'none';
-                            e.currentTarget.nextElementSibling?.classList.remove('hidden');
-                          }}
-                        />
-                        <div className="w-full h-full bg-gray-200 flex items-center justify-center hidden">
-                          <span className="text-xs text-gray-500">Error</span>
-                        </div>
-                      </>
+                      <img
+                        src={media.url}
+                        alt={`Thumbnail ${index + 1}`}
+                        className="w-full h-full object-cover"
+                      />
                     )}
                   </button>
                 ))}

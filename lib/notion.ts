@@ -1,15 +1,6 @@
 import { Client } from '@notionhq/client';
 import { NotionPost, NotionImage, NotionVideo, DatabaseColumn } from '@/types';
 
-// Helper function to convert any URL to proxy URL
-function convertToProxyUrl(originalUrl: string, type: 'image' | 'iframe' = 'image'): string {
-  // Skip if already a proxy URL
-  if (originalUrl.includes('/api/media-proxy')) return originalUrl;
-  
-  // Convert to proxy URL
-  return `/api/media-proxy?url=${encodeURIComponent(originalUrl)}&type=${type}`;
-}
-
 // Convert Canva design URL to multiple image URLs
 function convertCanvaUrlToImages(canvaUrl: string): NotionImage[] {
   // Canva design URLs look like: https://www.canva.com/design/DAGiPMnfawk/p4ZSR2b2w14NgJ9m4dSYrg/view
@@ -19,34 +10,28 @@ function convertCanvaUrlToImages(canvaUrl: string): NotionImage[] {
   if (designIdMatch) {
     const designId = designIdMatch[1];
     
-    // Since Canva embeds are blocked, use a placeholder approach
-    // Create a consistent placeholder based on the design ID
-    const placeholders = [
-      'https://images.unsplash.com/photo-1557804506-669a67965ba0?w=500&h=500&fit=crop&auto=format', // Business/office
-      'https://images.unsplash.com/photo-1551434678-e076c223a692?w=500&h=500&fit=crop&auto=format', // Team meeting
-      'https://images.unsplash.com/photo-1552664730-d307ca884978?w=500&h=500&fit=crop&auto=format', // Business strategy
-      'https://images.unsplash.com/photo-1553877522-43269d4ea984?w=500&h=500&fit=crop&auto=format', // Creative workspace
-      'https://images.unsplash.com/photo-1559136555-9303baea8ebd?w=500&h=500&fit=crop&auto=format'  // Professional woman
-    ];
+    // Extract multiple images from Canva design using embed format
+    // Canva designs can be accessed as individual pages using embed URLs
+    const numberOfImages = 3;
+    const images: NotionImage[] = [];
     
-    // Use design ID to pick a consistent placeholder
-    let hash = 0;
-    for (let i = 0; i < designId.length; i++) {
-      const char = designId.charCodeAt(i);
-      hash = ((hash << 5) - hash) + char;
-      hash = hash & hash;
+    for (let i = 1; i <= numberOfImages; i++) {
+      // Use Canva's embed format with page parameter
+      // This format: https://www.canva.com/design/{designId}/view?embed&page={pageNumber}
+      const embedUrl = `https://www.canva.com/design/${designId}/view?embed&page=${i}`;
+      
+      images.push({
+        url: embedUrl,
+        source: 'canva',
+        originalUrl: canvaUrl,
+        pageNumber: i,
+      });
     }
-    const index = Math.abs(hash) % placeholders.length;
     
-    return [{
-      url: convertToProxyUrl(placeholders[index], 'image'),
-      source: 'canva',
-      originalUrl: canvaUrl,
-      isEmbed: false, // No longer an embed, just a placeholder image
-    }];
+    return images;
   }
   
-  // Fallback to placeholder images if URL doesn't match expected pattern
+  // Fallback to single placeholder if URL doesn't match expected pattern
   const placeholders = [
     'https://images.unsplash.com/photo-1557804506-669a67965ba0?w=500&h=500&fit=crop&auto=format', // Business/office
     'https://images.unsplash.com/photo-1551434678-e076c223a692?w=500&h=500&fit=crop&auto=format', // Team meeting
@@ -65,7 +50,7 @@ function convertCanvaUrlToImages(canvaUrl: string): NotionImage[] {
   const index = Math.abs(hash) % placeholders.length;
   
   return [{
-    url: convertToProxyUrl(placeholders[index], 'image'),
+    url: placeholders[index],
     source: 'canva',
     originalUrl: canvaUrl,
   }];
@@ -242,14 +227,14 @@ async function extractPostFromPage(page: any): Promise<NotionPost> {
       if (text.href) {
         if (isVideoUrl(text.href)) {
           videos.push({
-            url: convertToProxyUrl(text.href, 'image'), // Proxy video URLs too
+            url: text.href,
             source: 'link',
             originalUrl: text.href,
             type: getVideoMimeType(text.href),
           });
         } else {
           images.push({
-            url: convertToProxyUrl(text.href, 'image'),
+            url: text.href,
             source: 'link',
             originalUrl: text.href,
           });
@@ -265,14 +250,14 @@ async function extractPostFromPage(page: any): Promise<NotionPost> {
       if (fileUrl) {
         if (isVideoUrl(fileUrl)) {
           videos.push({
-            url: convertToProxyUrl(fileUrl, 'image'), // Proxy video URLs too
+            url: fileUrl,
             source: 'attachment',
             originalUrl: fileUrl,
             type: getVideoMimeType(fileUrl),
           });
         } else {
           images.push({
-            url: convertToProxyUrl(fileUrl, 'image'),
+            url: fileUrl,
             source: 'attachment',
             originalUrl: fileUrl,
           });
