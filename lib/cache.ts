@@ -151,11 +151,15 @@ class CacheService {
     // Clean up expired entries every 100 operations
     if (this.memoryCache.size % 100 === 0) {
       const now = Date.now();
-      for (const [key, value] of this.memoryCache.entries()) {
+      const keysToDelete: string[] = [];
+      
+      this.memoryCache.forEach((value, key) => {
         if (value.expires <= now) {
-          this.memoryCache.delete(key);
+          keysToDelete.push(key);
         }
-      }
+      });
+      
+      keysToDelete.forEach(key => this.memoryCache.delete(key));
     }
   }
 
