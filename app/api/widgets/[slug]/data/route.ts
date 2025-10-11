@@ -43,20 +43,9 @@ export async function GET(
       console.log('Database ID:', widget.databaseId);
       posts = await fetchNotionDatabase(decryptedToken, widget.databaseId, platformFilter, statusFilter);
       console.log('Successfully fetched', posts.length, 'posts from Notion');
-      
-      // Log media information for debugging
-      posts.forEach((post, index) => {
-        console.log(`Post ${index + 1}: ${post.title}`);
-        console.log(`  - Images: ${post.images.length}`);
-        console.log(`  - Videos: ${post.videos.length}`);
-        post.images.forEach((img, imgIndex) => {
-          console.log(`    Image ${imgIndex + 1}: ${img.source} - ${img.url.substring(0, 50)}...`);
-        });
-      });
     } catch (error) {
       console.error('Error fetching from Notion:', error);
       console.error('Error details:', error instanceof Error ? error.message : 'Unknown error');
-      console.log('Falling back to mock data...');
       // Fallback to mock data if Notion fails
       posts = [
         {
@@ -100,27 +89,9 @@ export async function GET(
           imageSource: 'canva',
           images: [
             {
-              url: 'https://www.canva.com/design/DAGiPMnfawk/view?embed',
+              url: 'https://images.unsplash.com/photo-1611224923853-80b023f02d71?w=500&h=500&fit=crop',
               source: 'canva' as const,
-              originalUrl: 'https://www.canva.com/design/DAGiPMnfawk/p4ZSR2b2w14NgJ9m4dSYrg/view',
-              isEmbed: true
-            }
-          ],
-          videos: []
-        },
-        {
-          id: '4',
-          title: 'Another Canva Design',
-          publishDate: '2024-01-12',
-          platform: 'Instagram',
-          status: 'Done',
-          imageSource: 'canva',
-          images: [
-            {
-              url: 'https://www.canva.com/design/DAG01F_i.../view?embed',
-              source: 'canva' as const,
-              originalUrl: 'https://www.canva.com/design/DAG01F_i.../view',
-              isEmbed: true
+              originalUrl: 'https://images.unsplash.com/photo-1611224923853-80b023f02d71?w=500&h=500&fit=crop'
             }
           ],
           videos: []

@@ -5,7 +5,6 @@ import { useParams } from 'next/navigation';
 import { NotionPost, WidgetFilters } from '@/types';
 import WidgetCard from '@/components/WidgetCard';
 import FilterBar from '@/components/FilterBar';
-import DebugInfo from '@/components/DebugInfo';
 import { Image, Loader2, AlertCircle } from 'lucide-react';
 
 interface WidgetData {
@@ -29,33 +28,6 @@ export default function PublicWidgetPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [filters, setFilters] = useState<WidgetFilters>({});
-  const [isInIframe, setIsInIframe] = useState(false);
-
-  // Detect if we're in an iframe context
-  useEffect(() => {
-    const checkIframe = () => {
-      const inIframe = window.self !== window.top;
-      const isNotionEmbed = window.location.search.includes('notion') || 
-                           window.location.href.includes('notion') ||
-                           document.referrer.includes('notion');
-      
-      setIsInIframe(inIframe || isNotionEmbed);
-      
-      console.log('Widget page context:', {
-        inIframe,
-        isNotionEmbed,
-        pathname: window.location.pathname,
-        referrer: document.referrer,
-        userAgent: navigator.userAgent
-      });
-    };
-
-    // Check immediately and also after a short delay to catch iframe loading
-    checkIframe();
-    const timeout = setTimeout(checkIframe, 100);
-    
-    return () => clearTimeout(timeout);
-  }, []);
 
   const loadWidgetData = useCallback(async () => {
     try {
@@ -66,37 +38,16 @@ export default function PublicWidgetPage() {
       if (filters.platform) searchParams.set('platform', filters.platform);
       if (filters.status) searchParams.set('status', filters.status);
       
-      console.log('Loading widget data for slug:', slug);
-      console.log('Filters:', filters);
-      
       const response = await fetch(`/api/widgets/${slug}/data?${searchParams.toString()}`);
       
       if (!response.ok) {
         if (response.status === 404) {
           throw new Error('Widget not found');
         }
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.error || 'Failed to load widget data');
+        throw new Error('Failed to load widget data');
       }
       
       const widgetData = await response.json();
-      console.log('Widget data loaded:', widgetData);
-      console.log('Posts count:', widgetData.posts?.length || 0);
-      
-      // Log media information for debugging
-      if (widgetData.posts) {
-        widgetData.posts.forEach((post: any, index: number) => {
-          console.log(`Post ${index + 1}: ${post.title}`);
-          console.log(`  - Images: ${post.images?.length || 0}`);
-          console.log(`  - Videos: ${post.videos?.length || 0}`);
-          if (post.images) {
-            post.images.forEach((img: any, imgIndex: number) => {
-              console.log(`    Image ${imgIndex + 1}: ${img.source} - ${img.url?.substring(0, 50)}...`);
-            });
-          }
-        });
-      }
-      
       setData(widgetData);
     } catch (error) {
       console.error('Error loading widget data:', error);
@@ -172,17 +123,6 @@ export default function PublicWidgetPage() {
           </div>
         </div>
       </div>
-
-      {/* Debug Info for iframe context */}
-      {isInIframe && (
-        <div className="bg-blue-100 border-l-4 border-blue-500 text-blue-700 p-4 mb-4">
-          <p className="font-bold">Debug: Running in iframe context</p>
-          <p className="text-sm">This widget is embedded in Notion</p>
-        </div>
-      )}
-
-      {/* Debug Information */}
-      <DebugInfo posts={posts} isVisible={process.env.NODE_ENV === 'development'} />
 
       {/* Main Content */}
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">

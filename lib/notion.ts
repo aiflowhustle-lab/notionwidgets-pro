@@ -3,34 +3,35 @@ import { NotionPost, NotionImage, NotionVideo, DatabaseColumn } from '@/types';
 
 // Convert Canva design URL to multiple image URLs
 function convertCanvaUrlToImages(canvaUrl: string): NotionImage[] {
-  console.log('Converting Canva URL:', canvaUrl);
-  
   // Canva design URLs look like: https://www.canva.com/design/DAGiPMnfawk/p4ZSR2b2w14NgJ9m4dSYrg/view
   // Extract the design ID from the URL
   const designIdMatch = canvaUrl.match(/\/design\/([^\/]+)\//);
   
   if (designIdMatch) {
     const designId = designIdMatch[1];
-    console.log('Extracted design ID:', designId);
     
-    // For now, use Canva's embed URL format which works better
-    // Canva provides embed URLs that can be used in iframes
-    const embedUrl = `https://www.canva.com/design/${designId}/view?embed`;
-    console.log('Generated embed URL:', embedUrl);
+    // Extract multiple images from Canva design using embed format
+    // Canva designs can be accessed as individual pages using embed URLs
+    const numberOfImages = 3;
+    const images: NotionImage[] = [];
     
-    // Return the embed URL as a single image for now
-    // This will be handled specially in the WidgetCard component
-    return [{
-      url: embedUrl,
-      source: 'canva',
-      originalUrl: canvaUrl,
-      isEmbed: true, // Flag to indicate this needs special handling
-    }];
+    for (let i = 1; i <= numberOfImages; i++) {
+      // Use Canva's embed format with page parameter
+      // This format: https://www.canva.com/design/{designId}/view?embed&page={pageNumber}
+      const embedUrl = `https://www.canva.com/design/${designId}/view?embed&page=${i}`;
+      
+      images.push({
+        url: embedUrl,
+        source: 'canva',
+        originalUrl: canvaUrl,
+        pageNumber: i,
+      });
+    }
+    
+    return images;
   }
   
-  console.log('No design ID found, using fallback');
-  
-  // Fallback to placeholder images if URL doesn't match expected pattern
+  // Fallback to single placeholder if URL doesn't match expected pattern
   const placeholders = [
     'https://images.unsplash.com/photo-1557804506-669a67965ba0?w=500&h=500&fit=crop&auto=format', // Business/office
     'https://images.unsplash.com/photo-1551434678-e076c223a692?w=500&h=500&fit=crop&auto=format', // Team meeting
@@ -224,11 +225,7 @@ async function extractPostFromPage(page: any): Promise<NotionPost> {
   if (properties.Link?.rich_text && properties.Link.rich_text.length > 0) {
     for (const text of properties.Link.rich_text) {
       if (text.href) {
-        // Check if this is a Canva URL
-        if (text.href.includes('canva.com/design/')) {
-          const canvaImages = convertCanvaUrlToImages(text.href);
-          images.push(...canvaImages);
-        } else if (isVideoUrl(text.href)) {
+        if (isVideoUrl(text.href)) {
           videos.push({
             url: text.href,
             source: 'link',
@@ -321,17 +318,11 @@ export function extractImages(page: any): NotionImage[] {
   if (properties.Link?.rich_text && properties.Link.rich_text.length > 0) {
     for (const text of properties.Link.rich_text) {
       if (text.href && !isVideoUrl(text.href)) {
-        // Check if this is a Canva URL
-        if (text.href.includes('canva.com/design/')) {
-          const canvaImages = convertCanvaUrlToImages(text.href);
-          images.push(...canvaImages);
-        } else {
-          images.push({
-            url: text.href,
-            source: 'link',
-            originalUrl: text.href,
-          });
-        }
+        images.push({
+          url: text.href,
+          source: 'link',
+          originalUrl: text.href,
+        });
       }
     }
   }

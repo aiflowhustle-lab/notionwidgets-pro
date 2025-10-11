@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { ExternalLink, Calendar, BarChart3, Tag, Play, X, ChevronLeft, ChevronRight } from 'lucide-react';
 import { NotionPost } from '@/types';
 import { formatDate } from '@/lib/utils';
+import CanvaDesign from './CanvaDesign';
 
 interface WidgetCardProps {
   post: NotionPost;
@@ -85,12 +86,6 @@ export default function WidgetCard({ post, aspectRatio = 'square' }: WidgetCardP
       setMediaType('video');
       setIsGalleryOpen(true);
     } else if (hasImage) {
-      // If it's a Canva embed, open in new tab instead of gallery
-      if (mainImage.source === 'canva' && mainImage.isEmbed) {
-        window.open(mainImage.originalUrl || mainImage.url, '_blank');
-        return;
-      }
-      
       setSelectedMedia(mainImage.url);
       setMediaType('image');
       setCurrentImageIndex(0);
@@ -170,28 +165,16 @@ export default function WidgetCard({ post, aspectRatio = 'square' }: WidgetCardP
                 loop
                 playsInline
                 preload="metadata"
-                onError={() => setImageError(true)}
               />
             ) : hasImage && !imageError ? (
-              // Image display - handle Canva embeds specially
-              mainImage.source === 'canva' && mainImage.isEmbed ? (
-                <div className="w-full h-full bg-gradient-to-br from-orange-100 to-pink-100 flex flex-col items-center justify-center p-4">
-                  <div className="w-16 h-16 bg-orange-200 rounded-full flex items-center justify-center mb-3">
-                    <ExternalLink className="w-8 h-8 text-orange-600" />
-                  </div>
-                  <h3 className="text-sm font-medium text-gray-700 text-center mb-2">
-                    Canva Design
-                  </h3>
-                  <p className="text-xs text-gray-500 text-center mb-3">
-                    Click to view in Canva
-                  </p>
-                  <div className="text-xs text-orange-600 font-mono bg-orange-50 px-2 py-1 rounded">
-                    {mainImage.originalUrl ? 
-                      `ID: ${mainImage.originalUrl.match(/\/design\/([^\/]+)\//)?.[1]?.substring(0, 8)}...` : 
-                      'Design Link'
-                    }
-                  </div>
-                </div>
+              // Image display
+              mainImage.source === 'canva' ? (
+                <CanvaDesign
+                  canvaUrl={mainImage.originalUrl || mainImage.url}
+                  title={post.title}
+                  className="w-full h-full"
+                  onClick={handleMediaClick}
+                />
               ) : (
                 <Image
                   src={mainImage.url}
@@ -203,14 +186,7 @@ export default function WidgetCard({ post, aspectRatio = 'square' }: WidgetCardP
               )
             ) : (
               <div className="w-full h-full bg-gray-200 flex items-center justify-center">
-                <div className="text-center">
-                  <span className="text-gray-500 text-sm">Media not available</span>
-                  {mainImage && (
-                    <div className="text-xs text-gray-400 mt-1">
-                      Source: {mainImage.source}
-                    </div>
-                  )}
-                </div>
+                <span className="text-gray-500 text-sm">Media not available</span>
               </div>
             )}
             
@@ -284,41 +260,29 @@ export default function WidgetCard({ post, aspectRatio = 'square' }: WidgetCardP
                   className="max-w-full max-h-full object-contain rounded-lg"
                   onClick={(e) => e.stopPropagation()}
                 />
-              ) : allMedia[currentImageIndex]?.source === 'canva' && allMedia[currentImageIndex]?.isEmbed ? (
-                // Handle Canva embeds in gallery
-                <div 
-                  className="max-w-full max-h-full bg-gradient-to-br from-orange-100 to-pink-100 rounded-lg shadow-2xl flex flex-col items-center justify-center p-8 cursor-pointer hover:from-orange-200 hover:to-pink-200 transition-colors"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    window.open(allMedia[currentImageIndex].originalUrl || allMedia[currentImageIndex].url, '_blank');
-                  }}
-                >
-                  <div className="w-24 h-24 bg-orange-200 rounded-full flex items-center justify-center mb-4">
-                    <ExternalLink className="w-12 h-12 text-orange-600" />
-                  </div>
-                  <h3 className="text-lg font-medium text-gray-700 text-center mb-2">
-                    Canva Design
-                  </h3>
-                  <p className="text-sm text-gray-500 text-center mb-4">
-                    Click to view in Canva
-                  </p>
-                  <div className="text-sm text-orange-600 font-mono bg-orange-50 px-3 py-2 rounded">
-                    {allMedia[currentImageIndex].originalUrl ? 
-                      `ID: ${allMedia[currentImageIndex].originalUrl.match(/\/design\/([^\/]+)\//)?.[1]?.substring(0, 8)}...` : 
-                      'Design Link'
-                    }
-                  </div>
-                </div>
               ) : (
-                // Regular images
-                <Image
-                  src={allMedia[currentImageIndex].url}
-                  alt={post.title}
-                  width={800}
-                  height={600}
-                  className="max-w-full max-h-full object-contain rounded-lg shadow-2xl"
-                  onClick={(e) => e.stopPropagation()}
-                />
+                allMedia[currentImageIndex]?.source === 'canva' ? (
+                  <div 
+                    onClick={(e) => e.stopPropagation()}
+                    className="w-full h-full"
+                  >
+                    <CanvaDesign
+                      canvaUrl={allMedia[currentImageIndex].originalUrl || allMedia[currentImageIndex].url}
+                      title={post.title}
+                      className="w-full h-full"
+                      disableExternalLink={true}
+                    />
+                  </div>
+                ) : (
+                  <Image
+                    src={allMedia[currentImageIndex].url}
+                    alt={post.title}
+                    width={800}
+                    height={600}
+                    className="max-w-full max-h-full object-contain rounded-lg shadow-2xl"
+                    onClick={(e) => e.stopPropagation()}
+                  />
+                )
               )}
             </div>
 
@@ -368,26 +332,16 @@ export default function WidgetCard({ post, aspectRatio = 'square' }: WidgetCardP
                         className="w-full h-full object-cover"
                         muted
                       />
-                    ) : media.source === 'canva' && media.isEmbed ? (
+                    ) : media.source === 'canva' ? (
                       <div className="w-full h-full bg-gradient-to-br from-orange-100 to-pink-100 flex items-center justify-center">
                         <ExternalLink className="w-4 h-4 text-orange-600" />
                       </div>
                     ) : (
-                      <>
-                        <img
-                          src={media.url}
-                          alt={`Thumbnail ${index + 1}`}
-                          className="w-full h-full object-cover"
-                          onError={(e) => {
-                            // Show placeholder if image fails to load
-                            e.currentTarget.style.display = 'none';
-                            e.currentTarget.nextElementSibling?.classList.remove('hidden');
-                          }}
-                        />
-                        <div className="w-full h-full bg-gray-200 flex items-center justify-center hidden">
-                          <span className="text-xs text-gray-500">Error</span>
-                        </div>
-                      </>
+                      <img
+                        src={media.url}
+                        alt={`Thumbnail ${index + 1}`}
+                        className="w-full h-full object-cover"
+                      />
                     )}
                   </button>
                 ))}

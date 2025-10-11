@@ -41,7 +41,6 @@ export interface NotionImage {
   source: 'attachment' | 'link' | 'canva';
   originalUrl?: string;
   pageNumber?: number;
-  isEmbed?: boolean; // Flag for Canva embeds that need special handling
 }
 
 export interface NotionVideo {
