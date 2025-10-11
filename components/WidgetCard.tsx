@@ -5,7 +5,6 @@ import Image from 'next/image';
 import { ExternalLink, Calendar, BarChart3, Tag, Play, X, ChevronLeft, ChevronRight } from 'lucide-react';
 import { NotionPost } from '@/types';
 import { formatDate } from '@/lib/utils';
-import CanvaDesign from './CanvaDesign';
 
 interface WidgetCardProps {
   post: NotionPost;
@@ -167,23 +166,14 @@ export default function WidgetCard({ post, aspectRatio = 'square' }: WidgetCardP
                 preload="metadata"
               />
             ) : hasImage && !imageError ? (
-              // Image display
-              mainImage.source === 'canva' ? (
-                <CanvaDesign
-                  canvaUrl={mainImage.originalUrl || mainImage.url}
-                  title={post.title}
-                  className="w-full h-full"
-                  onClick={handleMediaClick}
-                />
-              ) : (
-                <Image
-                  src={mainImage.url}
-                  alt={post.title}
-                  fill
-                  className="object-cover group-hover:scale-105 transition-transform duration-300"
-                  onError={() => setImageError(true)}
-                />
-              )
+              // Image display - treat Canva as regular images
+              <Image
+                src={mainImage.url}
+                alt={post.title}
+                fill
+                className="object-cover group-hover:scale-105 transition-transform duration-300"
+                onError={() => setImageError(true)}
+              />
             ) : (
               <div className="w-full h-full bg-gray-200 flex items-center justify-center">
                 <span className="text-gray-500 text-sm">Media not available</span>
@@ -261,28 +251,15 @@ export default function WidgetCard({ post, aspectRatio = 'square' }: WidgetCardP
                   onClick={(e) => e.stopPropagation()}
                 />
               ) : (
-                allMedia[currentImageIndex]?.source === 'canva' ? (
-                  <div 
-                    onClick={(e) => e.stopPropagation()}
-                    className="w-full h-full"
-                  >
-                    <CanvaDesign
-                      canvaUrl={allMedia[currentImageIndex].originalUrl || allMedia[currentImageIndex].url}
-                      title={post.title}
-                      className="w-full h-full"
-                      disableExternalLink={true}
-                    />
-                  </div>
-                ) : (
-                  <Image
-                    src={allMedia[currentImageIndex].url}
-                    alt={post.title}
-                    width={800}
-                    height={600}
-                    className="max-w-full max-h-full object-contain rounded-lg shadow-2xl"
-                    onClick={(e) => e.stopPropagation()}
-                  />
-                )
+                // Treat all media as images (including Canva)
+                <Image
+                  src={allMedia[currentImageIndex].url}
+                  alt={post.title}
+                  width={800}
+                  height={600}
+                  className="max-w-full max-h-full object-contain rounded-lg shadow-2xl"
+                  onClick={(e) => e.stopPropagation()}
+                />
               )}
             </div>
 

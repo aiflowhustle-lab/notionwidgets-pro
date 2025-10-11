@@ -13,7 +13,7 @@ interface CanvaDesignProps {
 
 export default function CanvaDesign({ canvaUrl, title, className = '', onClick, disableExternalLink = false }: CanvaDesignProps) {
   const [imageError, setImageError] = useState(false);
-  const [useIframe, setUseIframe] = useState(true);
+  const [useDirectImage, setUseDirectImage] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   
   // Extract design ID from Canva URL
@@ -25,27 +25,36 @@ export default function CanvaDesign({ canvaUrl, title, className = '', onClick, 
   const pageMatch = canvaUrl.match(/[?&]page=(\d+)/);
   const pageNumber = pageMatch ? parseInt(pageMatch[1]) : 1;
   
-  // Create a preview URL using Canva's embed format
-  const previewUrl = designId 
-    ? `https://www.canva.com/design/${designId}/view?embed${pageNumber > 1 ? `&page=${pageNumber}` : ''}`
-    : canvaUrl;
+  // Create direct image URLs for Canva designs
+  const getCanvaImageUrl = (designId: string, page: number = 1) => {
+    // Try multiple Canva image URL formats
+    const urls = [
+      `https://www.canva.com/design/${designId}/view?page=${page}&format=png&width=800`,
+      `https://www.canva.com/design/${designId}/view?page=${page}&format=jpg&width=800`,
+      `https://media.canva.com/1/designs/${designId}/image/${page}`,
+      `https://www.canva.com/design/${designId}/view?page=${page}&format=webp&width=800`
+    ];
+    
+    // Return the first URL format for now
+    return urls[0];
+  };
 
-  // Try Canva embed script approach first, fallback to iframe
+  // Check if we should use direct images instead of iframe
   useEffect(() => {
     const checkIframeSupport = () => {
       // Check if we're in a nested iframe context (widget embedded in Notion)
       const inNestedIframe = window.self !== window.top && 
                             window.parent !== window.top;
       
-      if (inNestedIframe) {
-        console.log('Detected nested iframe context, using image fallback for Canva');
-        setUseIframe(false);
-        setImageError(true);
+      // Always use direct images for Canva to avoid iframe issues
+      if (designId) {
+        console.log('Using direct image URL for Canva design:', designId);
+        setUseDirectImage(true);
       }
     };
 
     checkIframeSupport();
-  }, []);
+  }, [designId]);
 
   const handleClick = (e: React.MouseEvent) => {
     if (onClick) {
@@ -64,15 +73,26 @@ export default function CanvaDesign({ canvaUrl, title, className = '', onClick, 
     >
       {/* Canva Design Preview */}
       <div className="relative w-full h-full bg-gradient-to-br from-orange-100 to-pink-100 rounded-lg overflow-hidden">
-        {!imageError && useIframe ? (
+        {!imageError && useDirectImage && designId ? (
+          <img
+            src={getCanvaImageUrl(designId, pageNumber)}
+            alt={title}
+            className="w-full h-full object-cover"
+            onError={() => {
+              console.log('Canva direct image failed, switching to fallback');
+              setImageError(true);
+              setUseDirectImage(false);
+            }}
+            loading="lazy"
+          />
+        ) : !imageError && designId ? (
           <iframe
-            src={previewUrl}
+            src={`https://www.canva.com/design/${designId}/view?embed${pageNumber > 1 ? `&page=${pageNumber}` : ''}`}
             className="w-full h-full border-0"
             title={title}
             onError={() => {
-              console.log('Canva iframe failed, switching to fallback');
-              setImageError(true);
-              setUseIframe(false);
+              console.log('Canva iframe failed, switching to direct image');
+              setUseDirectImage(true);
             }}
             sandbox="allow-scripts allow-same-origin allow-popups"
             allowFullScreen

@@ -16,12 +16,12 @@ function convertCanvaUrlToImages(canvaUrl: string): NotionImage[] {
     const images: NotionImage[] = [];
     
     for (let i = 1; i <= numberOfImages; i++) {
-      // Use Canva's embed format with page parameter
-      // This format: https://www.canva.com/design/{designId}/view?embed&page={pageNumber}
-      const embedUrl = `https://www.canva.com/design/${designId}/view?embed&page=${i}`;
+      // Use direct image URLs instead of embed URLs to avoid iframe issues
+      // Try multiple URL formats for better compatibility
+      const imageUrl = `https://www.canva.com/design/${designId}/view?page=${i}&format=png&width=800`;
       
       images.push({
-        url: embedUrl,
+        url: imageUrl,
         source: 'canva',
         originalUrl: canvaUrl,
         pageNumber: i,
