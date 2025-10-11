@@ -156,7 +156,7 @@ export default function WidgetCard({ post, aspectRatio = 'square' }: WidgetCardP
           {/* Media (Image or Video) */}
           <div className={`relative ${getAspectRatioClass()} overflow-hidden`}>
             {hasVideo ? (
-              // Video display
+              // Video display - all URLs are now proxied
               <video
                 src={mainVideo.url}
                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
@@ -167,26 +167,15 @@ export default function WidgetCard({ post, aspectRatio = 'square' }: WidgetCardP
                 onError={() => setImageError(true)}
               />
             ) : hasImage && !imageError ? (
-              // Image display - handle different Canva approaches
+              // Image display - all URLs are now proxied, handle Canva embeds as iframes
               mainImage.source === 'canva' && mainImage.isEmbed ? (
-                // Canva embed (likely blocked in Notion)
                 <iframe
                   src={mainImage.url}
                   className="w-full h-full border-0"
                   title={post.title}
                   onError={() => setImageError(true)}
                 />
-              ) : mainImage.source === 'canva' && mainImage.isDirectImage ? (
-                // Canva direct image (CSP-safe for Notion)
-                <Image
-                  src={mainImage.url}
-                  alt={post.title}
-                  fill
-                  className="object-cover group-hover:scale-105 transition-transform duration-300"
-                  onError={() => setImageError(true)}
-                />
               ) : (
-                // Regular images
                 <Image
                   src={mainImage.url}
                   alt={post.title}
@@ -279,7 +268,7 @@ export default function WidgetCard({ post, aspectRatio = 'square' }: WidgetCardP
                   onClick={(e) => e.stopPropagation()}
                 />
               ) : allMedia[currentImageIndex]?.source === 'canva' && allMedia[currentImageIndex]?.isEmbed ? (
-                // Handle Canva embeds in gallery
+                // Handle Canva embeds in gallery - all URLs are now proxied
                 <iframe
                   src={allMedia[currentImageIndex].url}
                   className="max-w-full max-h-full rounded-lg shadow-2xl"
@@ -287,7 +276,7 @@ export default function WidgetCard({ post, aspectRatio = 'square' }: WidgetCardP
                   onClick={(e) => e.stopPropagation()}
                 />
               ) : (
-                // Regular images
+                // Regular images - all URLs are now proxied
                 <Image
                   src={allMedia[currentImageIndex].url}
                   alt={post.title}

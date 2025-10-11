@@ -1,6 +1,15 @@
 import { Client } from '@notionhq/client';
 import { NotionPost, NotionImage, NotionVideo, DatabaseColumn } from '@/types';
 
+// Helper function to convert any URL to proxy URL
+function convertToProxyUrl(originalUrl: string, type: 'image' | 'iframe' = 'image'): string {
+  // Skip if already a proxy URL
+  if (originalUrl.includes('/api/media-proxy')) return originalUrl;
+  
+  // Convert to proxy URL
+  return `/api/media-proxy?url=${encodeURIComponent(originalUrl)}&type=${type}`;
+}
+
 // Convert Canva design URL to multiple image URLs
 function convertCanvaUrlToImages(canvaUrl: string): NotionImage[] {
   // Canva design URLs look like: https://www.canva.com/design/DAGiPMnfawk/p4ZSR2b2w14NgJ9m4dSYrg/view
@@ -10,37 +19,16 @@ function convertCanvaUrlToImages(canvaUrl: string): NotionImage[] {
   if (designIdMatch) {
     const designId = designIdMatch[1];
     
-    // Try multiple approaches for Notion compatibility
-    const approaches = [
-      // Approach 1: Direct image URL (most likely to work in Notion)
-      {
-        url: `https://media.canva.com/design/${designId}/image/0/0/800x600.png`,
-        source: 'canva',
-        originalUrl: canvaUrl,
-        isDirectImage: true,
-        approach: 'direct-image'
-      },
-      // Approach 2: Canva's public image URL
-      {
-        url: `https://www.canva.com/design/${designId}/view?format=png&width=800`,
-        source: 'canva',
-        originalUrl: canvaUrl,
-        isDirectImage: true,
-        approach: 'public-image'
-      },
-      // Approach 3: Embed URL (fallback, likely blocked in Notion)
-      {
-        url: `https://www.canva.com/design/${designId}/view?embed`,
-        source: 'canva',
-        originalUrl: canvaUrl,
-        isEmbed: true,
-        approach: 'embed'
-      }
-    ];
+    // Use Canva's embed URL format but proxy it
+    const embedUrl = `https://www.canva.com/design/${designId}/view?embed`;
+    const proxyUrl = convertToProxyUrl(embedUrl, 'iframe');
     
-    // Return the first approach (direct image) for now
-    // The WidgetCard will handle fallbacks if this fails
-    return [approaches[0]];
+    return [{
+      url: proxyUrl,
+      source: 'canva',
+      originalUrl: canvaUrl,
+      isEmbed: true, // Flag to indicate this needs special handling
+    }];
   }
   
   // Fallback to placeholder images if URL doesn't match expected pattern
@@ -62,7 +50,7 @@ function convertCanvaUrlToImages(canvaUrl: string): NotionImage[] {
   const index = Math.abs(hash) % placeholders.length;
   
   return [{
-    url: placeholders[index],
+    url: convertToProxyUrl(placeholders[index], 'image'),
     source: 'canva',
     originalUrl: canvaUrl,
   }];
@@ -239,14 +227,14 @@ async function extractPostFromPage(page: any): Promise<NotionPost> {
       if (text.href) {
         if (isVideoUrl(text.href)) {
           videos.push({
-            url: text.href,
+            url: convertToProxyUrl(text.href, 'image'), // Proxy video URLs too
             source: 'link',
             originalUrl: text.href,
             type: getVideoMimeType(text.href),
           });
         } else {
           images.push({
-            url: text.href,
+            url: convertToProxyUrl(text.href, 'image'),
             source: 'link',
             originalUrl: text.href,
           });
@@ -262,14 +250,14 @@ async function extractPostFromPage(page: any): Promise<NotionPost> {
       if (fileUrl) {
         if (isVideoUrl(fileUrl)) {
           videos.push({
-            url: fileUrl,
+            url: convertToProxyUrl(fileUrl, 'image'), // Proxy video URLs too
             source: 'attachment',
             originalUrl: fileUrl,
             type: getVideoMimeType(fileUrl),
           });
         } else {
           images.push({
-            url: fileUrl,
+            url: convertToProxyUrl(fileUrl, 'image'),
             source: 'attachment',
             originalUrl: fileUrl,
           });
