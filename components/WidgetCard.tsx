@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
-import { ExternalLink, Calendar, BarChart3, Tag, Play, X, ChevronLeft, ChevronRight } from 'lucide-react';
+import { ExternalLink, Calendar, BarChart3, Tag, Play, X, ChevronLeft, ChevronRight, Image as ImageIcon } from 'lucide-react';
 import { NotionPost } from '@/types';
 import { formatDate } from '@/lib/utils';
 import CanvaDesign from './CanvaDesign';
@@ -235,7 +235,7 @@ export default function WidgetCard({ post, aspectRatio = 'square' }: WidgetCardP
                 {hasVideo ? (
                   <Play className="w-3 h-3 text-gray-600" />
                 ) : (
-                  <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
+                  <ImageIcon className="w-3 h-3 text-gray-600" />
                 )}
               </div>
             </div>
