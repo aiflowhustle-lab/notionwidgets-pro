@@ -54,14 +54,12 @@ export default function CanvaDesign({ canvaUrl, title, className = '', onClick, 
     >
       {/* Canva Design Preview */}
       <div className="relative w-full h-full bg-gradient-to-br from-orange-100 to-pink-100 rounded-lg overflow-hidden">
-        {!imageError && !isInIframe ? (
-          <iframe
-            src={previewUrl}
-            className="w-full h-full border-0"
-            title={title}
+        {!imageError ? (
+          <img
+            src={canvaUrl}
+            alt={title}
+            className="w-full h-full object-cover"
             onError={() => setImageError(true)}
-            sandbox="allow-scripts allow-same-origin allow-popups"
-            allowFullScreen
             loading="lazy"
           />
         ) : (
@@ -73,7 +71,7 @@ export default function CanvaDesign({ canvaUrl, title, className = '', onClick, 
               Canva Design
             </h3>
             <p className="text-xs text-gray-500 text-center mb-3">
-              {isInIframe ? 'Click to view in Canva (iframe restricted)' : 'Click to view in Canva'}
+              Click to view in Canva
             </p>
             <div className="text-xs text-orange-600 font-mono bg-orange-50 px-2 py-1 rounded">
               {designId ? `ID: ${designId.substring(0, 8)}...` : 'Design Link'}
