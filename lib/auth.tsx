@@ -91,6 +91,6 @@ export function useAuth() {
 
 // Conditional AuthProvider that only applies auth to non-public pages
 export function ConditionalAuthProvider({ children }: { children: React.ReactNode }) {
-  // Always use AuthProvider for now - the public pages will have their own layout
+  // For now, always use AuthProvider but make it more resilient
   return <AuthProvider>{children}</AuthProvider>;
 }
