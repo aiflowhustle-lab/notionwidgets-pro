@@ -310,43 +310,7 @@ export default function WidgetCard({ post, aspectRatio = 'square' }: WidgetCardP
               </>
             )}
 
-            {/* Thumbnail strip */}
-            {hasMultipleMedia && allMedia.length <= 10 && (
-              <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 flex gap-2">
-                {allMedia.map((media, index) => (
-                  <button
-                    key={index}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setCurrentImageIndex(index);
-                    }}
-                    className={`w-12 h-12 rounded-lg overflow-hidden border-2 transition-all duration-200 ${
-                      index === currentImageIndex 
-                        ? 'border-white' 
-                        : 'border-transparent hover:border-white/50'
-                    }`}
-                  >
-                    {media.type === 'video' ? (
-                      <video
-                        src={media.url}
-                        className="w-full h-full object-cover"
-                        muted
-                      />
-                    ) : media.source === 'canva' ? (
-                      <div className="w-full h-full bg-gradient-to-br from-orange-100 to-pink-100 flex items-center justify-center">
-                        <ExternalLink className="w-4 h-4 text-orange-600" />
-                      </div>
-                    ) : (
-                      <img
-                        src={media.url}
-                        alt={`Thumbnail ${index + 1}`}
-                        className="w-full h-full object-cover"
-                      />
-                    )}
-                  </button>
-                ))}
-              </div>
-            )}
+            {/* Thumbnail strip - Hidden */}
 
             {/* Media Info - Title hidden */}
           </div>
