@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Filter, X, RotateCcw, MoreHorizontal } from 'lucide-react';
+import { X, RotateCcw, MoreHorizontal } from 'lucide-react';
 import { WidgetFilters } from '@/types';
 
 interface FilterBarProps {
@@ -47,11 +47,6 @@ export default function FilterBar({
         >
           <RotateCcw className="w-3 h-3" />
           <span>Refresh</span>
-        </button>
-
-        {/* Filter Icon Button */}
-        <button className="p-1.5 bg-gray-100 text-gray-600 rounded-md hover:bg-gray-200 transition-colors">
-          <Filter className="w-4 h-4" />
         </button>
 
         {/* Platform Filter */}
