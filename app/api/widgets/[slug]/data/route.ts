@@ -3,6 +3,9 @@ import { getWidget, incrementWidgetViews } from '@/lib/firestore-admin';
 import { fetchNotionDatabase } from '@/lib/notion';
 import { decryptToken } from '@/lib/encryption';
 
+// Force this route to be dynamic
+export const dynamic = 'force-dynamic';
+
 export async function GET(
   request: NextRequest,
   { params }: { params: { slug: string } }

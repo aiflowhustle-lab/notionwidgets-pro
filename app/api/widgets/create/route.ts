@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { adminAuth } from '@/lib/firebase-admin';
 import { createWidget } from '@/lib/firestore-admin';
+
+// Force this route to be dynamic
+export const dynamic = 'force-dynamic';
 import { testNotionConnection, detectDatabaseColumns } from '@/lib/notion';
 import { generateSlug, extractDatabaseId } from '@/lib/utils';
 import { encryptToken } from '@/lib/encryption';

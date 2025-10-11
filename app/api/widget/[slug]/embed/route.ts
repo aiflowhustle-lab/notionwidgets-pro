@@ -120,8 +120,8 @@ export async function GET(
   return new NextResponse(html, {
     headers: {
       'Content-Type': 'text/html',
-      'X-Frame-Options': 'SAMEORIGIN',
-      'Content-Security-Policy': "frame-ancestors 'self' notion.so *.notion.so",
+      // Do not use X-Frame-Options; use CSP frame-ancestors instead
+      'Content-Security-Policy': "frame-ancestors 'self' https://www.notion.so https://notion.so https://*.notion.so;",
       'Cache-Control': 'public, max-age=3600',
     },
   });
