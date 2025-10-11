@@ -24,7 +24,7 @@ export default function DebugInfo({ posts, isVisible = false }: DebugInfoProps) 
             {post.images.map((img, imgIndex) => (
               <div key={imgIndex} className="ml-4 text-xs">
                 <p>• {img.source}: {img.url.substring(0, 60)}...</p>
-                {img.isEmbed && <p className="text-orange-600">  (Canva Embed)</p>}
+                {img.source === 'canva' && <p className="text-orange-600">  (Canva Embed)</p>}
               </div>
             ))}
             <p><strong>Videos:</strong> {post.videos.length}</p>
