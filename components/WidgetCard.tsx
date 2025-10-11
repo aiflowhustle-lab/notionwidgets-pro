@@ -348,10 +348,7 @@ export default function WidgetCard({ post, aspectRatio = 'square' }: WidgetCardP
               </div>
             )}
 
-            {/* Media Info - Only show title */}
-            <div className="absolute bottom-12 left-1/2 transform -translate-x-1/2 text-center text-white">
-              <h3 className="text-lg font-semibold mb-2">{post.title}</h3>
-            </div>
+            {/* Media Info - Title hidden */}
           </div>
         </div>
       )}
