@@ -91,15 +91,6 @@ export function useAuth() {
 
 // Conditional AuthProvider that only applies auth to non-public pages
 export function ConditionalAuthProvider({ children }: { children: React.ReactNode }) {
-  // Check if we're on a public widget page
-  if (typeof window !== 'undefined') {
-    const isPublicWidget = window.location.pathname.startsWith('/w/');
-    if (isPublicWidget) {
-      // For public widget pages, don't initialize auth
-      return <>{children}</>;
-    }
-  }
-
-  // For all other pages, use the full AuthProvider
+  // Always use AuthProvider for now - the public pages will have their own layout
   return <AuthProvider>{children}</AuthProvider>;
 }

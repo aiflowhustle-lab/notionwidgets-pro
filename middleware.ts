@@ -10,6 +10,11 @@ export function middleware(request: NextRequest) {
   response.headers.set('Content-Security-Policy', "frame-ancestors *; object-src 'none';")
   response.headers.set('X-Content-Type-Options', 'nosniff')
   
+  // Add CORS headers for iframe embedding
+  response.headers.set('Access-Control-Allow-Origin', '*')
+  response.headers.set('Access-Control-Allow-Methods', 'GET, OPTIONS')
+  response.headers.set('Access-Control-Allow-Headers', 'Content-Type')
+  
   return response
 }
 

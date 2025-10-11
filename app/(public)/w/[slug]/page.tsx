@@ -28,7 +28,7 @@ export default function PublicWidgetPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [filters, setFilters] = useState<WidgetFilters>({});
-  const [isInIframe, setIsInIframe] = useState(false);
+  const [isInIframe, setIsInIframe] = useState(true); // Assume iframe by default for cleaner display
 
   const loadWidgetData = useCallback(async () => {
     try {
@@ -62,10 +62,10 @@ export default function PublicWidgetPage() {
     loadWidgetData();
   }, [loadWidgetData]);
 
-  // Detect if we're in an iframe
-  useEffect(() => {
-    setIsInIframe(window !== window.top);
-  }, []);
+  // Always assume iframe for cleaner display in Notion
+  // useEffect(() => {
+  //   setIsInIframe(window !== window.top);
+  // }, []);
 
   const handleFiltersChange = (newFilters: WidgetFilters) => {
     setFilters(newFilters);
