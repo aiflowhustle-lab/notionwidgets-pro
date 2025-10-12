@@ -29,6 +29,7 @@ export default function PublicWidgetPage() {
   const [error, setError] = useState<string | null>(null);
   const [filters, setFilters] = useState<WidgetFilters>({});
   const [isInIframe, setIsInIframe] = useState(false);
+  const [isIPadNotion, setIsIPadNotion] = useState(false);
 
   const loadWidgetData = useCallback(async () => {
     try {
@@ -65,6 +66,16 @@ export default function PublicWidgetPage() {
   // Detect if we're in an iframe
   useEffect(() => {
     setIsInIframe(window !== window.top);
+  }, []);
+
+  // Detect iPad Notion app
+  useEffect(() => {
+    const userAgent = navigator.userAgent;
+    const isIPad = /iPad/.test(userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+    const isInIframe = window !== window.top;
+    const isNotionApp = window.location.href.includes('notion') || document.referrer.includes('notion');
+    
+    setIsIPadNotion(isIPad && isInIframe && isNotionApp);
   }, []);
 
   const handleFiltersChange = (newFilters: WidgetFilters) => {
@@ -106,14 +117,126 @@ export default function PublicWidgetPage() {
 
   const { widget, posts, availablePlatforms, availableStatuses } = data;
 
+  // Simplified iPad Notion app version
+  if (isIPadNotion) {
+    return (
+      <div style={{ 
+        padding: '10px', 
+        backgroundColor: '#fff', 
+        fontFamily: 'system-ui, -apple-system, sans-serif',
+        maxWidth: '100%'
+      }}>
+        <div style={{ 
+          display: 'grid', 
+          gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', 
+          gap: '8px',
+          maxWidth: '100%'
+        }}>
+          {posts.map((post) => {
+            const mainImage = post.images?.[0];
+            const mainVideo = post.videos?.[0];
+            
+            return (
+              <div key={post.id} style={{
+                position: 'relative',
+                aspectRatio: '1',
+                backgroundColor: '#f5f5f5',
+                borderRadius: '8px',
+                overflow: 'hidden',
+                cursor: 'pointer'
+              }}>
+                {mainVideo ? (
+                  <video
+                    src={mainVideo.url}
+                    style={{
+                      width: '100%',
+                      height: '100%',
+                      objectFit: 'cover',
+                      borderRadius: '8px'
+                    }}
+                    muted
+                    loop
+                    playsInline
+                    preload="metadata"
+                    poster={mainImage?.url}
+                  />
+                ) : mainImage ? (
+                  <img
+                    src={mainImage.url}
+                    alt={post.title || 'Widget image'}
+                    style={{
+                      width: '100%',
+                      height: '100%',
+                      objectFit: 'cover',
+                      borderRadius: '8px'
+                    }}
+                    onError={(e) => {
+                      e.currentTarget.style.display = 'none';
+                    }}
+                  />
+                ) : (
+                  <div style={{
+                    width: '100%',
+                    height: '100%',
+                    backgroundColor: '#e5e5e5',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    color: '#666',
+                    fontSize: '12px'
+                  }}>
+                    No image
+                  </div>
+                )}
+                
+                {/* Simple overlay with title and date */}
+                <div style={{
+                  position: 'absolute',
+                  bottom: '0',
+                  left: '0',
+                  right: '0',
+                  background: 'linear-gradient(transparent, rgba(0,0,0,0.7))',
+                  color: 'white',
+                  padding: '8px',
+                  fontSize: '11px',
+                  lineHeight: '1.2'
+                }}>
+                  <div style={{ fontWeight: '500', marginBottom: '2px' }}>
+                    {post.title || 'Untitled'}
+                  </div>
+                  {post.publishDate && (
+                    <div style={{ opacity: 0.8, fontSize: '10px' }}>
+                      {new Date(post.publishDate).toLocaleDateString()}
+                    </div>
+                  )}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+        
+        {posts.length === 0 && (
+          <div style={{
+            textAlign: 'center',
+            padding: '40px 20px',
+            color: '#666'
+          }}>
+            <div style={{ fontSize: '16px', marginBottom: '8px' }}>No images found</div>
+            <div style={{ fontSize: '14px' }}>This widget doesn't have any images yet.</div>
+          </div>
+        )}
+      </div>
+    );
+  }
+
   return (
-    <div className="min-h-screen bg-white" style={{ WebkitOverflowScrolling: 'touch' }}>
+    <div className="min-h-screen bg-white">
       {/* Main Content */}
-      <div className="max-w-6xl mx-auto px-2 sm:px-4 lg:px-8 py-4 sm:py-8">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Filters and Results - Aligned with grid */}
         <div className="max-w-4xl mx-auto">
           {/* Filters */}
-          <div className="mb-4 sm:mb-6">
+          <div className="mb-6">
             <FilterBar
               onFiltersChange={handleFiltersChange}
               availablePlatforms={availablePlatforms}
@@ -125,21 +248,21 @@ export default function PublicWidgetPage() {
           {/* Results Count - Hidden */}
         </div>
 
-        {/* Images Grid - iPad Compatible */}
+        {/* Images Grid */}
         {posts.length === 0 ? (
-          <div className="text-center py-8 sm:py-12">
-            <div className="w-16 h-16 sm:w-24 sm:h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <Image className="w-8 h-8 sm:w-12 sm:h-12 text-gray-400" />
+          <div className="text-center py-12">
+            <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <Image className="w-12 h-12 text-gray-400" />
             </div>
-            <h3 className="text-base sm:text-lg font-medium text-gray-900 mb-2">No images found</h3>
-            <p className="text-sm sm:text-base text-gray-600">
+            <h3 className="text-lg font-medium text-gray-900 mb-2">No images found</h3>
+            <p className="text-gray-600">
               {Object.values(filters).some(v => v !== undefined)
                 ? 'Try adjusting your filters to see more images.'
                 : 'This widget doesn\'t have any images yet.'}
             </p>
           </div>
         ) : (
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-1 max-w-4xl mx-auto">
+          <div className="grid grid-cols-3 gap-1 max-w-4xl mx-auto">
             {posts.map((post) => (
               <WidgetCard
                 key={post.id}
