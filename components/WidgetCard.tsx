@@ -261,7 +261,7 @@ export default function WidgetCard({ post, aspectRatio = 'square' }: WidgetCardP
             </div>
 
             {/* Main media display */}
-            <div className="relative h-[85vh] flex items-center justify-center p-4">
+            <div className="relative h-[85vh] flex items-center justify-center">
               {allMedia[currentImageIndex]?.type === 'video' ? (
                 <video
                   src={allMedia[currentImageIndex].url}
@@ -274,12 +274,12 @@ export default function WidgetCard({ post, aspectRatio = 'square' }: WidgetCardP
                 allMedia[currentImageIndex]?.source === 'canva' ? (
                   <div 
                     onClick={(e) => e.stopPropagation()}
-                    className="max-w-full max-h-full flex items-center justify-center"
+                    className="w-full h-full"
                   >
                     <CanvaDesign
                       canvaUrl={allMedia[currentImageIndex].originalUrl || allMedia[currentImageIndex].url}
                       title={post.title}
-                      className="w-full h-full max-w-full max-h-full object-contain"
+                      className="w-full h-full"
                       disableExternalLink={true}
                     />
                   </div>

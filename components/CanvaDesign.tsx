@@ -40,22 +40,15 @@ export default function CanvaDesign({ canvaUrl, title, className = '', onClick, 
       onClick={handleClick}
     >
       {/* Canva Design Preview */}
-      <div className="relative w-full h-full bg-gradient-to-br from-orange-100 to-pink-100 rounded-lg overflow-hidden flex items-center justify-center">
+      <div className="relative w-full h-full bg-gradient-to-br from-orange-100 to-pink-100 rounded-lg overflow-hidden">
         {!imageError ? (
           <iframe
             src={embedUrl}
-            className="w-full h-full border-0 object-contain"
+            className="w-full h-full border-0"
             title={title}
             onError={() => setImageError(true)}
             sandbox="allow-scripts allow-same-origin allow-popups"
             loading="lazy"
-            style={{
-              maxWidth: '100%',
-              maxHeight: '100%',
-              objectFit: 'contain',
-              transform: 'scale(1.5)',
-              transformOrigin: 'center'
-            }}
           />
         ) : (
           <div className="w-full h-full flex flex-col items-center justify-center p-4 bg-gradient-to-br from-orange-100 to-pink-100">
