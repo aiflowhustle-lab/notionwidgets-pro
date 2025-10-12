@@ -51,12 +51,11 @@ export default function FilterBar({
           <span>Refresh</span>
         </button>
 
-        {/* Platform Filter - iPad Compatible */}
+        {/* Platform Filter */}
         <select
           value={filters.platform || ''}
           onChange={(e) => handleFilterChange('platform', e.target.value)}
-          className="px-2 sm:px-3 py-1.5 bg-gray-100 border border-gray-200 rounded-md text-xs sm:text-sm focus:ring-2 focus:ring-gray-800 focus:border-transparent"
-          style={{ WebkitAppearance: 'none', touchAction: 'manipulation' }}
+          className="px-3 py-1.5 bg-gray-100 border border-gray-200 rounded-md text-sm focus:ring-2 focus:ring-gray-800 focus:border-transparent"
         >
           <option value="">All Platforms</option>
           {availablePlatforms.map(platform => (
@@ -66,12 +65,11 @@ export default function FilterBar({
           ))}
         </select>
 
-        {/* Status Filter - iPad Compatible */}
+        {/* Status Filter */}
         <select
           value={filters.status || ''}
           onChange={(e) => handleFilterChange('status', e.target.value)}
-          className="px-2 sm:px-3 py-1.5 bg-gray-100 border border-gray-200 rounded-md text-xs sm:text-sm focus:ring-2 focus:ring-gray-800 focus:border-transparent"
-          style={{ WebkitAppearance: 'none', touchAction: 'manipulation' }}
+          className="px-3 py-1.5 bg-gray-100 border border-gray-200 rounded-md text-sm focus:ring-2 focus:ring-gray-800 focus:border-transparent"
         >
           <option value="">All Status</option>
           {availableStatuses.map(status => (

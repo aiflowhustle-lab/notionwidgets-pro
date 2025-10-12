@@ -3,7 +3,6 @@ import type { Metadata } from 'next'
 export const metadata: Metadata = {
   title: 'NotionWidgets Pro - Image Gallery Widget',
   description: 'Beautiful image gallery widgets powered by NotionWidgets Pro',
-  viewport: 'width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no',
   other: {
     'X-Frame-Options': 'SAMEORIGIN',
     'Content-Security-Policy': "frame-ancestors 'self' notion.so *.notion.so",

@@ -152,7 +152,7 @@ export default function WidgetCard({ post, aspectRatio = 'square' }: WidgetCardP
 
   return (
     <>
-      <div className="group cursor-pointer" onClick={handleMediaClick} style={{ touchAction: 'manipulation' }}>
+      <div className="group cursor-pointer" onClick={handleMediaClick}>
         <div className="bg-white rounded-lg overflow-hidden hover:shadow-lg transition-all duration-300">
           {/* Media (Image or Video) */}
           <div className={`relative ${getAspectRatioClass()} overflow-hidden`}>
@@ -161,8 +161,7 @@ export default function WidgetCard({ post, aspectRatio = 'square' }: WidgetCardP
               <div className="relative w-full h-full">
                 <video
                   src={mainVideo.url}
-                  className="w-full h-full object-cover"
-                  style={{ WebkitTransform: 'translateZ(0)' }}
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                   muted
                   loop
                   playsInline
@@ -195,8 +194,7 @@ export default function WidgetCard({ post, aspectRatio = 'square' }: WidgetCardP
                   src={mainImage.url}
                   alt={post.title}
                   fill
-                  className="object-cover"
-                  style={{ WebkitTransform: 'translateZ(0)' }}
+                  className="object-cover group-hover:scale-105 transition-transform duration-300"
                   onError={() => setImageError(true)}
                 />
               )
