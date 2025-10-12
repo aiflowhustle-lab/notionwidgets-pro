@@ -100,6 +100,8 @@ export async function GET(
       if (!canMakeRequest) {
         console.log('Rate limit exceeded, using fallback data');
         posts = getFallbackData();
+        // Cache the fallback data with current filters
+        await cacheService.set(widget.id, posts, platformFilter, statusFilter);
       } else {
         // Decrypt the Notion token
         let decryptedToken: string;
@@ -129,6 +131,8 @@ export async function GET(
           console.error('Error details:', error instanceof Error ? error.message : 'Unknown error');
           // Fallback to mock data if Notion fails
           posts = getFallbackData();
+          // Cache the fallback data with current filters
+          await cacheService.set(widget.id, posts, platformFilter, statusFilter);
         }
       }
     } else {
@@ -137,12 +141,20 @@ export async function GET(
 
     // Apply filters
     let filteredPosts = posts;
+    console.log('Before filtering - Total posts:', posts.length);
+    console.log('Platform filter:', platformFilter);
+    console.log('Status filter:', statusFilter);
+    
     if (platformFilter) {
       filteredPosts = filteredPosts.filter(post => post.platform === platformFilter);
+      console.log('After platform filter - Posts:', filteredPosts.length);
     }
     if (statusFilter) {
       filteredPosts = filteredPosts.filter(post => post.status === statusFilter);
+      console.log('After status filter - Posts:', filteredPosts.length);
     }
+    
+    console.log('Final filtered posts:', filteredPosts.length);
 
     // Increment view count (async, don't wait)
     // Temporarily disabled to prevent infinite loop
