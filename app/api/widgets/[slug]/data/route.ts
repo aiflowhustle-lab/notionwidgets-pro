@@ -78,6 +78,7 @@ export async function GET(
     const { searchParams } = new URL(request.url);
     const platformFilter = searchParams.get('platform') || undefined;
     const statusFilter = searchParams.get('status') || undefined;
+    const forceRefresh = searchParams.get('force_refresh') === 'true';
 
     // Get widget
     const widget = await getWidget(slug);
@@ -85,8 +86,8 @@ export async function GET(
       return NextResponse.json({ error: 'Widget not found' }, { status: 404, headers });
     }
 
-    // Check cache first
-    let posts = await cacheService.get(widget.id, platformFilter, statusFilter);
+    // Check cache first (unless force refresh)
+    let posts = forceRefresh ? null : await cacheService.get(widget.id, platformFilter, statusFilter);
     
     if (!posts) {
       // Cache miss - fetch from Notion with rate limiting

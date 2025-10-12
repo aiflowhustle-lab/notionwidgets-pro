@@ -30,7 +30,7 @@ export default function PublicWidgetPage() {
   const [filters, setFilters] = useState<WidgetFilters>({});
   const [isInIframe, setIsInIframe] = useState(false);
 
-  const loadWidgetData = useCallback(async () => {
+  const loadWidgetData = useCallback(async (forceRefresh = false) => {
     try {
       setLoading(true);
       setError(null);
@@ -38,6 +38,7 @@ export default function PublicWidgetPage() {
       const searchParams = new URLSearchParams();
       if (filters.platform) searchParams.set('platform', filters.platform);
       if (filters.status) searchParams.set('status', filters.status);
+      if (forceRefresh) searchParams.set('force_refresh', 'true');
       
       const response = await fetch(`${window.location.origin}/api/widgets/${slug}/data?${searchParams.toString()}`);
       
@@ -118,7 +119,7 @@ export default function PublicWidgetPage() {
               onFiltersChange={handleFiltersChange}
               availablePlatforms={availablePlatforms}
               availableStatuses={availableStatuses}
-              onRefresh={loadWidgetData}
+              onRefresh={() => loadWidgetData(true)}
             />
           </div>
 
