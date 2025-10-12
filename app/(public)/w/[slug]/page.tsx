@@ -107,13 +107,13 @@ export default function PublicWidgetPage() {
   const { widget, posts, availablePlatforms, availableStatuses } = data;
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white" style={{ WebkitOverflowScrolling: 'touch' }}>
       {/* Main Content */}
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="max-w-6xl mx-auto px-2 sm:px-4 lg:px-8 py-4 sm:py-8">
         {/* Filters and Results - Aligned with grid */}
         <div className="max-w-4xl mx-auto">
           {/* Filters */}
-          <div className="mb-6">
+          <div className="mb-4 sm:mb-6">
             <FilterBar
               onFiltersChange={handleFiltersChange}
               availablePlatforms={availablePlatforms}
@@ -125,21 +125,21 @@ export default function PublicWidgetPage() {
           {/* Results Count - Hidden */}
         </div>
 
-        {/* Images Grid */}
+        {/* Images Grid - iPad Compatible */}
         {posts.length === 0 ? (
-          <div className="text-center py-12">
-            <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <Image className="w-12 h-12 text-gray-400" />
+          <div className="text-center py-8 sm:py-12">
+            <div className="w-16 h-16 sm:w-24 sm:h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <Image className="w-8 h-8 sm:w-12 sm:h-12 text-gray-400" />
             </div>
-            <h3 className="text-lg font-medium text-gray-900 mb-2">No images found</h3>
-            <p className="text-gray-600">
+            <h3 className="text-base sm:text-lg font-medium text-gray-900 mb-2">No images found</h3>
+            <p className="text-sm sm:text-base text-gray-600">
               {Object.values(filters).some(v => v !== undefined)
                 ? 'Try adjusting your filters to see more images.'
                 : 'This widget doesn\'t have any images yet.'}
             </p>
           </div>
         ) : (
-          <div className="grid grid-cols-3 gap-1 max-w-4xl mx-auto">
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-1 max-w-4xl mx-auto">
             {posts.map((post) => (
               <WidgetCard
                 key={post.id}
