@@ -52,7 +52,9 @@ export default function CanvaDesign({ canvaUrl, title, className = '', onClick, 
             style={{
               maxWidth: '100%',
               maxHeight: '100%',
-              objectFit: 'contain'
+              objectFit: 'contain',
+              transform: 'scale(1.5)',
+              transformOrigin: 'center'
             }}
           />
         ) : (
