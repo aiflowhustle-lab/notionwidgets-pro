@@ -87,7 +87,15 @@ export async function GET(
     }
 
     // Check cache first (unless force refresh)
-    let posts = forceRefresh ? null : await cacheService.get(widget.id, platformFilter, statusFilter);
+    let posts = null;
+    if (!forceRefresh) {
+      posts = await cacheService.get(widget.id, platformFilter, statusFilter);
+      console.log('Cache check - forceRefresh:', forceRefresh, 'posts found:', !!posts);
+    } else {
+      console.log('Force refresh - bypassing cache');
+      // Invalidate cache for this widget to ensure fresh data
+      await cacheService.invalidate(widget.id);
+    }
     
     if (!posts) {
       // Cache miss - fetch from Notion with rate limiting

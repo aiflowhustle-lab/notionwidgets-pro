@@ -18,7 +18,7 @@ class CacheService {
   constructor() {
     this.config = {
       enabled: process.env.CACHE_ENABLED === 'true',
-      ttl: parseInt(process.env.CACHE_TTL_SECONDS || '60'), // 1 minute default
+      ttl: parseInt(process.env.CACHE_TTL_SECONDS || '30'), // 30 seconds default for faster updates
       redisUrl: process.env.REDIS_URL,
       redisPassword: process.env.REDIS_PASSWORD,
       redisDb: parseInt(process.env.REDIS_DB || '0'),
