@@ -118,6 +118,7 @@ export default function PublicWidgetPage() {
               onFiltersChange={handleFiltersChange}
               availablePlatforms={availablePlatforms}
               availableStatuses={availableStatuses}
+              onRefresh={loadWidgetData}
             />
           </div>
 

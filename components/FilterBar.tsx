@@ -8,6 +8,7 @@ interface FilterBarProps {
   onFiltersChange: (filters: WidgetFilters) => void;
   availablePlatforms: string[];
   availableStatuses: string[];
+  onRefresh?: () => void;
   className?: string;
 }
 
@@ -15,6 +16,7 @@ export default function FilterBar({
   onFiltersChange, 
   availablePlatforms, 
   availableStatuses,
+  onRefresh,
   className = '' 
 }: FilterBarProps) {
   const [filters, setFilters] = useState<WidgetFilters>({});
@@ -42,7 +44,7 @@ export default function FilterBar({
       <div className="flex items-center space-x-3">
         {/* Refresh Button */}
         <button
-          onClick={() => window.location.reload()}
+          onClick={onRefresh || (() => window.location.reload())}
           className="px-3 py-1.5 bg-gray-800 text-white text-sm rounded-md hover:bg-gray-700 transition-colors flex items-center space-x-1"
         >
           <RotateCcw className="w-3 h-3" />
