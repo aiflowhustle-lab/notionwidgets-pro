@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { Widget } from '@/types';
 import { getUserWidgets } from '@/lib/firestore';
 import { formatDate, formatNumber } from '@/lib/utils';
+import { auth } from '@/lib/firebase';
 import { Plus, Eye, Copy, Trash2, ExternalLink, Calendar, BarChart3 } from 'lucide-react';
 import CreateWidgetModal from '@/components/CreateWidgetModal';
 
@@ -55,10 +56,17 @@ export default function DashboardPage() {
     }
 
     try {
+      const firebaseUser = auth.currentUser;
+      if (!firebaseUser) {
+        alert('You must be logged in to delete widgets');
+        return;
+      }
+      
+      const token = await firebaseUser.getIdToken();
       const response = await fetch(`/api/widgets/by-id/${widgetId}`, {
         method: 'DELETE',
         headers: {
-          'Authorization': `Bearer ${await user.getIdToken()}`,
+          'Authorization': `Bearer ${token}`,
         },
       });
 

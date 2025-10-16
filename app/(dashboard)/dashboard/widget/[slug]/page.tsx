@@ -6,6 +6,7 @@ import { Widget } from '@/types';
 import { getWidget } from '@/lib/firestore';
 import { copyToClipboard } from '@/lib/utils';
 import { useAuth } from '@/lib/auth';
+import { auth } from '@/lib/firebase';
 import { Check, Copy, ExternalLink, Code, Trash2, Edit, Eye } from 'lucide-react';
 
 export default function WidgetResultsPage() {
@@ -63,10 +64,17 @@ export default function WidgetResultsPage() {
     }
 
     try {
+      const firebaseUser = auth.currentUser;
+      if (!firebaseUser) {
+        alert('You must be logged in to delete widgets');
+        return;
+      }
+      
+      const token = await firebaseUser.getIdToken();
       const response = await fetch(`/api/widgets/by-id/${widget.id}`, {
         method: 'DELETE',
         headers: {
-          'Authorization': `Bearer ${await user.getIdToken()}`,
+          'Authorization': `Bearer ${token}`,
         },
       });
 
