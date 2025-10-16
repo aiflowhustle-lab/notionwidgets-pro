@@ -59,23 +59,23 @@ export default function FilterBar({
         {/* Refresh Button */}
         <button
           onClick={onRefresh || (() => window.location.reload())}
-          className="px-3 py-1.5 bg-gray-800 text-white text-sm rounded-md hover:bg-gray-700 transition-colors flex items-center space-x-1"
+          className="p-1.5 bg-gray-800 text-white rounded-md hover:bg-gray-700 transition-colors flex items-center justify-center"
+          title="Refresh"
         >
-          <RotateCcw className="w-3 h-3" />
-          <span>Refresh</span>
+          <RotateCcw className="w-4 h-4" />
         </button>
 
         {/* Filter Toggle Button */}
         <button
           onClick={() => setShowFilters(!showFilters)}
-          className={`px-3 py-1.5 text-sm rounded-md transition-colors flex items-center space-x-1 ${
+          className={`p-1.5 rounded-md transition-colors flex items-center justify-center ${
             showFilters 
               ? 'bg-blue-600 text-white hover:bg-blue-700' 
               : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
           }`}
+          title="Filters"
         >
-          <Filter className="w-3 h-3" />
-          <span>Filters</span>
+          <Filter className="w-4 h-4" />
         </button>
 
         {/* Clear Filters Button - Always visible when filters are active */}
