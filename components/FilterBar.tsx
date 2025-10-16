@@ -10,7 +10,6 @@ interface FilterBarProps {
   availableStatuses: string[];
   onRefresh?: () => void;
   className?: string;
-  currentFilters?: WidgetFilters;
 }
 
 export default function FilterBar({ 
@@ -18,10 +17,9 @@ export default function FilterBar({
   availablePlatforms, 
   availableStatuses,
   onRefresh,
-  className = '',
-  currentFilters = {}
+  className = '' 
 }: FilterBarProps) {
-  const [filters, setFilters] = useState<WidgetFilters>(currentFilters);
+  const [filters, setFilters] = useState<WidgetFilters>({});
   const [showFilters, setShowFilters] = useState(true);
 
   useEffect(() => {
@@ -29,28 +27,10 @@ export default function FilterBar({
   }, [filters, onFiltersChange]);
 
   const handleFilterChange = (key: keyof WidgetFilters, value: string) => {
-    const newFilters = {
-      ...filters,
+    setFilters(prev => ({
+      ...prev,
       [key]: value === '' ? undefined : value,
-    };
-    setFilters(newFilters);
-    
-    // Update URL for server-side filtering
-    const url = new URL(window.location.href);
-    if (newFilters.platform) {
-      url.searchParams.set('platform', newFilters.platform);
-    } else {
-      url.searchParams.delete('platform');
-    }
-    
-    if (newFilters.status) {
-      url.searchParams.set('status', newFilters.status);
-    } else {
-      url.searchParams.delete('status');
-    }
-    
-    // Navigate to new URL (this will trigger server-side re-render)
-    window.location.href = url.toString();
+    }));
   };
 
   const clearFilters = () => {

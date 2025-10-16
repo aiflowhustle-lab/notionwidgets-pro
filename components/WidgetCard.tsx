@@ -10,10 +10,9 @@ import CanvaDesign from './CanvaDesign';
 interface WidgetCardProps {
   post: NotionPost;
   aspectRatio?: string;
-  priority?: boolean; // For iPad compatibility - first few images should not be lazy loaded
 }
 
-export default function WidgetCard({ post, aspectRatio = 'square', priority = false }: WidgetCardProps) {
+export default function WidgetCard({ post, aspectRatio = 'square' }: WidgetCardProps) {
   const [imageError, setImageError] = useState(false);
   const [selectedMedia, setSelectedMedia] = useState<string | null>(null);
   const [mediaType, setMediaType] = useState<'image' | 'video' | null>(null);
@@ -197,8 +196,6 @@ export default function WidgetCard({ post, aspectRatio = 'square', priority = fa
                   fill
                   className="object-cover group-hover:scale-105 transition-transform duration-300"
                   onError={() => setImageError(true)}
-                  priority={priority}
-                  unoptimized={priority} // For iPad compatibility
                 />
               )
             ) : (

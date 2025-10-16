@@ -115,7 +115,7 @@ export default function DashboardPage() {
   };
 
   const copyEmbedCode = async (slug: string) => {
-    const embedCode = `<iframe src="${window.location.origin}/api/widget/${slug}/embed" width="100%" height="600" frameborder="0"></iframe>`;
+    const embedCode = `<iframe src="${window.location.origin}/w/${slug}" width="100%" height="600" frameborder="0"></iframe>`;
     try {
       await navigator.clipboard.writeText(embedCode);
       // You could add a toast notification here

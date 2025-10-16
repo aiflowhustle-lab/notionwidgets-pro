@@ -91,8 +91,10 @@ export async function GET(
     if (!forceRefresh) {
       posts = await cacheService.get(widget.id, platformFilter, statusFilter);
       console.log('Cache check - forceRefresh:', forceRefresh, 'posts found:', !!posts);
+      console.log('Cache key would be:', `widget:${widget.id}:${platformFilter || 'all'}:${statusFilter || 'all'}`);
     } else {
       console.log('Force refresh - bypassing cache');
+      console.log('Invalidating cache for widget:', widget.id);
       // Invalidate cache for this widget to ensure fresh data
       await cacheService.invalidate(widget.id);
     }
@@ -148,22 +150,10 @@ export async function GET(
       console.log('Cache hit - using cached data');
     }
 
-    // Apply filters
-    let filteredPosts = posts;
-    console.log('Before filtering - Total posts:', posts.length);
-    console.log('Platform filter:', platformFilter);
-    console.log('Status filter:', statusFilter);
-    
-    if (platformFilter) {
-      filteredPosts = filteredPosts.filter(post => post.platform === platformFilter);
-      console.log('After platform filter - Posts:', filteredPosts.length);
-    }
-    if (statusFilter) {
-      filteredPosts = filteredPosts.filter(post => post.status === statusFilter);
-      console.log('After status filter - Posts:', filteredPosts.length);
-    }
-    
-    console.log('Final filtered posts:', filteredPosts.length);
+    // Posts are already filtered by fetchNotionDatabase function
+    console.log('Total posts after Notion filtering:', posts.length);
+    console.log('Platform filter applied:', platformFilter);
+    console.log('Status filter applied:', statusFilter);
 
     // Increment view count (async, don't wait)
     // Temporarily disabled to prevent infinite loop
@@ -181,7 +171,7 @@ export async function GET(
         settings: widget.settings,
         views: widget.views,
       },
-      posts: filteredPosts,
+      posts: posts,
       availablePlatforms,
       availableStatuses,
     }, { headers });
