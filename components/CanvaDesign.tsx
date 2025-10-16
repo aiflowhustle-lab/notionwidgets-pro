@@ -52,9 +52,9 @@ export default function CanvaDesign({ canvaUrl, title, className = '', onClick, 
               loading="lazy"
               style={{
                 width: '150%',
-                height: '150%',
+                height: '120%',
                 left: '-25%',
-                top: '-25%',
+                top: '-10%',
                 transform: 'scale(1)',
                 transformOrigin: 'center center'
               }}
