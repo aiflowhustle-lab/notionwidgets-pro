@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { X, RotateCcw, MoreHorizontal } from 'lucide-react';
+import { X, RotateCcw } from 'lucide-react';
 import { WidgetFilters } from '@/types';
 
 interface FilterBarProps {
@@ -66,38 +66,32 @@ export default function FilterBar({
         </button>
 
         {/* Platform Filter */}
-        <div className="flex flex-col">
-          <label className="text-xs text-gray-600 mb-1">Platform</label>
-          <select
-            value={filters.platform || ''}
-            onChange={(e) => handleFilterChange('platform', e.target.value)}
-            className="px-3 py-1.5 bg-white border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 min-w-[120px]"
-          >
-            <option value="">All Platforms</option>
-            {availablePlatforms.map(platform => (
-              <option key={platform} value={platform}>
-                {platform}
-              </option>
-            ))}
-          </select>
-        </div>
+        <select
+          value={filters.platform || ''}
+          onChange={(e) => handleFilterChange('platform', e.target.value)}
+          className="px-3 py-1.5 bg-white border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 min-w-[120px]"
+        >
+          <option value="">All Platforms</option>
+          {availablePlatforms.map(platform => (
+            <option key={platform} value={platform}>
+              {platform}
+            </option>
+          ))}
+        </select>
 
         {/* Status Filter */}
-        <div className="flex flex-col">
-          <label className="text-xs text-gray-600 mb-1">Status</label>
-          <select
-            value={filters.status || ''}
-            onChange={(e) => handleFilterChange('status', e.target.value)}
-            className="px-3 py-1.5 bg-white border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 min-w-[120px]"
-          >
-            <option value="">All Status</option>
-            {availableStatuses.map(status => (
-              <option key={status} value={status}>
-                {status}
-              </option>
-            ))}
-          </select>
-        </div>
+        <select
+          value={filters.status || ''}
+          onChange={(e) => handleFilterChange('status', e.target.value)}
+          className="px-3 py-1.5 bg-white border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 min-w-[120px]"
+        >
+          <option value="">All Status</option>
+          {availableStatuses.map(status => (
+            <option key={status} value={status}>
+              {status}
+            </option>
+          ))}
+        </select>
 
         {/* Clear Filters Button */}
         {hasActiveFilters && (
@@ -109,11 +103,6 @@ export default function FilterBar({
             <span>Clear</span>
           </button>
         )}
-
-        {/* Ellipsis Button */}
-        <button className="p-1.5 bg-gray-100 text-gray-600 rounded-md hover:bg-gray-200 transition-colors">
-          <MoreHorizontal className="w-4 h-4" />
-        </button>
       </div>
 
       {/* Active Filters Display - Hidden since dropdowns show current selection */}
