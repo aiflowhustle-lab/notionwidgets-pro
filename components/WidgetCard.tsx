@@ -152,17 +152,8 @@ export default function WidgetCard({ post, aspectRatio = 'square' }: WidgetCardP
 
   return (
     <>
-      <div 
-        className="group cursor-pointer touch-manipulation" 
-        onClick={handleMediaClick}
-        style={{ 
-          WebkitTapHighlightColor: 'transparent',
-          WebkitTouchCallout: 'none',
-          WebkitUserSelect: 'none',
-          userSelect: 'none'
-        }}
-      >
-        <div className="bg-white rounded-lg overflow-hidden hover:shadow-lg transition-all duration-300 touch-manipulation">
+      <div className="group cursor-pointer" onClick={handleMediaClick}>
+        <div className="bg-white rounded-lg overflow-hidden hover:shadow-lg transition-all duration-300">
           {/* Media (Image or Video) */}
           <div className={`relative ${getAspectRatioClass()} overflow-hidden`}>
             {hasVideo ? (

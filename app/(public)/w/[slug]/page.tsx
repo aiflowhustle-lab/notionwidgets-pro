@@ -63,45 +63,9 @@ export default function PublicWidgetPage() {
     loadWidgetData();
   }, [loadWidgetData]);
 
-  // Detect if we're in an iframe and add iPad-specific handling
+  // Detect if we're in an iframe
   useEffect(() => {
-    const inIframe = window !== window.top;
-    setIsInIframe(inIframe);
-    
-    if (inIframe) {
-      // Add iPad-specific iframe handling
-      document.body.style.overflow = 'auto';
-      (document.body.style as any).webkitOverflowScrolling = 'touch';
-      
-      // Force visibility for Notion iframe
-      document.body.style.visibility = 'visible';
-      document.body.style.display = 'block';
-      document.body.style.opacity = '1';
-      
-      // Detect if we're in Notion
-      const isNotion = document.referrer.includes('notion.so') || 
-                      (window.parent && window.parent.location.href.includes('notion.so'));
-      
-      if (isNotion) {
-        // Force all content to be visible
-        const allElements = document.querySelectorAll('*');
-        allElements.forEach(el => {
-          (el as HTMLElement).style.visibility = 'visible';
-          (el as HTMLElement).style.display = (el as HTMLElement).style.display || 'block';
-          (el as HTMLElement).style.opacity = '1';
-        });
-      }
-      
-      // Prevent zoom on double tap for iPad
-      let lastTouchEnd = 0;
-      document.addEventListener('touchend', function (event) {
-        const now = (new Date()).getTime();
-        if (now - lastTouchEnd <= 300) {
-          event.preventDefault();
-        }
-        lastTouchEnd = now;
-      }, false);
-    }
+    setIsInIframe(window !== window.top);
   }, []);
 
   const handleFiltersChange = (newFilters: WidgetFilters) => {
