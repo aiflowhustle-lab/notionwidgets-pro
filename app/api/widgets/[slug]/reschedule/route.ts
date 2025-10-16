@@ -44,20 +44,57 @@ export async function POST(
       auth: widget.token,
     });
 
-    // Update each post's date based on new order
-    const updates = postOrder.map(async (postId: string, index: number) => {
-      try {
-        // Calculate new date (assuming posts are scheduled daily)
-        const baseDate = new Date();
-        baseDate.setDate(baseDate.getDate() + index);
-        
-        const newDate = baseDate.toISOString().split('T')[0]; // YYYY-MM-DD format
+    // First, get all posts with their current dates
+    const postsWithDates = await Promise.all(
+      postOrder.map(async (postId: string) => {
+        try {
+          const page = await notion.pages.retrieve({ page_id: postId });
+          const properties = (page as any).properties;
+          
+          // Get the current date from the post
+          const currentDate = properties.Date?.date?.start || null;
+          
+          return { postId, currentDate };
+        } catch (error) {
+          console.error(`Failed to get current date for post ${postId}:`, error);
+          return { postId, currentDate: null };
+        }
+      })
+    );
 
-        // Update the post in Notion
+    // Create a mapping of new positions to dates
+    // The idea is to swap the dates based on the new order
+    const dateMapping = new Map();
+    
+    // Get all the dates from the posts in their current order
+    const allDates = postsWithDates.map(p => p.currentDate).filter(Boolean);
+    
+    // Map each post to its new date based on the reordered positions
+    postOrder.forEach((postId, newIndex) => {
+      // Find the original index of this post
+      const originalIndex = postsWithDates.findIndex(p => p.postId === postId);
+      
+      if (originalIndex !== -1 && allDates[originalIndex]) {
+        // The new date for this post should be the date that was at this new position originally
+        const newDate = allDates[newIndex] || postsWithDates[originalIndex].currentDate;
+        dateMapping.set(postId, newDate);
+      }
+    });
+
+    // Update each post with its new date
+    const updates = postOrder.map(async (postId: string, newIndex: number) => {
+      try {
+        // Get the date that should be assigned to this position
+        const newDate = dateMapping.get(postId);
+        
+        if (!newDate) {
+          throw new Error('No date found for this post');
+        }
+
+        // Update the post in Notion with the new date
         await notion.pages.update({
           page_id: postId,
           properties: {
-            // Assuming you have a 'Date' property in your Notion database
             'Date': {
               date: {
                 start: newDate,

@@ -170,6 +170,9 @@ export default function PublicWidgetPage() {
       setHasChanges(false);
       setIsDragMode(false);
       
+      // Reload widget data to show updated dates
+      await loadWidgetData(true);
+      
       // Show success message (you could add a toast notification here)
       alert('Posts successfully rescheduled!');
       
