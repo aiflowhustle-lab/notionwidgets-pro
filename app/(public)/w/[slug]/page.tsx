@@ -94,15 +94,6 @@ export default function PublicWidgetPage() {
     loadWidgetData();
   }, [loadWidgetData]);
 
-  // Load data when filters change (but not on initial mount)
-  useEffect(() => {
-    // Only load if we have actual filter values and we're not already loading
-    if (!isLoadingRef.current && (filters.platform || filters.status)) {
-      console.log('Filters changed, loading data with:', filters);
-      loadWidgetData(false, filters);
-    }
-  }, [filters.platform, filters.status, loadWidgetData]);
-
   // Detect if we're in an iframe
   useEffect(() => {
     setIsInIframe(window !== window.top);
@@ -129,6 +120,10 @@ export default function PublicWidgetPage() {
     console.log('Updating URL to:', url.toString());
     // Update URL without page refresh
     window.history.replaceState({}, '', url.toString());
+    
+    // Immediately load data with new filters
+    console.log('Loading data immediately with new filters:', newFilters);
+    loadWidgetData(false, newFilters);
   };
 
   if (loading) {
