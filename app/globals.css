@@ -124,3 +124,37 @@ iframe {
   -ms-user-select: none;
   user-select: none;
 }
+
+/* Force visibility in iframe context - especially for Notion */
+body {
+  visibility: visible !important;
+  display: block !important;
+  opacity: 1 !important;
+}
+
+/* Ensure all content is visible in iframe */
+* {
+  visibility: visible !important;
+}
+
+/* Specific fixes for Notion iframe embedding */
+iframe {
+  visibility: visible !important;
+  display: block !important;
+  opacity: 1 !important;
+}
+
+/* Force grid and card visibility */
+.grid, .card, .card img, .card-content {
+  visibility: visible !important;
+  display: block !important;
+  opacity: 1 !important;
+}
+
+.grid {
+  display: grid !important;
+}
+
+.card {
+  display: block !important;
+}

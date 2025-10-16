@@ -14,6 +14,40 @@ export async function GET(
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Widget ${slug} - NotionWidgets Pro</title>
+    <script>
+        // Notion iframe detection and handling
+        (function() {
+            // Detect if we're in Notion iframe
+            const isNotion = window.location !== window.parent.location && 
+                           (document.referrer.includes('notion.so') || 
+                            window.parent.location.href.includes('notion.so'));
+            
+            // Force content visibility for Notion
+            if (isNotion) {
+                document.documentElement.style.visibility = 'visible';
+                document.body.style.visibility = 'visible';
+                document.body.style.display = 'block';
+                document.body.style.opacity = '1';
+            }
+            
+            // Ensure content loads even in restricted iframes
+            window.addEventListener('load', function() {
+                document.body.style.visibility = 'visible';
+                document.body.style.display = 'block';
+                document.body.style.opacity = '1';
+            });
+            
+            // Fallback for iPad Notion
+            setTimeout(function() {
+                if (document.body.style.visibility === 'hidden' || 
+                    document.body.style.display === 'none') {
+                    document.body.style.visibility = 'visible';
+                    document.body.style.display = 'block';
+                    document.body.style.opacity = '1';
+                }
+            }, 100);
+        })();
+    </script>
     <style>
         * {
             -webkit-tap-highlight-color: transparent;
@@ -30,6 +64,9 @@ export async function GET(
             height: 100%;
             overflow-x: hidden;
             -webkit-overflow-scrolling: touch;
+            visibility: visible !important;
+            display: block !important;
+            opacity: 1 !important;
         }
         
         body {
@@ -38,12 +75,33 @@ export async function GET(
             background: white;
             position: relative;
             min-height: 100vh;
+            visibility: visible !important;
+            display: block !important;
+            opacity: 1 !important;
         }
         
         .widget-container {
             max-width: 800px;
             margin: 0 auto;
             position: relative;
+            visibility: visible !important;
+            display: block !important;
+            opacity: 1 !important;
+        }
+        
+        /* Force visibility in iframe context */
+        .grid, .card, .card img, .card-content {
+            visibility: visible !important;
+            display: block !important;
+            opacity: 1 !important;
+        }
+        
+        .grid {
+            display: grid !important;
+        }
+        
+        .card {
+            display: block !important;
         }
         
         .header {
