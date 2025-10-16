@@ -40,16 +40,26 @@ export default function CanvaDesign({ canvaUrl, title, className = '', onClick, 
       onClick={handleClick}
     >
       {/* Canva Design Preview */}
-      <div className="relative w-full h-full bg-gradient-to-br from-orange-100 to-pink-100 rounded-lg overflow-hidden">
+      <div className="relative w-full h-full bg-gradient-to-br from-orange-100 to-pink-100 overflow-hidden">
         {!imageError ? (
-          <iframe
-            src={embedUrl}
-            className="w-full h-full border-0"
-            title={title}
-            onError={() => setImageError(true)}
-            sandbox="allow-scripts allow-same-origin allow-popups"
-            loading="lazy"
-          />
+          <div className="relative w-full h-full flex items-center justify-center">
+            <iframe
+              src={embedUrl}
+              className="border-0"
+              title={title}
+              onError={() => setImageError(true)}
+              sandbox="allow-scripts allow-same-origin allow-popups"
+              loading="lazy"
+              style={{
+                width: '100%',
+                height: '100%',
+                minWidth: '100%',
+                minHeight: '100%',
+                transform: 'scale(1.1)',
+                transformOrigin: 'center center'
+              }}
+            />
+          </div>
         ) : (
           <div className="w-full h-full flex flex-col items-center justify-center p-4 bg-gradient-to-br from-orange-100 to-pink-100">
             <div className="w-16 h-16 bg-orange-200 rounded-full flex items-center justify-center mb-3">
