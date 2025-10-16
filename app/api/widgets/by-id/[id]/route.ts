@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { adminAuth } from '@/lib/firebase-admin';
-import { getWidgetById, deleteWidget } from '@/lib/firestore';
+import { adminAuth, adminDb } from '@/lib/firebase-admin';
+import { getWidgetById, deleteWidget } from '@/lib/firestore-admin';
 
 // Force this route to be dynamic
 export const dynamic = 'force-dynamic';
