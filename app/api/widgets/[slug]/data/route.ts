@@ -168,16 +168,16 @@ export async function GET(
       const allPostsCache = await cacheService.get(widget.id);
       if (allPostsCache && allPostsCache.length > 0) {
         // Use cached data for available options
-        availablePlatforms = Array.from(new Set(allPostsCache.map(post => post.platform).filter(Boolean)));
-        availableStatuses = Array.from(new Set(allPostsCache.map(post => post.status).filter(Boolean)));
+        availablePlatforms = Array.from(new Set(allPostsCache.map(post => post.platform).filter((platform): platform is string => Boolean(platform))));
+        availableStatuses = Array.from(new Set(allPostsCache.map(post => post.status).filter((status): status is string => Boolean(status))));
         console.log('Using cached data for available options');
       } else {
         // If no cache, fetch all posts without filters
         console.log('No cache found, fetching all posts for available options');
         const decryptedToken = decryptToken(widget.token);
         const allPosts = await fetchNotionDatabase(decryptedToken, widget.databaseId);
-        availablePlatforms = Array.from(new Set(allPosts.map(post => post.platform).filter(Boolean)));
-        availableStatuses = Array.from(new Set(allPosts.map(post => post.status).filter(Boolean)));
+        availablePlatforms = Array.from(new Set(allPosts.map(post => post.platform).filter((platform): platform is string => Boolean(platform))));
+        availableStatuses = Array.from(new Set(allPosts.map(post => post.status).filter((status): status is string => Boolean(status))));
         
         // Cache the all posts data for future use
         await cacheService.set(widget.id, allPosts);
@@ -185,8 +185,8 @@ export async function GET(
     } catch (error) {
       console.error('Error getting available options:', error);
       // Fallback to using filtered posts
-      availablePlatforms = Array.from(new Set(posts.map(post => post.platform).filter(Boolean)));
-      availableStatuses = Array.from(new Set(posts.map(post => post.status).filter(Boolean)));
+      availablePlatforms = Array.from(new Set(posts.map(post => post.platform).filter((platform): platform is string => Boolean(platform))));
+      availableStatuses = Array.from(new Set(posts.map(post => post.status).filter((status): status is string => Boolean(status))));
     }
 
     return NextResponse.json({
