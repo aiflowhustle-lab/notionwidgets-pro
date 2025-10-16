@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getWidget } from '@/lib/firestore-admin';
 import { fetchNotionDatabase } from '@/lib/notion';
 import { decryptToken } from '@/lib/encryption';
+import { NotionPost } from '@/types';
 
 export async function GET(
   request: NextRequest,
@@ -17,7 +18,7 @@ export async function GET(
     }
 
     // Fetch real data from Notion
-    let posts = [];
+    let posts: NotionPost[] = [];
     try {
       const decryptedToken = decryptToken(widget.token);
       posts = await fetchNotionDatabase(decryptedToken, widget.databaseId);
