@@ -49,6 +49,11 @@ export default function DashboardPage() {
       return;
     }
 
+    if (!user) {
+      alert('You must be logged in to delete widgets');
+      return;
+    }
+
     try {
       const response = await fetch(`/api/widgets/by-id/${widgetId}`, {
         method: 'DELETE',
