@@ -11,12 +11,12 @@ export async function POST(
     const { slug } = params;
     console.log('Reschedule request for slug:', slug);
     
-    const { postOrder } = await request.json();
-    console.log('Post order received:', postOrder);
+    const { posts } = await request.json();
+    console.log('Posts data received:', posts);
 
-    if (!postOrder || !Array.isArray(postOrder)) {
+    if (!posts || !Array.isArray(posts)) {
       return NextResponse.json(
-        { error: 'Post order is required and must be an array' },
+        { error: 'Posts data is required and must be an array' },
         { status: 400 }
       );
     }
@@ -47,65 +47,13 @@ export async function POST(
       auth: widget.token,
     });
 
-    // First, get all posts with their current dates
-    const postsWithDates = await Promise.all(
-      postOrder.map(async (postId: string) => {
-        try {
-          const page = await notion.pages.retrieve({ page_id: postId });
-          const properties = (page as any).properties;
-          
-          // Get the current date from the post - try different property names
-          const currentDate = properties.Date?.date?.start || 
-                             properties['Publish Date']?.date?.start || 
-                             properties['Publish date']?.date?.start ||
-                             properties['publish_date']?.date?.start ||
-                             null;
-          console.log(`Post ${postId} current date:`, currentDate);
-          console.log(`Post ${postId} available properties:`, Object.keys(properties));
-          console.log(`Post ${postId} Date property:`, properties.Date);
-          console.log(`Post ${postId} Publish Date property:`, properties['Publish Date']);
-          
-          return { postId, currentDate };
-        } catch (error) {
-          console.error(`Failed to get current date for post ${postId}:`, error);
-          return { postId, currentDate: null };
-        }
-      })
-    );
-    
-    console.log('All posts with dates:', postsWithDates);
-
-    // Create a mapping of new positions to dates
-    // The idea is to swap the dates based on the new order
-    const dateMapping = new Map();
-    
-    // Get all the dates from the posts in their current order
-    const allDates = postsWithDates.map(p => p.currentDate).filter(Boolean);
-    console.log('All dates extracted:', allDates);
-    
-    // Map each post to its new date based on the reordered positions
-    postOrder.forEach((postId, newIndex) => {
-      // Find the original index of this post
-      const originalIndex = postsWithDates.findIndex(p => p.postId === postId);
-      
-      if (originalIndex !== -1 && allDates[originalIndex]) {
-        // The new date for this post should be the date that was at this new position originally
-        const newDate = allDates[newIndex] || postsWithDates[originalIndex].currentDate;
-        dateMapping.set(postId, newDate);
-        console.log(`Mapping post ${postId} (was at index ${originalIndex}) to new date ${newDate} (at new index ${newIndex})`);
-      }
-    });
-    
-    console.log('Final date mapping:', Object.fromEntries(dateMapping));
-
-    // Update each post with its new date
-    const updates = postOrder.map(async (postId: string, newIndex: number) => {
+    // Update each post with its new date directly
+    const updates = posts.map(async (post: { id: string; publishDate: string | null }) => {
       try {
-        // Get the date that should be assigned to this position
-        const newDate = dateMapping.get(postId);
+        const { id: postId, publishDate: newDate } = post;
         
         if (!newDate) {
-          throw new Error('No date found for this post');
+          throw new Error('No date provided for this post');
         }
 
         // Update the post in Notion with the new date
@@ -124,9 +72,9 @@ export async function POST(
         console.log(`Successfully updated post ${postId} to date ${newDate}. Notion response:`, updateResponse);
         return { postId, newDate, success: true };
       } catch (error) {
-        console.error(`Failed to update post ${postId}:`, error);
+        console.error(`Failed to update post ${post.id}:`, error);
         return { 
-          postId, 
+          postId: post.id, 
           error: error instanceof Error ? error.message : 'Unknown error', 
           success: false 
         };

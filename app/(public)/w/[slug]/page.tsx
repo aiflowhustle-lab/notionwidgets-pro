@@ -131,15 +131,28 @@ export default function PublicWidgetPage() {
       const oldIndex = data.posts.findIndex((post) => post.id === active.id);
       const newIndex = data.posts.findIndex((post) => post.id === over?.id);
 
-      const newPosts = arrayMove(data.posts, oldIndex, newIndex);
+      // Get the dates from the posts
+      const dates = data.posts.map(post => post.publishDate).filter(Boolean);
+      
+      // Create new posts with swapped dates
+      const newPosts = data.posts.map((post, index) => {
+        const newDate = dates[newIndex] || post.publishDate;
+        return {
+          ...post,
+          publishDate: newDate
+        };
+      });
+
+      // Reorder the posts
+      const reorderedPosts = arrayMove(newPosts, oldIndex, newIndex);
       
       setData({
         ...data,
-        posts: newPosts
+        posts: reorderedPosts
       });
 
       setHasChanges(true);
-      console.log('Posts reordered:', { oldIndex, newIndex, newPosts });
+      console.log('Posts reordered with swapped dates:', { oldIndex, newIndex, reorderedPosts });
     }
   };
 
@@ -148,7 +161,11 @@ export default function PublicWidgetPage() {
 
     setIsRescheduling(true);
     try {
-      const postOrder = data.posts.map(post => post.id);
+      // Send the current post order and their dates
+      const postData = data.posts.map(post => ({
+        id: post.id,
+        publishDate: post.publishDate
+      }));
       
       const token = await getAuthToken();
       const headers: Record<string, string> = {
@@ -162,7 +179,7 @@ export default function PublicWidgetPage() {
       const response = await fetch(`/api/widgets/${slug}/reschedule`, {
         method: 'POST',
         headers,
-        body: JSON.stringify({ postOrder }),
+        body: JSON.stringify({ posts: postData }),
       });
 
       if (!response.ok) {
