@@ -130,12 +130,19 @@ export async function fetchNotionDatabase(
           const post = await extractPostFromPage(page);
           
           // Apply filters
+          console.log('Checking filters for post:', post.title, 'platform:', post.platform, 'status:', post.status);
+          console.log('Platform filter:', platformFilter, 'Status filter:', statusFilter);
+          
           if (platformFilter && post.platform !== platformFilter) {
+            console.log('Post filtered out by platform:', post.title);
             continue;
           }
           if (statusFilter && post.status !== statusFilter) {
+            console.log('Post filtered out by status:', post.title);
             continue;
           }
+          
+          console.log('Post passed filters:', post.title);
           
           posts.push(post);
         }
@@ -169,12 +176,14 @@ async function extractPostFromPage(page: any): Promise<NotionPost> {
   if (properties.Platform?.select?.name) {
     platform = properties.Platform.select.name;
   }
+  console.log('Platform extracted:', platform, 'from properties:', properties.Platform);
   
   // Extract status
   let status: string | null = null;
   if (properties.Status?.status?.name) {
     status = properties.Status.status.name;
   }
+  console.log('Status extracted:', status, 'from properties:', properties.Status);
   
   // Extract image source
   let imageSource: string | null = null;

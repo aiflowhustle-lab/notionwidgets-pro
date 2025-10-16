@@ -52,32 +52,49 @@ export default function FilterBar({
         </button>
 
         {/* Platform Filter */}
-        <select
-          value={filters.platform || ''}
-          onChange={(e) => handleFilterChange('platform', e.target.value)}
-          className="px-3 py-1.5 bg-gray-100 border border-gray-200 rounded-md text-sm focus:ring-2 focus:ring-gray-800 focus:border-transparent"
-        >
-          <option value="">All Platforms</option>
-          {availablePlatforms.map(platform => (
-            <option key={platform} value={platform}>
-              {platform}
-            </option>
-          ))}
-        </select>
+        <div className="flex flex-col">
+          <label className="text-xs text-gray-600 mb-1">Platform</label>
+          <select
+            value={filters.platform || ''}
+            onChange={(e) => handleFilterChange('platform', e.target.value)}
+            className="px-3 py-1.5 bg-white border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 min-w-[120px]"
+          >
+            <option value="">All Platforms</option>
+            {availablePlatforms.map(platform => (
+              <option key={platform} value={platform}>
+                {platform}
+              </option>
+            ))}
+          </select>
+        </div>
 
         {/* Status Filter */}
-        <select
-          value={filters.status || ''}
-          onChange={(e) => handleFilterChange('status', e.target.value)}
-          className="px-3 py-1.5 bg-gray-100 border border-gray-200 rounded-md text-sm focus:ring-2 focus:ring-gray-800 focus:border-transparent"
-        >
-          <option value="">All Status</option>
-          {availableStatuses.map(status => (
-            <option key={status} value={status}>
-              {status}
-            </option>
-          ))}
-        </select>
+        <div className="flex flex-col">
+          <label className="text-xs text-gray-600 mb-1">Status</label>
+          <select
+            value={filters.status || ''}
+            onChange={(e) => handleFilterChange('status', e.target.value)}
+            className="px-3 py-1.5 bg-white border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 min-w-[120px]"
+          >
+            <option value="">All Status</option>
+            {availableStatuses.map(status => (
+              <option key={status} value={status}>
+                {status}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {/* Clear Filters Button */}
+        {hasActiveFilters && (
+          <button
+            onClick={clearFilters}
+            className="px-3 py-1.5 bg-red-100 text-red-700 text-sm rounded-md hover:bg-red-200 transition-colors flex items-center space-x-1"
+          >
+            <X className="w-3 h-3" />
+            <span>Clear</span>
+          </button>
+        )}
 
         {/* Ellipsis Button */}
         <button className="p-1.5 bg-gray-100 text-gray-600 rounded-md hover:bg-gray-200 transition-colors">
