@@ -116,35 +116,7 @@ export default function FilterBar({
         </button>
       </div>
 
-      {/* Active Filters Display */}
-      {hasActiveFilters && (
-        <div className="mt-4 pt-4 border-t border-gray-200">
-          <div className="flex flex-wrap gap-2">
-            {filters.platform && (
-              <span className="inline-flex items-center px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded-md">
-                Platform: {filters.platform}
-                <button
-                  onClick={() => handleFilterChange('platform', '')}
-                  className="ml-1 hover:text-gray-900"
-                >
-                  <X className="w-3 h-3" />
-                </button>
-              </span>
-            )}
-            {filters.status && (
-              <span className="inline-flex items-center px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded-md">
-                Status: {filters.status}
-                <button
-                  onClick={() => handleFilterChange('status', '')}
-                  className="ml-1 hover:text-gray-900"
-                >
-                  <X className="w-3 h-3" />
-                </button>
-              </span>
-            )}
-          </div>
-        </div>
-      )}
+      {/* Active Filters Display - Hidden since dropdowns show current selection */}
     </div>
   );
 }
