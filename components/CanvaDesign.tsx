@@ -55,7 +55,7 @@ export default function CanvaDesign({ canvaUrl, title, className = '', onClick, 
                 height: '100%',
                 minWidth: '100%',
                 minHeight: '100%',
-                transform: 'scale(1.1)',
+                transform: 'scale(1.0)',
                 transformOrigin: 'center center'
               }}
             />
