@@ -118,7 +118,9 @@ export default function WidgetResultsPage() {
   }
 
   const widgetUrl = `${window.location.origin}/w/${widget.slug}`;
+  const phonePreviewUrl = `${window.location.origin}/phone-preview/${widget.slug}`;
   const embedCode = `<iframe src="${widgetUrl}" width="100%" height="600" frameborder="0"></iframe>`;
+  const phoneEmbedCode = `<iframe src="${phonePreviewUrl}" width="390" height="844" frameborder="0" style="border-radius: 60px; border: 14px solid #000; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);"></iframe>`;
 
   return (
     <div className="space-y-8">
@@ -136,27 +138,43 @@ export default function WidgetResultsPage() {
       {/* Widget Preview */}
       <div className="bg-white rounded-lg shadow-sm border p-6">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-semibold text-gray-900">Live Preview</h2>
-          <a
-            href={widgetUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-blue-600 hover:text-blue-800 flex items-center"
-          >
-            <ExternalLink className="w-4 h-4 mr-1" />
-            Open in new tab
-          </a>
+          <h2 className="text-xl font-semibold text-gray-900">Live Preview (iPhone Mockup)</h2>
+          <div className="flex gap-2">
+            <a
+              href={phonePreviewUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-green-600 hover:text-green-800 flex items-center"
+            >
+              <ExternalLink className="w-4 h-4 mr-1" />
+              Phone View
+            </a>
+            <a
+              href={widgetUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-blue-600 hover:text-blue-800 flex items-center"
+            >
+              <ExternalLink className="w-4 h-4 mr-1" />
+              Desktop View
+            </a>
+          </div>
         </div>
         
-        <div className="border rounded-lg overflow-hidden">
-          <iframe
-            src={widgetUrl}
-            width="100%"
-            height="600"
-            frameBorder="0"
-            className="w-full"
-          />
+        <div className="flex justify-center">
+          <div className="border border-gray-200 rounded-lg overflow-hidden">
+            <iframe
+              src={phonePreviewUrl}
+              width="390"
+              height="844"
+              frameBorder="0"
+              className="rounded-[60px] border-[14px] border-black shadow-2xl"
+            />
+          </div>
         </div>
+        <p className="text-sm text-gray-600 mt-4 text-center">
+          This is how your widget will look when embedded in Notion with the iPhone mockup.
+        </p>
       </div>
 
       {/* Widget Details */}
@@ -197,7 +215,7 @@ export default function WidgetResultsPage() {
           <div className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                HTML iframe
+                HTML iframe (Desktop)
               </label>
               <div className="relative">
                 <textarea
@@ -214,9 +232,30 @@ export default function WidgetResultsPage() {
                 </button>
               </div>
             </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                HTML iframe (iPhone Mockup) - Perfect for Notion
+              </label>
+              <div className="relative">
+                <textarea
+                  value={phoneEmbedCode}
+                  readOnly
+                  rows={6}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-sm font-mono"
+                />
+                <button
+                  onClick={() => handleCopy(phoneEmbedCode, 'phone-embed')}
+                  className="absolute top-2 right-2 p-2 bg-green-600 text-white rounded hover:bg-green-700 transition-colors"
+                >
+                  {copied === 'phone-embed' ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+                </button>
+              </div>
+            </div>
             
-            <div className="text-sm text-gray-600">
-              <p>Copy this code to embed the widget in your website or Notion page.</p>
+            <div className="text-sm text-gray-600 space-y-2">
+              <p><strong>Desktop iframe:</strong> Use for websites and blogs.</p>
+              <p><strong>iPhone Mockup:</strong> Perfect for Notion pages - shows your widget in a beautiful phone frame!</p>
             </div>
           </div>
         </div>
