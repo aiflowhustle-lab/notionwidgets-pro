@@ -18,6 +18,7 @@ function getFallbackData() {
       platform: 'Instagram',
       status: 'Done',
       imageSource: 'attachment',
+      pinned: true,
       images: [
         {
           url: 'https://images.unsplash.com/photo-1611162616475-46b635cb6868?w=500&h=500&fit=crop',
@@ -34,6 +35,7 @@ function getFallbackData() {
       platform: 'TikTok',
       status: 'In progress',
       imageSource: 'link',
+      pinned: false,
       images: [
         {
           url: 'https://images.unsplash.com/photo-1611605698335-8b1569810432?w=500&h=500&fit=crop',
@@ -50,6 +52,7 @@ function getFallbackData() {
       platform: 'Others',
       status: 'Done',
       imageSource: 'canva',
+      pinned: false,
       images: [
         {
           url: 'https://images.unsplash.com/photo-1611224923853-80b023f02d71?w=500&h=500&fit=crop',
