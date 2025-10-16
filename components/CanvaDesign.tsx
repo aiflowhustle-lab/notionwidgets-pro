@@ -51,10 +51,10 @@ export default function CanvaDesign({ canvaUrl, title, className = '', onClick, 
               sandbox="allow-scripts allow-same-origin allow-popups"
               loading="lazy"
               style={{
-                width: '120%',
-                height: '120%',
-                left: '-10%',
-                top: '-10%',
+                width: '150%',
+                height: '150%',
+                left: '-25%',
+                top: '-25%',
                 transform: 'scale(1)',
                 transformOrigin: 'center center'
               }}
