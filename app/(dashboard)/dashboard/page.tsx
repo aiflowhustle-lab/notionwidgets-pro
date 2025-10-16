@@ -63,6 +63,9 @@ export default function DashboardPage() {
       }
       
       const token = await firebaseUser.getIdToken();
+      console.log('Attempting to delete widget:', widgetId);
+      console.log('User token:', token.substring(0, 20) + '...');
+      
       const response = await fetch(`/api/widgets/by-id/${widgetId}`, {
         method: 'DELETE',
         headers: {
@@ -70,14 +73,19 @@ export default function DashboardPage() {
         },
       });
 
+      console.log('Delete response status:', response.status);
+      const responseData = await response.json();
+      console.log('Delete response data:', responseData);
+
       if (response.ok) {
         setWidgets(prev => prev.filter(w => w.id !== widgetId));
+        console.log('Widget deleted successfully from UI');
       } else {
-        throw new Error('Failed to delete widget');
+        throw new Error(`Failed to delete widget: ${responseData.error || 'Unknown error'}`);
       }
     } catch (error) {
       console.error('Error deleting widget:', error);
-      alert('Failed to delete widget. Please try again.');
+      alert(`Failed to delete widget: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
   };
 
