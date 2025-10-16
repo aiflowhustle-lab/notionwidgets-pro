@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useParams } from 'next/navigation';
 import { NotionPost, WidgetFilters } from '@/types';
 import WidgetCard from '@/components/WidgetCard';
@@ -29,16 +29,17 @@ export default function PublicWidgetPage() {
   const [error, setError] = useState<string | null>(null);
   const [filters, setFilters] = useState<WidgetFilters>({});
   const [isInIframe, setIsInIframe] = useState(false);
+  const isFilterChanging = useRef(false);
 
-  const loadWidgetData = useCallback(async (forceRefresh = false) => {
-    console.log('Loading widget data with filters:', filters, 'forceRefresh:', forceRefresh);
+  const loadWidgetData = useCallback(async (forceRefresh = false, currentFilters = filters) => {
+    console.log('Loading widget data with filters:', currentFilters, 'forceRefresh:', forceRefresh);
     try {
       setLoading(true);
       setError(null);
       
       const searchParams = new URLSearchParams();
-      if (filters.platform) searchParams.set('platform', filters.platform);
-      if (filters.status) searchParams.set('status', filters.status);
+      if (currentFilters.platform) searchParams.set('platform', currentFilters.platform);
+      if (currentFilters.status) searchParams.set('status', currentFilters.status);
       if (forceRefresh) searchParams.set('force_refresh', 'true');
       
       const apiUrl = `${window.location.origin}/api/widgets/${slug}/data?${searchParams.toString()}`;
@@ -62,7 +63,7 @@ export default function PublicWidgetPage() {
     } finally {
       setLoading(false);
     }
-  }, [slug, filters.platform, filters.status]);
+  }, [slug]);
 
   // Load filters from URL on component mount
   useEffect(() => {
@@ -78,7 +79,7 @@ export default function PublicWidgetPage() {
     }
   }, []);
 
-  // Load data when component mounts or filters change
+  // Load data when component mounts
   useEffect(() => {
     loadWidgetData();
   }, [loadWidgetData]);
@@ -90,6 +91,7 @@ export default function PublicWidgetPage() {
 
   const handleFiltersChange = (newFilters: WidgetFilters) => {
     console.log('Filter change requested:', newFilters);
+    isFilterChanging.current = true;
     setFilters(newFilters);
     
     // Update URL parameters
@@ -109,6 +111,10 @@ export default function PublicWidgetPage() {
     console.log('Updating URL to:', url.toString());
     // Update URL without page refresh
     window.history.replaceState({}, '', url.toString());
+    
+    // Load data with new filters
+    loadWidgetData(false, newFilters);
+    isFilterChanging.current = false;
   };
 
   if (loading) {
