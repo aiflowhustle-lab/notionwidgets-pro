@@ -50,8 +50,16 @@ const nextConfig = {
         source: '/w/:path*',
         headers: [
           {
+            key: 'X-Frame-Options',
+            value: 'ALLOWALL',
+          },
+          {
             key: 'Content-Security-Policy',
-            value: "frame-ancestors 'self' https://www.notion.so https://notion.so https://*.notion.so https://*.vercel.app https://vercel.app; object-src 'none';",
+            value: "frame-ancestors *; img-src * data:;",
+          },
+          {
+            key: 'Cache-Control',
+            value: 'public, s-maxage=300, stale-while-revalidate=60',
           },
         ],
       },

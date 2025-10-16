@@ -1,11 +1,11 @@
-'use client';
-
-import { useState, useEffect, useCallback } from 'react';
-import { useParams } from 'next/navigation';
+import { notFound } from 'next/navigation';
+import { getWidget } from '@/lib/firestore-admin';
+import { fetchNotionDatabase } from '@/lib/notion';
+import { decryptToken } from '@/lib/encryption';
 import { NotionPost, WidgetFilters } from '@/types';
 import WidgetCard from '@/components/WidgetCard';
 import FilterBar from '@/components/FilterBar';
-import { Image, Loader2, AlertCircle } from 'lucide-react';
+import { Image, AlertCircle } from 'lucide-react';
 
 interface WidgetData {
   widget: {
@@ -20,120 +20,67 @@ interface WidgetData {
   availableStatuses: string[];
 }
 
-export default function PublicWidgetPage() {
-  const params = useParams();
-  const slug = params.slug as string;
-  
-  const [data, setData] = useState<WidgetData | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [filters, setFilters] = useState<WidgetFilters>({});
-  const [isInIframe, setIsInIframe] = useState(false);
+interface PageProps {
+  params: { slug: string };
+  searchParams: { platform?: string; status?: string };
+}
 
-  const loadWidgetData = useCallback(async (forceRefresh = false) => {
-    try {
-      setLoading(true);
-      setError(null);
-      
-      const searchParams = new URLSearchParams();
-      if (filters.platform) searchParams.set('platform', filters.platform);
-      if (filters.status) searchParams.set('status', filters.status);
-      if (forceRefresh) searchParams.set('force_refresh', 'true');
-      
-      const response = await fetch(`${window.location.origin}/api/widgets/${slug}/data?${searchParams.toString()}`);
-      
-      if (!response.ok) {
-        if (response.status === 404) {
-          throw new Error('Widget not found');
-        }
-        throw new Error('Failed to load widget data');
-      }
-      
-      const widgetData = await response.json();
-      setData(widgetData);
-    } catch (error) {
-      console.error('Error loading widget data:', error);
-      setError(error instanceof Error ? error.message : 'Failed to load widget data');
-    } finally {
-      setLoading(false);
-    }
-  }, [slug, filters.platform, filters.status]);
+async function getWidgetData(slug: string, filters: WidgetFilters): Promise<WidgetData> {
+  // Get widget from Firestore server-side
+  const widget = await getWidget(slug);
+  if (!widget || !widget.isActive) {
+    notFound();
+  }
 
-  // Load filters from URL on component mount
-  useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const platform = urlParams.get('platform') || '';
-    const status = urlParams.get('status') || '';
-    
-    if (platform || status) {
-      setFilters({
-        platform: platform || undefined,
-        status: status || undefined,
-      });
-    }
-  }, []);
+  // Fetch real data from Notion server-side
+  let posts: NotionPost[] = [];
+  try {
+    const decryptedToken = decryptToken(widget.token);
+    posts = await fetchNotionDatabase(decryptedToken, widget.databaseId, filters.platform, filters.status);
+  } catch (error) {
+    console.error('Error fetching Notion data:', error);
+    // Fallback to empty array if Notion fails
+  }
 
-  useEffect(() => {
-    loadWidgetData();
-  }, [loadWidgetData]);
+  // Get available filter options from all posts (not filtered)
+  let allPosts: NotionPost[] = [];
+  try {
+    const decryptedToken = decryptToken(widget.token);
+    allPosts = await fetchNotionDatabase(decryptedToken, widget.databaseId);
+  } catch (error) {
+    console.error('Error fetching all posts for filters:', error);
+  }
 
-  // Detect if we're in an iframe
-  useEffect(() => {
-    setIsInIframe(window !== window.top);
-  }, []);
+  const availablePlatforms = Array.from(new Set(allPosts.map(post => post.platform).filter(Boolean)));
+  const availableStatuses = Array.from(new Set(allPosts.map(post => post.status).filter(Boolean)));
 
-  const handleFiltersChange = (newFilters: WidgetFilters) => {
-    setFilters(newFilters);
-    
-    // Update URL parameters
-    const url = new URL(window.location.href);
-    if (newFilters.platform) {
-      url.searchParams.set('platform', newFilters.platform);
-    } else {
-      url.searchParams.delete('platform');
-    }
-    
-    if (newFilters.status) {
-      url.searchParams.set('status', newFilters.status);
-    } else {
-      url.searchParams.delete('status');
-    }
-    
-    // Update URL without page refresh
-    window.history.replaceState({}, '', url.toString());
+  return {
+    widget: {
+      id: widget.id,
+      name: widget.name,
+      slug: widget.slug,
+      settings: widget.settings || {},
+      views: widget.views || 0,
+    },
+    posts,
+    availablePlatforms,
+    availableStatuses,
+  };
+}
+
+export default async function PublicWidgetPage({ params, searchParams }: PageProps) {
+  const { slug } = params;
+  const filters: WidgetFilters = {
+    platform: searchParams.platform,
+    status: searchParams.status,
   };
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <Loader2 className="w-12 h-12 animate-spin text-blue-600 mx-auto mb-4" />
-          <p className="text-gray-600">Loading widget...</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center max-w-md mx-auto p-6">
-          <AlertCircle className="w-16 h-16 text-red-500 mx-auto mb-4" />
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">Widget Not Found</h1>
-          <p className="text-gray-600 mb-6">{error}</p>
-          <button
-            onClick={() => window.location.reload()}
-            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-          >
-            Try Again
-          </button>
-        </div>
-      </div>
-    );
-  }
-
-  if (!data) {
-    return null;
+  let data: WidgetData;
+  try {
+    data = await getWidgetData(slug, filters);
+  } catch (error) {
+    console.error('Error loading widget data:', error);
+    notFound();
   }
 
   const { widget, posts, availablePlatforms, availableStatuses } = data;
@@ -166,13 +113,14 @@ export default function PublicWidgetPage() {
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Filters and Results - Aligned with grid */}
         <div className="max-w-4xl mx-auto">
-          {/* Filters */}
+          {/* Filters - Server-side rendered with URL params */}
           <div className="mb-6">
             <FilterBar
-              onFiltersChange={handleFiltersChange}
+              onFiltersChange={() => {}} // No-op for server component
               availablePlatforms={availablePlatforms}
               availableStatuses={availableStatuses}
-              onRefresh={() => loadWidgetData(true)}
+              onRefresh={() => {}} // No-op for server component
+              currentFilters={filters}
             />
           </div>
 
@@ -200,11 +148,12 @@ export default function PublicWidgetPage() {
           </div>
         ) : (
           <div className="grid grid-cols-3 gap-1 max-w-4xl mx-auto">
-            {posts.map((post) => (
+            {posts.map((post, index) => (
               <WidgetCard
                 key={post.id}
                 post={post}
                 aspectRatio={widget.settings?.aspectRatio || 'square'}
+                priority={index < 6} // First 6 images (2 rows) get priority loading for iPad
               />
             ))}
           </div>
