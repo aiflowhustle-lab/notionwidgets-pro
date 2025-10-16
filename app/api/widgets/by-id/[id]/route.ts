@@ -27,10 +27,12 @@ export async function DELETE(
     // Verify Firebase token
     let decodedToken;
     try {
+      console.log('Verifying Firebase token...');
       decodedToken = await adminAuth.verifyIdToken(token);
       console.log('Token verified for user:', decodedToken.uid);
     } catch (error) {
       console.log('Token verification failed:', error);
+      console.log('Admin auth object:', typeof adminAuth, adminAuth);
       return NextResponse.json({ error: 'Invalid token' }, { status: 401 });
     }
 
@@ -38,7 +40,16 @@ export async function DELETE(
     console.log('Attempting to delete widget with ID:', id);
 
     // Get widget to verify ownership
-    const widget = await getWidgetById(id);
+    console.log('Fetching widget from Firestore...');
+    let widget;
+    try {
+      widget = await getWidgetById(id);
+      console.log('Widget fetch result:', widget ? 'Found' : 'Not found');
+    } catch (fetchError) {
+      console.error('Error fetching widget:', fetchError);
+      throw new Error(`Failed to fetch widget: ${fetchError instanceof Error ? fetchError.message : 'Unknown error'}`);
+    }
+    
     if (!widget) {
       console.log('Widget not found:', id);
       return NextResponse.json({ error: 'Widget not found' }, { status: 404 });
@@ -52,14 +63,25 @@ export async function DELETE(
 
     // Delete widget
     console.log('Attempting to delete widget from Firestore...');
-    await deleteWidget(id);
-    console.log('Widget deleted successfully from Firestore');
+    try {
+      await deleteWidget(id);
+      console.log('Widget deleted successfully from Firestore');
+    } catch (deleteError) {
+      console.error('Firestore delete error:', deleteError);
+      throw new Error(`Firestore delete failed: ${deleteError instanceof Error ? deleteError.message : 'Unknown error'}`);
+    }
 
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error('Error deleting widget:', error);
+    console.error('Error details:', {
+      message: error instanceof Error ? error.message : 'Unknown error',
+      stack: error instanceof Error ? error.stack : undefined,
+      name: error instanceof Error ? error.name : undefined
+    });
     return NextResponse.json({ 
-      error: 'Internal server error' 
+      error: 'Internal server error',
+      details: error instanceof Error ? error.message : 'Unknown error'
     }, { status: 500 });
   }
 }
