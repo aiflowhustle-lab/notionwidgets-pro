@@ -31,6 +31,7 @@ export default function PublicWidgetPage() {
   const [isInIframe, setIsInIframe] = useState(false);
 
   const loadWidgetData = useCallback(async (forceRefresh = false) => {
+    console.log('Loading widget data with filters:', filters, 'forceRefresh:', forceRefresh);
     try {
       setLoading(true);
       setError(null);
@@ -40,7 +41,10 @@ export default function PublicWidgetPage() {
       if (filters.status) searchParams.set('status', filters.status);
       if (forceRefresh) searchParams.set('force_refresh', 'true');
       
-      const response = await fetch(`${window.location.origin}/api/widgets/${slug}/data?${searchParams.toString()}`);
+      const apiUrl = `${window.location.origin}/api/widgets/${slug}/data?${searchParams.toString()}`;
+      console.log('Fetching from API:', apiUrl);
+      
+      const response = await fetch(apiUrl);
       
       if (!response.ok) {
         if (response.status === 404) {
@@ -50,6 +54,7 @@ export default function PublicWidgetPage() {
       }
       
       const widgetData = await response.json();
+      console.log('Received data:', widgetData);
       setData(widgetData);
     } catch (error) {
       console.error('Error loading widget data:', error);
@@ -73,6 +78,7 @@ export default function PublicWidgetPage() {
     }
   }, []);
 
+  // Load data when component mounts or filters change
   useEffect(() => {
     loadWidgetData();
   }, [loadWidgetData]);
@@ -83,6 +89,7 @@ export default function PublicWidgetPage() {
   }, []);
 
   const handleFiltersChange = (newFilters: WidgetFilters) => {
+    console.log('Filter change requested:', newFilters);
     setFilters(newFilters);
     
     // Update URL parameters
@@ -99,6 +106,7 @@ export default function PublicWidgetPage() {
       url.searchParams.delete('status');
     }
     
+    console.log('Updating URL to:', url.toString());
     // Update URL without page refresh
     window.history.replaceState({}, '', url.toString());
   };
