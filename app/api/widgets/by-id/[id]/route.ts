@@ -11,6 +11,8 @@ export async function DELETE(
 ) {
   try {
     console.log('DELETE request received for widget:', params.id);
+    console.log('Request URL:', request.url);
+    console.log('Request method:', request.method);
     
     // Get authorization header
     const authHeader = request.headers.get('authorization');

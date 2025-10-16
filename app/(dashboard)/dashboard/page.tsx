@@ -74,7 +74,22 @@ export default function DashboardPage() {
       });
 
       console.log('Delete response status:', response.status);
-      const responseData = await response.json();
+      
+      let responseData;
+      try {
+        const responseText = await response.text();
+        console.log('Raw response:', responseText);
+        
+        if (responseText) {
+          responseData = JSON.parse(responseText);
+        } else {
+          responseData = { error: 'Empty response from server' };
+        }
+      } catch (parseError) {
+        console.error('Failed to parse response:', parseError);
+        responseData = { error: 'Invalid response from server' };
+      }
+      
       console.log('Delete response data:', responseData);
 
       if (response.ok) {
