@@ -2,39 +2,22 @@
 
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
-import { Calendar, BarChart3, Tag, Play, X, ChevronLeft, ChevronRight, Image as ImageIcon, GripVertical } from 'lucide-react';
+import { Calendar, BarChart3, Tag, Play, X, ChevronLeft, ChevronRight, Image as ImageIcon } from 'lucide-react';
 import { NotionPost } from '@/types';
 import { formatDate } from '@/lib/utils';
 import CanvaDesign from './CanvaDesign';
-import { useSortable } from '@dnd-kit/sortable';
-import { CSS } from '@dnd-kit/utilities';
 
 interface WidgetCardProps {
   post: NotionPost;
   aspectRatio?: string;
-  isDragMode?: boolean;
 }
 
-export default function WidgetCard({ post, aspectRatio = 'square', isDragMode = false }: WidgetCardProps) {
+export default function WidgetCard({ post, aspectRatio = 'square' }: WidgetCardProps) {
   const [imageError, setImageError] = useState(false);
   const [selectedMedia, setSelectedMedia] = useState<string | null>(null);
   const [mediaType, setMediaType] = useState<'image' | 'video' | null>(null);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isGalleryOpen, setIsGalleryOpen] = useState(false);
-
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    transform,
-    transition,
-    isDragging,
-  } = useSortable({ id: post.id });
-
-  const style = {
-    transform: CSS.Transform.toString(transform),
-    transition,
-  };
 
   const getAspectRatioClass = () => {
     switch (aspectRatio) {
@@ -169,21 +152,8 @@ export default function WidgetCard({ post, aspectRatio = 'square', isDragMode = 
 
   return (
     <>
-      <div 
-        ref={setNodeRef}
-        style={style}
-        className={`group ${isDragging ? 'opacity-50' : ''} ${isDragMode ? 'cursor-grab' : 'cursor-pointer'}`}
-        onClick={isDragMode ? undefined : handleMediaClick}
-        {...(isDragMode ? attributes : {})}
-        {...(isDragMode ? listeners : {})}
-      >
-        <div className="bg-white overflow-hidden hover:shadow-lg transition-all duration-300 relative">
-          {/* Drag Handle */}
-          {isDragMode && (
-            <div className="absolute top-2 right-2 z-10 bg-black bg-opacity-60 text-white p-1 rounded">
-              <GripVertical className="w-4 h-4" />
-            </div>
-          )}
+      <div className="group cursor-pointer" onClick={handleMediaClick}>
+        <div className="bg-white overflow-hidden hover:shadow-lg transition-all duration-300">
           {/* Media (Image or Video) */}
           <div className={`relative ${getAspectRatioClass()} overflow-hidden`}>
             {hasVideo ? (
