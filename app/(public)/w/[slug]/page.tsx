@@ -51,8 +51,8 @@ async function getWidgetData(slug: string, filters: WidgetFilters): Promise<Widg
     console.error('Error fetching all posts for filters:', error);
   }
 
-  const availablePlatforms = Array.from(new Set(allPosts.map(post => post.platform).filter(Boolean)));
-  const availableStatuses = Array.from(new Set(allPosts.map(post => post.status).filter(Boolean)));
+  const availablePlatforms = Array.from(new Set(allPosts.map(post => post.platform).filter(Boolean))) as string[];
+  const availableStatuses = Array.from(new Set(allPosts.map(post => post.status).filter(Boolean))) as string[];
 
   return {
     widget: {
