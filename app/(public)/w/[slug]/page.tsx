@@ -30,9 +30,18 @@ export default function PublicWidgetPage() {
   const [filters, setFilters] = useState<WidgetFilters>({});
   const [isInIframe, setIsInIframe] = useState(false);
   const isFilterChanging = useRef(false);
+  const isLoadingRef = useRef(false);
 
   const loadWidgetData = useCallback(async (forceRefresh = false, currentFilters = filters) => {
+    // Prevent multiple simultaneous loads
+    if (isLoadingRef.current && !forceRefresh) {
+      console.log('Already loading, skipping duplicate request');
+      return;
+    }
+    
     console.log('Loading widget data with filters:', currentFilters, 'forceRefresh:', forceRefresh);
+    isLoadingRef.current = true;
+    
     try {
       setLoading(true);
       setError(null);
@@ -62,6 +71,7 @@ export default function PublicWidgetPage() {
       setError(error instanceof Error ? error.message : 'Failed to load widget data');
     } finally {
       setLoading(false);
+      isLoadingRef.current = false;
     }
   }, [slug]);
 
@@ -84,6 +94,15 @@ export default function PublicWidgetPage() {
     loadWidgetData();
   }, [loadWidgetData]);
 
+  // Load data when filters change (but not on initial mount)
+  useEffect(() => {
+    // Only load if we have actual filter values and we're not already loading
+    if (!isLoadingRef.current && (filters.platform || filters.status)) {
+      console.log('Filters changed, loading data with:', filters);
+      loadWidgetData(false, filters);
+    }
+  }, [filters.platform, filters.status, loadWidgetData]);
+
   // Detect if we're in an iframe
   useEffect(() => {
     setIsInIframe(window !== window.top);
@@ -91,7 +110,6 @@ export default function PublicWidgetPage() {
 
   const handleFiltersChange = (newFilters: WidgetFilters) => {
     console.log('Filter change requested:', newFilters);
-    isFilterChanging.current = true;
     setFilters(newFilters);
     
     // Update URL parameters
@@ -111,10 +129,6 @@ export default function PublicWidgetPage() {
     console.log('Updating URL to:', url.toString());
     // Update URL without page refresh
     window.history.replaceState({}, '', url.toString());
-    
-    // Load data with new filters
-    loadWidgetData(false, newFilters);
-    isFilterChanging.current = false;
   };
 
   if (loading) {
