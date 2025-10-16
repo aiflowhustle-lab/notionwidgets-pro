@@ -54,10 +54,16 @@ export async function POST(
           const page = await notion.pages.retrieve({ page_id: postId });
           const properties = (page as any).properties;
           
-          // Get the current date from the post
-          const currentDate = properties.Date?.date?.start || null;
+          // Get the current date from the post - try different property names
+          const currentDate = properties.Date?.date?.start || 
+                             properties['Publish Date']?.date?.start || 
+                             properties['Publish date']?.date?.start ||
+                             properties['publish_date']?.date?.start ||
+                             null;
           console.log(`Post ${postId} current date:`, currentDate);
-          console.log(`Post ${postId} properties:`, JSON.stringify(properties, null, 2));
+          console.log(`Post ${postId} available properties:`, Object.keys(properties));
+          console.log(`Post ${postId} Date property:`, properties.Date);
+          console.log(`Post ${postId} Publish Date property:`, properties['Publish Date']);
           
           return { postId, currentDate };
         } catch (error) {
@@ -107,7 +113,7 @@ export async function POST(
         const updateResponse = await notion.pages.update({
           page_id: postId,
           properties: {
-            'Date': {
+            'Publish Date': {
               date: {
                 start: newDate,
               },
