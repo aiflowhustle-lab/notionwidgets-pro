@@ -22,13 +22,13 @@ export default function WidgetCard({ post, aspectRatio = 'square' }: WidgetCardP
   const getAspectRatioClass = () => {
     switch (aspectRatio) {
       case 'portrait':
-        return 'aspect-[3/3]'; // Reduced from 3/4 to 3/3 (20% height reduction)
+        return 'aspect-[2.4/3]'; // 20% width reduction (3 * 0.8 = 2.4)
       case 'landscape':
-        return 'aspect-[4/2.4]'; // Reduced from 4/3 to 4/2.4 (20% height reduction)
+        return 'aspect-[3.2/2.4]'; // 20% width reduction (4 * 0.8 = 3.2)
       case 'auto':
         return 'aspect-auto';
       default:
-        return 'aspect-[3/3]'; // Reduced from 3/4 to 3/3 (20% height reduction)
+        return 'aspect-[2.4/3]'; // 20% width reduction (3 * 0.8 = 2.4)
     }
   };
 
@@ -153,7 +153,7 @@ export default function WidgetCard({ post, aspectRatio = 'square' }: WidgetCardP
   return (
     <>
       <div className="group cursor-pointer" onClick={handleMediaClick}>
-        <div className="bg-white rounded-lg overflow-hidden hover:shadow-lg transition-all duration-300">
+        <div className="bg-white overflow-hidden hover:shadow-lg transition-all duration-300">
           {/* Media (Image or Video) */}
           <div className={`relative ${getAspectRatioClass()} overflow-hidden`}>
             {hasVideo ? (
