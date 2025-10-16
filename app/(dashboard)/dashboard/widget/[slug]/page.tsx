@@ -118,7 +118,8 @@ export default function WidgetResultsPage() {
   }
 
   const widgetUrl = `${window.location.origin}/w/${widget.slug}`;
-  const embedCode = `<iframe src="${widgetUrl}" width="100%" height="600" frameborder="0"></iframe>`;
+  const embedUrl = `${window.location.origin}/api/widget/${widget.slug}/embed`;
+  const embedCode = `<iframe src="${embedUrl}" width="100%" height="600" frameborder="0"></iframe>`;
 
   return (
     <div className="space-y-8">
@@ -150,7 +151,7 @@ export default function WidgetResultsPage() {
         
         <div className="border rounded-lg overflow-hidden">
           <iframe
-            src={widgetUrl}
+            src={embedUrl}
             width="100%"
             height="600"
             frameBorder="0"
@@ -217,6 +218,29 @@ export default function WidgetResultsPage() {
             
             <div className="text-sm text-gray-600">
               <p>Copy this code to embed the widget in your website or Notion page.</p>
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Direct Embed URL (iPad Notion Compatible)
+              </label>
+              <div className="relative">
+                <input
+                  type="text"
+                  value={embedUrl}
+                  readOnly
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-sm font-mono"
+                />
+                <button
+                  onClick={() => handleCopy(embedUrl, 'embedUrl')}
+                  className="absolute top-2 right-2 p-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
+                >
+                  {copied === 'embedUrl' ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+                </button>
+              </div>
+              <p className="text-xs text-gray-500 mt-1">
+                For iPad Notion: Copy this URL and paste it directly into Notion (not as iframe)
+              </p>
             </div>
           </div>
         </div>
