@@ -101,6 +101,18 @@ export default function PublicWidgetPage() {
 
   const handleFiltersChange = (newFilters: WidgetFilters) => {
     console.log('Filter change requested:', newFilters);
+    
+    // Only proceed if filters actually changed
+    const currentPlatform = filters.platform || '';
+    const currentStatus = filters.status || '';
+    const newPlatform = newFilters.platform || '';
+    const newStatus = newFilters.status || '';
+    
+    if (currentPlatform === newPlatform && currentStatus === newStatus) {
+      console.log('Filters unchanged, skipping update');
+      return;
+    }
+    
     setFilters(newFilters);
     
     // Update URL parameters

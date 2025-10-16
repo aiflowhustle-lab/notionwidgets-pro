@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { X, RotateCcw, MoreHorizontal } from 'lucide-react';
 import { WidgetFilters } from '@/types';
 
@@ -21,8 +21,15 @@ export default function FilterBar({
 }: FilterBarProps) {
   const [filters, setFilters] = useState<WidgetFilters>({});
   const [showFilters, setShowFilters] = useState(true);
+  const isInitialMount = useRef(true);
 
   useEffect(() => {
+    // Skip the initial mount to prevent empty filter calls
+    if (isInitialMount.current) {
+      isInitialMount.current = false;
+      return;
+    }
+    
     onFiltersChange(filters);
   }, [filters, onFiltersChange]);
 
