@@ -55,9 +55,29 @@ export async function POST(
         const page = await notion.pages.retrieve({ page_id: firstPost.id });
         const properties = (page as any).properties;
         console.log('Available properties:', Object.keys(properties));
+        console.log('Publish Date property:', properties['Publish Date']);
         console.log('All properties:', JSON.stringify(properties, null, 2));
+        
+        // Test a simple update to see if we can write to the database
+        console.log('Testing simple update...');
+        const testUpdate = await notion.pages.update({
+          page_id: firstPost.id,
+          properties: {
+            'Publish Date': {
+              date: {
+                start: firstPost.publishDate || '2025-01-01',
+              },
+            },
+          },
+        });
+        console.log('Test update successful:', testUpdate);
       } catch (error) {
-        console.error('Failed to check properties:', error);
+        console.error('Failed to check properties or test update:', error);
+        console.error('Error details:', {
+          message: error instanceof Error ? error.message : 'Unknown error',
+          code: (error as any)?.code,
+          status: (error as any)?.status,
+        });
       }
     }
 
