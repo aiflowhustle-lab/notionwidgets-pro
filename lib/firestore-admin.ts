@@ -88,6 +88,35 @@ export async function getWidget(slug: string): Promise<Widget | null> {
   }
 }
 
+export async function getWidgetById(id: string): Promise<Widget | null> {
+  try {
+    const docRef = adminDb.collection('widgets').doc(id);
+    const docSnap = await docRef.get();
+    
+    if (!docSnap.exists) {
+      return null;
+    }
+    
+    const data = docSnap.data();
+    return {
+      id: docSnap.id,
+      userId: data?.userId,
+      name: data?.name,
+      token: data?.token,
+      databaseId: data?.databaseId,
+      slug: data?.slug,
+      settings: data?.settings || {},
+      views: data?.views || 0,
+      isActive: data?.isActive,
+      createdAt: data?.createdAt?.toDate() || new Date(),
+      updatedAt: data?.updatedAt?.toDate() || new Date(),
+    };
+  } catch (error) {
+    console.error('Error getting widget by ID:', error);
+    throw new Error('Failed to get widget');
+  }
+}
+
 export async function getUserWidgets(userId: string): Promise<Widget[]> {
   try {
     const snapshot = await adminDb.collection('widgets')
