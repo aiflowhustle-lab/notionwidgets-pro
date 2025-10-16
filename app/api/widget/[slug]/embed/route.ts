@@ -15,37 +15,80 @@ export async function GET(
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Widget ${slug} - NotionWidgets Pro</title>
     <script>
-        // Notion iframe detection and handling
+        // Aggressive Notion iPad iframe fix
         (function() {
+            // Force immediate visibility
+            document.documentElement.style.visibility = 'visible';
+            document.documentElement.style.display = 'block';
+            document.documentElement.style.opacity = '1';
+            
+            // Force body visibility immediately
+            document.body.style.visibility = 'visible';
+            document.body.style.display = 'block';
+            document.body.style.opacity = '1';
+            document.body.style.height = 'auto';
+            document.body.style.minHeight = '100vh';
+            
             // Detect if we're in Notion iframe
             const isNotion = window.location !== window.parent.location && 
                            (document.referrer.includes('notion.so') || 
-                            window.parent.location.href.includes('notion.so'));
+                            window.parent.location.href.includes('notion.so') ||
+                            navigator.userAgent.includes('iPad'));
             
-            // Force content visibility for Notion
-            if (isNotion) {
-                document.documentElement.style.visibility = 'visible';
-                document.body.style.visibility = 'visible';
-                document.body.style.display = 'block';
-                document.body.style.opacity = '1';
+            // Aggressive content injection for Notion iPad
+            function forceContentVisibility() {
+                const allElements = document.querySelectorAll('*');
+                allElements.forEach(el => {
+                    el.style.visibility = 'visible';
+                    el.style.display = el.style.display || 'block';
+                    el.style.opacity = '1';
+                    el.style.height = 'auto';
+                    el.style.minHeight = 'auto';
+                });
+                
+                // Force specific elements
+                const widgetContainer = document.querySelector('.widget-container');
+                if (widgetContainer) {
+                    widgetContainer.style.visibility = 'visible';
+                    widgetContainer.style.display = 'block';
+                    widgetContainer.style.opacity = '1';
+                    widgetContainer.style.height = 'auto';
+                }
+                
+                const grid = document.querySelector('.grid');
+                if (grid) {
+                    grid.style.visibility = 'visible';
+                    grid.style.display = 'grid';
+                    grid.style.opacity = '1';
+                }
+                
+                const cards = document.querySelectorAll('.card');
+                cards.forEach(card => {
+                    card.style.visibility = 'visible';
+                    card.style.display = 'block';
+                    card.style.opacity = '1';
+                });
             }
             
-            // Ensure content loads even in restricted iframes
-            window.addEventListener('load', function() {
-                document.body.style.visibility = 'visible';
-                document.body.style.display = 'block';
-                document.body.style.opacity = '1';
-            });
+            // Run immediately
+            forceContentVisibility();
             
-            // Fallback for iPad Notion
-            setTimeout(function() {
-                if (document.body.style.visibility === 'hidden' || 
-                    document.body.style.display === 'none') {
-                    document.body.style.visibility = 'visible';
-                    document.body.style.display = 'block';
-                    document.body.style.opacity = '1';
-                }
-            }, 100);
+            // Run on load
+            window.addEventListener('load', forceContentVisibility);
+            
+            // Run multiple times for Notion iPad
+            if (isNotion) {
+                setTimeout(forceContentVisibility, 50);
+                setTimeout(forceContentVisibility, 100);
+                setTimeout(forceContentVisibility, 200);
+                setTimeout(forceContentVisibility, 500);
+                setTimeout(forceContentVisibility, 1000);
+            }
+            
+            // Continuous monitoring for Notion
+            if (isNotion) {
+                setInterval(forceContentVisibility, 2000);
+            }
         })();
     </script>
     <style>

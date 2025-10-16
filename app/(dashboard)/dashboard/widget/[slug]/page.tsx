@@ -100,7 +100,9 @@ export default function WidgetResultsPage() {
   }
 
   const widgetUrl = `${window.location.origin}/w/${widget.slug}`;
+  const notionUrl = `${window.location.origin}/api/widget/${widget.slug}/notion`;
   const embedCode = `<iframe src="${widgetUrl}" width="100%" height="600" frameborder="0" allowfullscreen loading="lazy"></iframe>`;
+  const notionEmbedCode = `<iframe src="${notionUrl}" width="100%" height="600" frameborder="0" allowfullscreen loading="lazy"></iframe>`;
 
   return (
     <div className="space-y-8">
@@ -185,7 +187,7 @@ export default function WidgetResultsPage() {
           <div className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                HTML iframe
+                Standard HTML iframe
               </label>
               <div className="relative">
                 <textarea
@@ -205,6 +207,27 @@ export default function WidgetResultsPage() {
             
             <div className="text-sm text-gray-600">
               <p>Copy this code to embed the widget in your website or Notion page.</p>
+            </div>
+            
+            <div className="mt-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+              <h4 className="text-sm font-semibold text-yellow-800 mb-2">For Notion on iPad (Recommended)</h4>
+              <div className="relative">
+                <textarea
+                  value={notionEmbedCode}
+                  readOnly
+                  rows={4}
+                  className="w-full px-3 py-2 border border-yellow-300 rounded-lg bg-yellow-50 text-sm font-mono"
+                />
+                <button
+                  onClick={() => handleCopy(notionEmbedCode, 'notion')}
+                  className="absolute top-2 right-2 p-2 bg-yellow-600 text-white rounded hover:bg-yellow-700 transition-colors"
+                >
+                  {copied === 'notion' ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+                </button>
+              </div>
+              <p className="text-xs text-yellow-700 mt-2">
+                Use this code specifically for Notion embedding on iPad devices. It includes special optimizations for iframe compatibility.
+              </p>
             </div>
           </div>
         </div>
