@@ -180,7 +180,7 @@ export default function PublicWidgetPage() {
       {/* Main Content */}
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Filters and Results - Aligned with grid */}
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-3xl mx-auto">
           {/* Filters */}
           <div className="mb-6">
             <FilterBar
@@ -209,7 +209,7 @@ export default function PublicWidgetPage() {
             </p>
           </div>
         ) : (
-          <div className="grid grid-cols-3 gap-1 max-w-4xl mx-auto">
+          <div className="grid grid-cols-3 gap-1 max-w-3xl mx-auto">
             {posts.map((post) => (
               <WidgetCard
                 key={post.id}
