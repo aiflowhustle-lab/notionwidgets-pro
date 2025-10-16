@@ -119,6 +119,10 @@ export async function fetchNotionDatabase(
         page_size: 100,
         sorts: [
           {
+            property: 'Pinned',
+            direction: 'descending',
+          },
+          {
             property: 'Publish Date',
             direction: 'descending',
           },
@@ -190,6 +194,13 @@ async function extractPostFromPage(page: any): Promise<NotionPost> {
   if (properties['Image Source']?.select?.name) {
     imageSource = properties['Image Source'].select.name;
   }
+  
+  // Extract pinned status
+  let pinned: boolean = false;
+  if (properties.Pinned?.checkbox !== undefined) {
+    pinned = properties.Pinned.checkbox;
+  }
+  console.log('Pinned extracted:', pinned, 'from properties:', properties.Pinned);
   
   // Extract images and videos from all possible columns
   const images: NotionImage[] = [];
@@ -288,6 +299,7 @@ async function extractPostFromPage(page: any): Promise<NotionPost> {
     platform,
     status,
     imageSource,
+    pinned,
     images,
     videos,
   };

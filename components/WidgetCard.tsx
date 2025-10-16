@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
-import { Calendar, BarChart3, Tag, Play, X, ChevronLeft, ChevronRight, Image as ImageIcon } from 'lucide-react';
+import { Calendar, BarChart3, Tag, Play, X, ChevronLeft, ChevronRight, Image as ImageIcon, Pin } from 'lucide-react';
 import { NotionPost } from '@/types';
 import { formatDate } from '@/lib/utils';
 import CanvaDesign from './CanvaDesign';
@@ -156,6 +156,14 @@ export default function WidgetCard({ post, aspectRatio = 'square' }: WidgetCardP
         <div className="bg-white overflow-hidden hover:shadow-lg transition-all duration-300">
           {/* Media (Image or Video) */}
           <div className={`relative ${getAspectRatioClass()} overflow-hidden`}>
+            {/* Pinned Icon */}
+            {post.pinned && (
+              <div className="absolute top-2 right-2 z-10">
+                <div className="bg-yellow-500 text-white p-1.5 rounded-full shadow-lg">
+                  <Pin className="w-3 h-3 fill-current" />
+                </div>
+              </div>
+            )}
             {hasVideo ? (
               // Video display with proper thumbnail
               <div className="relative w-full h-full">

@@ -32,6 +32,7 @@ export interface NotionPost {
   platform: string | null;
   status: string | null;
   imageSource: string | null;
+  pinned: boolean;
   images: NotionImage[];
   videos: NotionVideo[];
 }
