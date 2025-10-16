@@ -53,11 +53,13 @@ export async function POST(
         const { id: postId, publishDate: newDate } = post;
         
         if (!newDate) {
-          throw new Error('No date provided for this post');
+          console.warn(`No date provided for post ${postId}, skipping`);
+          return { postId, success: false, error: 'No date provided' };
         }
 
         // Update the post in Notion with the new date
         console.log(`Attempting to update post ${postId} with new date ${newDate}`);
+        
         const updateResponse = await notion.pages.update({
           page_id: postId,
           properties: {
@@ -69,10 +71,16 @@ export async function POST(
           },
         });
 
-        console.log(`Successfully updated post ${postId} to date ${newDate}. Notion response:`, updateResponse);
+        console.log(`Successfully updated post ${postId} to date ${newDate}. Notion response:`, JSON.stringify(updateResponse, null, 2));
         return { postId, newDate, success: true };
       } catch (error) {
         console.error(`Failed to update post ${post.id}:`, error);
+        console.error(`Error details:`, {
+          message: error instanceof Error ? error.message : 'Unknown error',
+          stack: error instanceof Error ? error.stack : undefined,
+          postId: post.id,
+          publishDate: post.publishDate
+        });
         return { 
           postId: post.id, 
           error: error instanceof Error ? error.message : 'Unknown error', 

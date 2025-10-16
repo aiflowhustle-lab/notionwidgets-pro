@@ -131,17 +131,28 @@ export default function PublicWidgetPage() {
       const oldIndex = data.posts.findIndex((post) => post.id === active.id);
       const newIndex = data.posts.findIndex((post) => post.id === over?.id);
 
-      // Get the dates from the posts
-      const dates = data.posts.map(post => post.publishDate).filter(Boolean);
+      // Get the dates of the two posts being swapped
+      const draggedPost = data.posts[oldIndex];
+      const targetPost = data.posts[newIndex];
       
-      // Create new posts with swapped dates
-      const newPosts = data.posts.map((post, index) => {
-        const newDate = dates[newIndex] || post.publishDate;
-        return {
-          ...post,
-          publishDate: newDate
-        };
+      console.log('Swapping dates:', {
+        draggedPost: { id: draggedPost.id, date: draggedPost.publishDate },
+        targetPost: { id: targetPost.id, date: targetPost.publishDate }
       });
+
+      // Create new posts array with swapped dates
+      const newPosts = [...data.posts];
+      
+      // Swap the dates
+      newPosts[oldIndex] = {
+        ...draggedPost,
+        publishDate: targetPost.publishDate
+      };
+      
+      newPosts[newIndex] = {
+        ...targetPost,
+        publishDate: draggedPost.publishDate
+      };
 
       // Reorder the posts
       const reorderedPosts = arrayMove(newPosts, oldIndex, newIndex);
