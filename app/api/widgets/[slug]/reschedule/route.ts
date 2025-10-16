@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getWidgetBySlug } from '@/lib/firestore-admin';
+import { getWidget } from '@/lib/firestore-admin';
 import { adminAuth } from '@/lib/firebase-admin';
 import { Client } from '@notionhq/client';
 
@@ -19,7 +19,7 @@ export async function POST(
     }
 
     // Get widget data
-    const widget = await getWidgetBySlug(slug);
+    const widget = await getWidget(slug);
     if (!widget) {
       return NextResponse.json(
         { error: 'Widget not found' },
@@ -70,7 +70,11 @@ export async function POST(
         return { postId, newDate, success: true };
       } catch (error) {
         console.error(`Failed to update post ${postId}:`, error);
-        return { postId, error: error.message, success: false };
+        return { 
+          postId, 
+          error: error instanceof Error ? error.message : 'Unknown error', 
+          success: false 
+        };
       }
     });
 
