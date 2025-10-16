@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { X, RotateCcw } from 'lucide-react';
+import { X, RotateCcw, Filter } from 'lucide-react';
 import { WidgetFilters } from '@/types';
 
 interface FilterBarProps {
@@ -22,7 +22,7 @@ export default function FilterBar({
   currentFilters = {}
 }: FilterBarProps) {
   const [filters, setFilters] = useState<WidgetFilters>(currentFilters);
-  const [showFilters, setShowFilters] = useState(true);
+  const [showFilters, setShowFilters] = useState(false);
   const isInitialMount = useRef(true);
 
   // Sync internal state with currentFilters prop
@@ -65,35 +65,20 @@ export default function FilterBar({
           <span>Refresh</span>
         </button>
 
-        {/* Platform Filter */}
-        <select
-          value={filters.platform || ''}
-          onChange={(e) => handleFilterChange('platform', e.target.value)}
-          className="px-3 py-1.5 bg-white border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 min-w-[120px]"
+        {/* Filter Toggle Button */}
+        <button
+          onClick={() => setShowFilters(!showFilters)}
+          className={`px-3 py-1.5 text-sm rounded-md transition-colors flex items-center space-x-1 ${
+            showFilters 
+              ? 'bg-blue-600 text-white hover:bg-blue-700' 
+              : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+          }`}
         >
-          <option value="">All Platforms</option>
-          {availablePlatforms.map(platform => (
-            <option key={platform} value={platform}>
-              {platform}
-            </option>
-          ))}
-        </select>
+          <Filter className="w-3 h-3" />
+          <span>Filters</span>
+        </button>
 
-        {/* Status Filter */}
-        <select
-          value={filters.status || ''}
-          onChange={(e) => handleFilterChange('status', e.target.value)}
-          className="px-3 py-1.5 bg-white border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 min-w-[120px]"
-        >
-          <option value="">All Status</option>
-          {availableStatuses.map(status => (
-            <option key={status} value={status}>
-              {status}
-            </option>
-          ))}
-        </select>
-
-        {/* Clear Filters Button */}
+        {/* Clear Filters Button - Always visible when filters are active */}
         {hasActiveFilters && (
           <button
             onClick={clearFilters}
@@ -105,7 +90,38 @@ export default function FilterBar({
         )}
       </div>
 
-      {/* Active Filters Display - Hidden since dropdowns show current selection */}
+      {/* Collapsible Filter Dropdowns */}
+      {showFilters && (
+        <div className="mt-4 flex items-center space-x-3">
+          {/* Platform Filter */}
+          <select
+            value={filters.platform || ''}
+            onChange={(e) => handleFilterChange('platform', e.target.value)}
+            className="px-3 py-1.5 bg-white border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 min-w-[120px]"
+          >
+            <option value="">All Platforms</option>
+            {availablePlatforms.map(platform => (
+              <option key={platform} value={platform}>
+                {platform}
+              </option>
+            ))}
+          </select>
+
+          {/* Status Filter */}
+          <select
+            value={filters.status || ''}
+            onChange={(e) => handleFilterChange('status', e.target.value)}
+            className="px-3 py-1.5 bg-white border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 min-w-[120px]"
+          >
+            <option value="">All Status</option>
+            {availableStatuses.map(status => (
+              <option key={status} value={status}>
+                {status}
+              </option>
+            ))}
+          </select>
+        </div>
+      )}
     </div>
   );
 }
