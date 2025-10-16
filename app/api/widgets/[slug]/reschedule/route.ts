@@ -56,6 +56,8 @@ export async function POST(
           
           // Get the current date from the post
           const currentDate = properties.Date?.date?.start || null;
+          console.log(`Post ${postId} current date:`, currentDate);
+          console.log(`Post ${postId} properties:`, JSON.stringify(properties, null, 2));
           
           return { postId, currentDate };
         } catch (error) {
@@ -64,6 +66,8 @@ export async function POST(
         }
       })
     );
+    
+    console.log('All posts with dates:', postsWithDates);
 
     // Create a mapping of new positions to dates
     // The idea is to swap the dates based on the new order
@@ -71,6 +75,7 @@ export async function POST(
     
     // Get all the dates from the posts in their current order
     const allDates = postsWithDates.map(p => p.currentDate).filter(Boolean);
+    console.log('All dates extracted:', allDates);
     
     // Map each post to its new date based on the reordered positions
     postOrder.forEach((postId, newIndex) => {
@@ -81,8 +86,11 @@ export async function POST(
         // The new date for this post should be the date that was at this new position originally
         const newDate = allDates[newIndex] || postsWithDates[originalIndex].currentDate;
         dateMapping.set(postId, newDate);
+        console.log(`Mapping post ${postId} (was at index ${originalIndex}) to new date ${newDate} (at new index ${newIndex})`);
       }
     });
+    
+    console.log('Final date mapping:', Object.fromEntries(dateMapping));
 
     // Update each post with its new date
     const updates = postOrder.map(async (postId: string, newIndex: number) => {
@@ -95,7 +103,8 @@ export async function POST(
         }
 
         // Update the post in Notion with the new date
-        await notion.pages.update({
+        console.log(`Attempting to update post ${postId} with new date ${newDate}`);
+        const updateResponse = await notion.pages.update({
           page_id: postId,
           properties: {
             'Date': {
@@ -106,7 +115,7 @@ export async function POST(
           },
         });
 
-        console.log(`Updated post ${postId} to date ${newDate}`);
+        console.log(`Successfully updated post ${postId} to date ${newDate}. Notion response:`, updateResponse);
         return { postId, newDate, success: true };
       } catch (error) {
         console.error(`Failed to update post ${postId}:`, error);
