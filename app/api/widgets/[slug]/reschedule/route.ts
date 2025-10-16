@@ -47,6 +47,20 @@ export async function POST(
       auth: widget.token,
     });
 
+    // First, let's check what properties are available in the first post
+    if (posts.length > 0) {
+      try {
+        const firstPost = posts[0];
+        console.log(`Checking properties for post ${firstPost.id}`);
+        const page = await notion.pages.retrieve({ page_id: firstPost.id });
+        const properties = (page as any).properties;
+        console.log('Available properties:', Object.keys(properties));
+        console.log('All properties:', JSON.stringify(properties, null, 2));
+      } catch (error) {
+        console.error('Failed to check properties:', error);
+      }
+    }
+
     // Update each post with its new date directly
     const updates = posts.map(async (post: { id: string; publishDate: string | null }) => {
       try {
