@@ -50,8 +50,11 @@ export default function DashboardPage() {
     }
 
     try {
-      const response = await fetch(`/api/widgets/${widgetId}`, {
+      const response = await fetch(`/api/widgets/by-id/${widgetId}`, {
         method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${await user.getIdToken()}`,
+        },
       });
 
       if (response.ok) {
