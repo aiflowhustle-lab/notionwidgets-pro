@@ -45,6 +45,8 @@ export default function PublicWidgetPage() {
   const [filters, setFilters] = useState<WidgetFilters>({});
   const [isInIframe, setIsInIframe] = useState(false);
   const [isDragMode, setIsDragMode] = useState(false);
+  const [isRescheduling, setIsRescheduling] = useState(false);
+  const [hasChanges, setHasChanges] = useState(false);
   const isFilterChanging = useRef(false);
   const isLoadingRef = useRef(false);
 
@@ -136,9 +138,53 @@ export default function PublicWidgetPage() {
         posts: newPosts
       });
 
-      // TODO: Send update to API to save new order
+      setHasChanges(true);
       console.log('Posts reordered:', { oldIndex, newIndex, newPosts });
     }
+  };
+
+  const handleReschedule = async () => {
+    if (!data || !hasChanges) return;
+
+    setIsRescheduling(true);
+    try {
+      const postOrder = data.posts.map(post => post.id);
+      
+      const response = await fetch(`/api/widgets/${slug}/reschedule`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${await getAuthToken()}`,
+        },
+        body: JSON.stringify({ postOrder }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to reschedule posts');
+      }
+
+      const result = await response.json();
+      console.log('Reschedule result:', result);
+      
+      // Reset changes and exit drag mode
+      setHasChanges(false);
+      setIsDragMode(false);
+      
+      // Show success message (you could add a toast notification here)
+      alert('Posts successfully rescheduled!');
+      
+    } catch (error) {
+      console.error('Error rescheduling posts:', error);
+      alert('Failed to reschedule posts. Please try again.');
+    } finally {
+      setIsRescheduling(false);
+    }
+  };
+
+  const getAuthToken = async () => {
+    // This is a placeholder - you'll need to implement proper auth
+    // For now, we'll use a mock token or get it from your auth system
+    return 'mock-token';
   };
 
   const handleFiltersChange = (newFilters: WidgetFilters) => {
@@ -234,17 +280,29 @@ export default function PublicWidgetPage() {
                 currentFilters={filters}
               />
               
-              {/* Drag Mode Toggle */}
-              <button
-                onClick={() => setIsDragMode(!isDragMode)}
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                  isDragMode 
-                    ? 'bg-blue-600 text-white hover:bg-blue-700' 
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                }`}
-              >
-                {isDragMode ? 'Exit Drag Mode' : 'Plan Grid'}
-              </button>
+              {/* Plan Grid and Reschedule Buttons */}
+              <div className="flex gap-2">
+                <button
+                  onClick={() => setIsDragMode(!isDragMode)}
+                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                    isDragMode 
+                      ? 'bg-blue-600 text-white hover:bg-blue-700' 
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  }`}
+                >
+                  {isDragMode ? 'Plan Grid: ON' : 'Plan Grid'}
+                </button>
+                
+                {isDragMode && hasChanges && (
+                  <button
+                    onClick={handleReschedule}
+                    disabled={isRescheduling}
+                    className="px-4 py-2 bg-green-600 text-white rounded-lg text-sm font-medium hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  >
+                    {isRescheduling ? 'Rescheduling...' : 'Reschedule'}
+                  </button>
+                )}
+              </div>
             </div>
           </div>
 
