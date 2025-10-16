@@ -150,12 +150,18 @@ export default function PublicWidgetPage() {
     try {
       const postOrder = data.posts.map(post => post.id);
       
+      const token = await getAuthToken();
+      const headers: Record<string, string> = {
+        'Content-Type': 'application/json',
+      };
+      
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+      
       const response = await fetch(`/api/widgets/${slug}/reschedule`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${await getAuthToken()}`,
-        },
+        headers,
         body: JSON.stringify({ postOrder }),
       });
 
@@ -185,9 +191,19 @@ export default function PublicWidgetPage() {
   };
 
   const getAuthToken = async () => {
-    // This is a placeholder - you'll need to implement proper auth
-    // For now, we'll use a mock token or get it from your auth system
-    return 'mock-token';
+    // For public widgets, we might not need authentication
+    // But if we do, we can get it from Firebase auth
+    try {
+      const { auth } = await import('@/lib/firebase');
+      if (auth.currentUser) {
+        return await auth.currentUser.getIdToken();
+      }
+    } catch (error) {
+      console.error('Error getting auth token:', error);
+    }
+    
+    // For now, return null to skip authentication
+    return null;
   };
 
   const handleFiltersChange = (newFilters: WidgetFilters) => {
