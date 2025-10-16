@@ -159,9 +159,35 @@ export async function GET(
     // Temporarily disabled to prevent infinite loop
     // incrementWidgetViews(widget.id).catch(console.error);
 
-    // Get available filter options
-    const availablePlatforms = Array.from(new Set(posts.map(post => post.platform).filter(Boolean)));
-    const availableStatuses = Array.from(new Set(posts.map(post => post.status).filter(Boolean)));
+    // Get available filter options - try to get from cache first, then fetch if needed
+    let availablePlatforms: string[] = [];
+    let availableStatuses: string[] = [];
+    
+    try {
+      // Try to get all posts from cache (without filters) for available options
+      const allPostsCache = await cacheService.get(widget.id);
+      if (allPostsCache && allPostsCache.length > 0) {
+        // Use cached data for available options
+        availablePlatforms = Array.from(new Set(allPostsCache.map(post => post.platform).filter(Boolean)));
+        availableStatuses = Array.from(new Set(allPostsCache.map(post => post.status).filter(Boolean)));
+        console.log('Using cached data for available options');
+      } else {
+        // If no cache, fetch all posts without filters
+        console.log('No cache found, fetching all posts for available options');
+        const decryptedToken = decryptToken(widget.token);
+        const allPosts = await fetchNotionDatabase(decryptedToken, widget.databaseId);
+        availablePlatforms = Array.from(new Set(allPosts.map(post => post.platform).filter(Boolean)));
+        availableStatuses = Array.from(new Set(allPosts.map(post => post.status).filter(Boolean)));
+        
+        // Cache the all posts data for future use
+        await cacheService.set(widget.id, allPosts);
+      }
+    } catch (error) {
+      console.error('Error getting available options:', error);
+      // Fallback to using filtered posts
+      availablePlatforms = Array.from(new Set(posts.map(post => post.platform).filter(Boolean)));
+      availableStatuses = Array.from(new Set(posts.map(post => post.status).filter(Boolean)));
+    }
 
     return NextResponse.json({
       widget: {
