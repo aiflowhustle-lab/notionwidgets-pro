@@ -10,6 +10,7 @@ interface FilterBarProps {
   availableStatuses: string[];
   onRefresh?: () => void;
   className?: string;
+  currentFilters?: WidgetFilters;
 }
 
 export default function FilterBar({ 
@@ -17,11 +18,17 @@ export default function FilterBar({
   availablePlatforms, 
   availableStatuses,
   onRefresh,
-  className = '' 
+  className = '',
+  currentFilters = {}
 }: FilterBarProps) {
-  const [filters, setFilters] = useState<WidgetFilters>({});
+  const [filters, setFilters] = useState<WidgetFilters>(currentFilters);
   const [showFilters, setShowFilters] = useState(true);
   const isInitialMount = useRef(true);
+
+  // Sync internal state with currentFilters prop
+  useEffect(() => {
+    setFilters(currentFilters);
+  }, [currentFilters]);
 
   useEffect(() => {
     // Skip the initial mount to prevent empty filter calls

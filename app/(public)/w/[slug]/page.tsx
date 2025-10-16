@@ -208,6 +208,7 @@ export default function PublicWidgetPage() {
               availablePlatforms={availablePlatforms}
               availableStatuses={availableStatuses}
               onRefresh={() => loadWidgetData(true)}
+              currentFilters={filters}
             />
           </div>
 
