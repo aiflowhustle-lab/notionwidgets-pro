@@ -100,7 +100,7 @@ export default function WidgetResultsPage() {
   }
 
   const widgetUrl = `${window.location.origin}/w/${widget.slug}`;
-  const embedCode = `<iframe src="${widgetUrl}" width="100%" height="600" frameborder="0"></iframe>`;
+  const embedCode = `<iframe src="${widgetUrl}" width="100%" height="600" frameborder="0" allowfullscreen sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-presentation" loading="lazy"></iframe>`;
 
   return (
     <div className="space-y-8">
@@ -137,6 +137,13 @@ export default function WidgetResultsPage() {
             height="600"
             frameBorder="0"
             className="w-full"
+            allowFullScreen
+            sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-presentation"
+            loading="lazy"
+            style={{ 
+              WebkitTransform: 'translateZ(0)',
+              transform: 'translateZ(0)'
+            }}
           />
         </div>
       </div>

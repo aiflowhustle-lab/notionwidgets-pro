@@ -63,9 +63,26 @@ export default function PublicWidgetPage() {
     loadWidgetData();
   }, [loadWidgetData]);
 
-  // Detect if we're in an iframe
+  // Detect if we're in an iframe and add iPad-specific handling
   useEffect(() => {
-    setIsInIframe(window !== window.top);
+    const inIframe = window !== window.top;
+    setIsInIframe(inIframe);
+    
+    if (inIframe) {
+      // Add iPad-specific iframe handling
+      document.body.style.overflow = 'auto';
+      (document.body.style as any).webkitOverflowScrolling = 'touch';
+      
+      // Prevent zoom on double tap for iPad
+      let lastTouchEnd = 0;
+      document.addEventListener('touchend', function (event) {
+        const now = (new Date()).getTime();
+        if (now - lastTouchEnd <= 300) {
+          event.preventDefault();
+        }
+        lastTouchEnd = now;
+      }, false);
+    }
   }, []);
 
   const handleFiltersChange = (newFilters: WidgetFilters) => {

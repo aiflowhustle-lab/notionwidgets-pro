@@ -8,8 +8,11 @@ export const metadata: Metadata = {
   title: 'Image Gallery Widget - NotionWidgets Pro',
   description: 'Beautiful image gallery widget with filtering and gallery modal',
   other: {
-    // Do not set X-Frame-Options at page level; CSP controls embedding
-    'Content-Security-Policy': "frame-ancestors 'self' https://www.notion.so https://notion.so https://*.notion.so https://*.vercel.app https://vercel.app;",
+    // Allow iframe embedding from any origin for iPad compatibility
+    'Content-Security-Policy': "frame-ancestors *; object-src 'none'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:;",
+    'X-Frame-Options': 'ALLOWALL',
+    'X-Content-Type-Options': 'nosniff',
+    'Referrer-Policy': 'strict-origin-when-cross-origin',
   },
 }
 

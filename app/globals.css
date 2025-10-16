@@ -78,3 +78,49 @@
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
+
+/* iPad iframe compatibility fixes */
+@supports (-webkit-touch-callout: none) {
+  /* iPad Safari specific styles */
+  body {
+    -webkit-overflow-scrolling: touch;
+    -webkit-text-size-adjust: 100%;
+  }
+  
+  /* Prevent zoom on double tap in iframes */
+  * {
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+  }
+  
+  /* Ensure proper touch handling */
+  .touch-manipulation {
+    touch-action: manipulation;
+  }
+  
+  /* Fix iframe viewport issues on iPad */
+  iframe {
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
+  }
+}
+
+/* General iframe compatibility */
+iframe {
+  border: none;
+  overflow: hidden;
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+}
+
+/* Prevent text selection in iframe context */
+.iframe-content {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
