@@ -6,6 +6,21 @@ import { NotionPost, WidgetFilters } from '@/types';
 import WidgetCard from '@/components/WidgetCard';
 import FilterBar from '@/components/FilterBar';
 import { Image, Loader2, AlertCircle } from 'lucide-react';
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragEndEvent,
+} from '@dnd-kit/core';
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+} from '@dnd-kit/sortable';
 
 interface WidgetData {
   widget: {
@@ -29,8 +44,16 @@ export default function PublicWidgetPage() {
   const [error, setError] = useState<string | null>(null);
   const [filters, setFilters] = useState<WidgetFilters>({});
   const [isInIframe, setIsInIframe] = useState(false);
+  const [isDragMode, setIsDragMode] = useState(false);
   const isFilterChanging = useRef(false);
   const isLoadingRef = useRef(false);
+
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
 
   const loadWidgetData = useCallback(async (forceRefresh = false, currentFilters = filters) => {
     // Prevent multiple simultaneous loads
@@ -98,6 +121,25 @@ export default function PublicWidgetPage() {
   useEffect(() => {
     setIsInIframe(window !== window.top);
   }, []);
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+
+    if (active.id !== over?.id && data) {
+      const oldIndex = data.posts.findIndex((post) => post.id === active.id);
+      const newIndex = data.posts.findIndex((post) => post.id === over?.id);
+
+      const newPosts = arrayMove(data.posts, oldIndex, newIndex);
+      
+      setData({
+        ...data,
+        posts: newPosts
+      });
+
+      // TODO: Send update to API to save new order
+      console.log('Posts reordered:', { oldIndex, newIndex, newPosts });
+    }
+  };
 
   const handleFiltersChange = (newFilters: WidgetFilters) => {
     console.log('Filter change requested:', newFilters);
@@ -181,15 +223,29 @@ export default function PublicWidgetPage() {
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Filters and Results - Aligned with grid */}
         <div className="max-w-3xl mx-auto">
-          {/* Filters */}
+          {/* Filters and Drag Mode Toggle */}
           <div className="mb-6">
-            <FilterBar
-              onFiltersChange={handleFiltersChange}
-              availablePlatforms={availablePlatforms}
-              availableStatuses={availableStatuses}
-              onRefresh={() => loadWidgetData(true)}
-              currentFilters={filters}
-            />
+            <div className="flex items-center justify-between mb-4">
+              <FilterBar
+                onFiltersChange={handleFiltersChange}
+                availablePlatforms={availablePlatforms}
+                availableStatuses={availableStatuses}
+                onRefresh={() => loadWidgetData(true)}
+                currentFilters={filters}
+              />
+              
+              {/* Drag Mode Toggle */}
+              <button
+                onClick={() => setIsDragMode(!isDragMode)}
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                  isDragMode 
+                    ? 'bg-blue-600 text-white hover:bg-blue-700' 
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                }`}
+              >
+                {isDragMode ? 'Exit Drag Mode' : 'Plan Grid'}
+              </button>
+            </div>
           </div>
 
           {/* Results Count - Hidden */}
@@ -209,15 +265,27 @@ export default function PublicWidgetPage() {
             </p>
           </div>
         ) : (
-          <div className="grid grid-cols-3 gap-1 max-w-3xl mx-auto">
-            {posts.map((post) => (
-              <WidgetCard
-                key={post.id}
-                post={post}
-                aspectRatio={widget.settings?.aspectRatio || 'square'}
-              />
-            ))}
-          </div>
+          <DndContext
+            sensors={sensors}
+            collisionDetection={closestCenter}
+            onDragEnd={handleDragEnd}
+          >
+            <SortableContext
+              items={posts.map(post => post.id)}
+              strategy={verticalListSortingStrategy}
+            >
+              <div className="grid grid-cols-3 gap-1 max-w-3xl mx-auto">
+                {posts.map((post) => (
+                  <WidgetCard
+                    key={post.id}
+                    post={post}
+                    aspectRatio={widget.settings?.aspectRatio || 'square'}
+                    isDragMode={isDragMode}
+                  />
+                ))}
+              </div>
+            </SortableContext>
+          </DndContext>
         )}
       </div>
     </div>
