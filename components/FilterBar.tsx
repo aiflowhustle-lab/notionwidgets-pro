@@ -59,10 +59,10 @@ export default function FilterBar({
         {/* Refresh Button */}
         <button
           onClick={onRefresh || (() => window.location.reload())}
-          className="p-1.5 bg-gray-800 text-white rounded-md hover:bg-gray-700 transition-colors flex items-center justify-center"
-          title="Refresh"
+          className="px-3 py-1.5 bg-gray-800 text-white text-sm rounded-md hover:bg-gray-700 transition-colors flex items-center space-x-1"
         >
-          <RotateCcw className="w-4 h-4" />
+          <RotateCcw className="w-3 h-3" />
+          <span>Refresh</span>
         </button>
 
         {/* Filter Toggle Button */}
