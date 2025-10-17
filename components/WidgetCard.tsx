@@ -169,7 +169,7 @@ export default function WidgetCard({ post, aspectRatio = 'square' }: WidgetCardP
             {!hasVideo && (
               <div className="absolute top-2 left-2 z-10">
                 <div className="text-white">
-                  <svg width="16" height="16" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" data-iconid="select-all-off" data-svgname="Select all off">
+                  <svg width="16" height="16" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink" data-iconid="select-all-off" data-svgname="Select all off">
                     <title>ic_fluent_select_all_off_24_filled</title>
                     <desc>Created with Sketch.</desc>
                     <g id="🔍-Product-Icons" stroke="none" strokeWidth="1" fill="none" fillRule="evenodd">
