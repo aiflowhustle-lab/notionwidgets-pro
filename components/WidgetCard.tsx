@@ -160,7 +160,7 @@ export default function WidgetCard({ post, aspectRatio = 'square' }: WidgetCardP
             {post.pinned && (
               <div className="absolute top-2 right-2 z-10">
                 <div className="text-white">
-                  <Pin className="w-4 h-4 fill-current rotate-45" />
+                  <Pin className="w-6 h-6 fill-current rotate-45" />
                 </div>
               </div>
             )}
@@ -169,7 +169,7 @@ export default function WidgetCard({ post, aspectRatio = 'square' }: WidgetCardP
             {!hasVideo && (
               <div className="absolute top-2 left-2 z-10">
                 <div className="text-white">
-                  <svg width="16" height="16" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink" data-iconid="select-all-off" data-svgname="Select all off">
+                  <svg width="24" height="24" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink" data-iconid="select-all-off" data-svgname="Select all off">
                     <title>ic_fluent_select_all_off_24_filled</title>
                     <desc>Created with Sketch.</desc>
                     <g id="🔍-Product-Icons" stroke="none" strokeWidth="1" fill="none" fillRule="evenodd">
@@ -177,6 +177,17 @@ export default function WidgetCard({ post, aspectRatio = 'square' }: WidgetCardP
                             <path d="M20.4961766,5.62668182 C21.3720675,5.93447702 22,6.76890777 22,7.75 L22,17.75 C22,20.0972102 20.0972102,22 17.75,22 L7.75,22 C6.76890777,22 5.93447702,21.3720675 5.62668182,20.4961766 L7.72396188,20.4995565 L17.75,20.5 C19.2687831,20.5 20.5,19.2687831 20.5,17.75 L20.5,7.75 L20.4960194,7.69901943 L20.4961766,5.62668182 Z M17.246813,2 C18.4894537,2 19.496813,3.00735931 19.496813,4.25 L19.496813,17.246813 C19.496813,18.4894537 18.4894537,19.496813 17.246813,19.496813 L4.25,19.496813 C3.00735931,19.496813 2,18.4894537 2,17.246813 L2,4.25 C2,3.00735931 3.00735931,2 4.25,2 L17.246813,2 Z" id="🎨-Color"></path>
                         </g>
                     </g>
+                  </svg>
+                </div>
+              </div>
+            )}
+
+            {/* Reels Icon - Show on videos only */}
+            {hasVideo && (
+              <div className="absolute top-2 left-2 z-10">
+                <div className="text-white">
+                  <svg className="w-6 h-6" viewBox="0 0 50 50" fill="currentColor">
+                    <path d="M13.34 4.13L20.26 16H4v-1C4 9.48 8.05 4.92 13.34 4.13zM33.26 16L22.57 16 15.57 4 26.26 4zM46 15v1H35.57l-7-12H35C41.08 4 46 8.92 46 15zM4 18v17c0 6.08 4.92 11 11 11h20c6.08 0 11-4.92 11-11V18H4zM31 32.19l-7.99 4.54C21.68 37.49 20 36.55 20 35.04v-9.08c0-1.51 1.68-2.45 3.01-1.69L31 28.81C32.33 29.56 32.33 31.44 31 32.19z"></path>
                   </svg>
                 </div>
               </div>
