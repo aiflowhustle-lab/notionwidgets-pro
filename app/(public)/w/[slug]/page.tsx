@@ -209,7 +209,7 @@ export default function PublicWidgetPage() {
           {/* Grid Icon - Show All Cards (9 dots) - Far left */}
           <button
             onClick={() => handleViewChange('all')}
-            className={`p-2 transition-all flex items-center justify-center mr-2 ${
+            className={`p-2 transition-all flex items-center justify-center mr-8 ${
               currentView === 'all'
                 ? 'text-black shadow-[0_4px_0_0_rgba(0,0,0,1)]'
                 : 'text-black hover:text-gray-600'
@@ -229,7 +229,7 @@ export default function PublicWidgetPage() {
             </svg>
           </button>
 
-          {/* Reels Icon - Show Only Videos - Close to grid icon */}
+          {/* Reels Icon - Show Only Videos - With more spacing from grid */}
           <button
             onClick={() => handleViewChange('videos')}
             className={`p-2 transition-all flex items-center justify-center ${
