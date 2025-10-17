@@ -2,7 +2,7 @@
 
 import { IPhone17Mockup } from '@/components/IPhone17Mockup';
 import { useState, useEffect } from 'react';
-import { Widget } from '@/types';
+import { Widget, NotionPost } from '@/types';
 import WidgetCard from '@/components/WidgetCard';
 import FilterBar from '@/components/FilterBar';
 
