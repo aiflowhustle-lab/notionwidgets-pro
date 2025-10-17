@@ -242,7 +242,7 @@ export default function WidgetCard({ post, aspectRatio = 'square' }: WidgetCardP
             
             {/* Date display beside icons at top */}
             {post.publishDate && (
-              <div className="absolute top-2 right-2 z-10">
+              <div className="absolute top-2 left-12 z-10">
                 <div className="bg-gray-500 bg-opacity-80 text-white text-xs px-2 py-1 rounded">
                   {new Date(post.publishDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                 </div>
