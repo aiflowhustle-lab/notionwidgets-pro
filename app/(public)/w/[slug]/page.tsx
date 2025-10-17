@@ -190,44 +190,6 @@ export default function PublicWidgetPage() {
 
   return (
     <div className="min-h-screen bg-white">
-      {/* Top Navigation Bar */}
-      <div className="bg-black py-4">
-        <div className="max-w-3xl mx-auto px-4 flex justify-center items-center space-x-8">
-          {/* Grid Icon - Show All Cards */}
-          <button
-            onClick={() => handleViewChange('all')}
-            className={`p-2 transition-colors flex items-center justify-center ${
-              currentView === 'all'
-                ? 'text-white'
-                : 'text-gray-400 hover:text-white'
-            }`}
-            title="Show all cards"
-          >
-            <svg className="w-6 h-6" viewBox="0 0 24 24" fill="currentColor">
-              <rect x="3" y="3" width="7" height="7"/>
-              <rect x="14" y="3" width="7" height="7"/>
-              <rect x="14" y="14" width="7" height="7"/>
-              <rect x="3" y="14" width="7" height="7"/>
-            </svg>
-          </button>
-
-          {/* Reels Icon - Show Only Videos */}
-          <button
-            onClick={() => handleViewChange('videos')}
-            className={`p-2 transition-colors flex items-center justify-center ${
-              currentView === 'videos'
-                ? 'text-white'
-                : 'text-gray-400 hover:text-white'
-            }`}
-            title="Show only videos"
-          >
-            <svg className="w-6 h-6" viewBox="0 0 50 50" fill="currentColor">
-              <path d="M13.34 4.13L20.26 16H4v-1C4 9.48 8.05 4.92 13.34 4.13zM33.26 16L22.57 16 15.57 4 26.26 4zM46 15v1H35.57l-7-12H35C41.08 4 46 8.92 46 15zM4 18v17c0 6.08 4.92 11 11 11h20c6.08 0 11-4.92 11-11V18H4zM31 32.19l-7.99 4.54C21.68 37.49 20 36.55 20 35.04v-9.08c0-1.51 1.68-2.45 3.01-1.69L31 28.81C32.33 29.56 32.33 31.44 31 32.19z"></path>
-            </svg>
-          </button>
-        </div>
-      </div>
-      
       {/* Main Content */}
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
         {/* Filters */}
@@ -260,14 +222,53 @@ export default function PublicWidgetPage() {
             </p>
           </div>
         ) : (
-          <div className="grid grid-cols-3 gap-1 max-w-3xl mx-auto">
-            {filteredPosts.map((post) => (
-              <WidgetCard
-                key={post.id}
-                post={post}
-                aspectRatio={widget.settings?.aspectRatio || 'square'}
-              />
-            ))}
+          <div className="relative max-w-3xl mx-auto">
+            {/* View Toggle Icons - Positioned over top cards */}
+            <div className="absolute top-2 left-0 right-0 z-20 flex justify-center space-x-8">
+              {/* Grid Icon - Show All Cards */}
+              <button
+                onClick={() => handleViewChange('all')}
+                className={`p-2 transition-colors flex items-center justify-center ${
+                  currentView === 'all'
+                    ? 'text-white bg-black bg-opacity-60 rounded-full'
+                    : 'text-gray-400 hover:text-white'
+                }`}
+                title="Show all cards"
+              >
+                <svg className="w-6 h-6" viewBox="0 0 24 24" fill="currentColor">
+                  <rect x="3" y="3" width="7" height="7"/>
+                  <rect x="14" y="3" width="7" height="7"/>
+                  <rect x="14" y="14" width="7" height="7"/>
+                  <rect x="3" y="14" width="7" height="7"/>
+                </svg>
+              </button>
+
+              {/* Reels Icon - Show Only Videos */}
+              <button
+                onClick={() => handleViewChange('videos')}
+                className={`p-2 transition-colors flex items-center justify-center ${
+                  currentView === 'videos'
+                    ? 'text-white bg-black bg-opacity-60 rounded-full'
+                    : 'text-gray-400 hover:text-white'
+                }`}
+                title="Show only videos"
+              >
+                <svg className="w-6 h-6" viewBox="0 0 50 50" fill="currentColor">
+                  <path d="M13.34 4.13L20.26 16H4v-1C4 9.48 8.05 4.92 13.34 4.13zM33.26 16L22.57 16 15.57 4 26.26 4zM46 15v1H35.57l-7-12H35C41.08 4 46 8.92 46 15zM4 18v17c0 6.08 4.92 11 11 11h20c6.08 0 11-4.92 11-11V18H4zM31 32.19l-7.99 4.54C21.68 37.49 20 36.55 20 35.04v-9.08c0-1.51 1.68-2.45 3.01-1.69L31 28.81C32.33 29.56 32.33 31.44 31 32.19z"></path>
+                </svg>
+              </button>
+            </div>
+
+            {/* Cards Grid */}
+            <div className="grid grid-cols-3 gap-1">
+              {filteredPosts.map((post) => (
+                <WidgetCard
+                  key={post.id}
+                  post={post}
+                  aspectRatio={widget.settings?.aspectRatio || 'square'}
+                />
+              ))}
+            </div>
           </div>
         )}
       </div>
