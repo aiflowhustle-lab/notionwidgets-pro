@@ -158,7 +158,7 @@ export default function WidgetCard({ post, aspectRatio = 'square' }: WidgetCardP
           <div className={`relative ${getAspectRatioClass()} overflow-hidden`}>
             {/* Pinned Icon */}
             {post.pinned && (
-              <div className="absolute top-2 right-12 z-10">
+              <div className="absolute top-2 right-2 z-10">
                 <div className="text-white">
                   <Pin className="w-4 h-4 fill-current rotate-45 scale-110" />
                 </div>
@@ -240,20 +240,14 @@ export default function WidgetCard({ post, aspectRatio = 'square' }: WidgetCardP
               </div>
             )}
             
-            {/* Date display beside icons at top */}
-            {post.publishDate && (
-              <div className="absolute top-2 left-12 z-10">
-                <div className="bg-gray-500 bg-opacity-80 text-white text-xs px-2 py-1 rounded">
-                  {new Date(post.publishDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
-                </div>
-              </div>
-            )}
-
             {/* Overlay with content on hover - Bottom 20% */}
             <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-60 transition-all duration-300 flex flex-col justify-end">
-              {/* Title overlay - Bottom 20% of card */}
+              {/* Title and date overlay - Bottom 20% of card */}
               <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-black bg-opacity-80 h-[20%] flex flex-col justify-center p-4">
                 <div className="text-white">
+                  <div className="text-xs text-white/70 mb-1">
+                    {post.publishDate ? formatDate(post.publishDate) : 'No date'}
+                  </div>
                   <h3 className="text-sm font-medium line-clamp-2">
                     {post.title || 'Untitled'}
                   </h3>
