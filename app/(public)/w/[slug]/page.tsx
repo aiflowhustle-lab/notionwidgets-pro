@@ -205,13 +205,13 @@ export default function PublicWidgetPage() {
         </div>
 
         {/* View Toggle Icons - Between filters and cards */}
-        <div className="max-w-3xl mx-auto mb-4 flex justify-center space-x-16">
+        <div className="max-w-3xl mx-auto mb-4 flex justify-center space-x-4">
           {/* Grid Icon - Show All Cards (9 dots) */}
           <button
             onClick={() => handleViewChange('all')}
-            className={`p-2 transition-colors flex items-center justify-center ${
+            className={`p-2 transition-all flex items-center justify-center ${
               currentView === 'all'
-                ? 'text-black'
+                ? 'text-black shadow-[0_4px_0_0_rgba(0,0,0,1)]'
                 : 'text-black hover:text-gray-600'
             }`}
             title="Show all cards"
@@ -232,9 +232,9 @@ export default function PublicWidgetPage() {
           {/* Reels Icon - Show Only Videos */}
           <button
             onClick={() => handleViewChange('videos')}
-            className={`p-2 transition-colors flex items-center justify-center ${
+            className={`p-2 transition-all flex items-center justify-center ${
               currentView === 'videos'
-                ? 'text-black'
+                ? 'text-black shadow-[0_4px_0_0_rgba(0,0,0,1)]'
                 : 'text-black hover:text-gray-600'
             }`}
             title="Show only videos"
