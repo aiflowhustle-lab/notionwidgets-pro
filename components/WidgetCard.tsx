@@ -159,7 +159,7 @@ export default function WidgetCard({ post, aspectRatio = 'square' }: WidgetCardP
             {/* Pinned Icon */}
             {post.pinned && (
               <div className="absolute top-2 right-2 z-10">
-                <div className="text-black">
+                <div className="text-white">
                   <Pin className="w-4 h-4 fill-current rotate-45" />
                 </div>
               </div>
