@@ -229,25 +229,20 @@ export default function PublicWidgetPage() {
       </div>
       
       {/* Main Content */}
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Filters and Results - Aligned with grid */}
-        <div className="max-w-3xl mx-auto">
-          {/* Filters */}
-          <div className="mb-6">
-            <FilterBar
-              onFiltersChange={handleFiltersChange}
-              availablePlatforms={availablePlatforms}
-              availableStatuses={availableStatuses}
-              onRefresh={() => loadWidgetData(true)}
-              onViewChange={handleViewChange}
-              currentFilters={filters}
-            />
-          </div>
-
-          {/* Results Count - Hidden */}
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+        {/* Filters */}
+        <div className="max-w-3xl mx-auto mb-6">
+          <FilterBar
+            onFiltersChange={handleFiltersChange}
+            availablePlatforms={availablePlatforms}
+            availableStatuses={availableStatuses}
+            onRefresh={() => loadWidgetData(true)}
+            onViewChange={handleViewChange}
+            currentFilters={filters}
+          />
         </div>
 
-        {/* Images Grid */}
+        {/* Content Grid - 2x3 Layout */}
         {filteredPosts.length === 0 ? (
           <div className="text-center py-12">
             <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
