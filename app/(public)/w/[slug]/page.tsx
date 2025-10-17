@@ -212,7 +212,7 @@ export default function PublicWidgetPage() {
               onClick={() => handleViewChange('all')}
               className={`p-2 transition-all flex items-center justify-center mr-5 ${
                 currentView === 'all'
-                  ? 'text-black shadow-[0_4px_0_0_rgba(0,0,0,1)]'
+                  ? 'text-black shadow-[0_2px_0_0_rgba(0,0,0,1)] scale-x-130'
                   : 'text-black hover:text-gray-600'
               }`}
               title="Show all cards"
@@ -237,7 +237,7 @@ export default function PublicWidgetPage() {
               onClick={() => handleViewChange('videos')}
               className={`p-2 transition-all flex items-center justify-center ${
                 currentView === 'videos'
-                  ? 'text-black shadow-[0_4px_0_0_rgba(0,0,0,1)]'
+                  ? 'text-black shadow-[0_2px_0_0_rgba(0,0,0,1)] scale-x-130'
                   : 'text-black hover:text-gray-600'
               }`}
               title="Show only videos"
