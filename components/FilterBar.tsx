@@ -65,7 +65,7 @@ export default function FilterBar({
 
   return (
     <div className={`${className}`}>
-      <div className="flex items-center space-x-3">
+      <div className="flex items-center justify-center space-x-3">
         {/* Refresh Button */}
         <div className="btn-wrapper">
           <button 
@@ -109,7 +109,7 @@ export default function FilterBar({
         {/* Filter Toggle Button */}
         <div className="btn-wrapper">
           <button 
-            className="btn"
+            className="btn-icon"
             onClick={() => setShowFilters(!showFilters)}
             title="Filters"
           >
@@ -120,28 +120,6 @@ export default function FilterBar({
                 d="M12 3c2.755 0 5.455.232 8.083.678.533.09.917.556.917 1.096v1.044a2.25 2.25 0 0 1-.659 1.591l-5.432 5.432a2.25 2.25 0 0 0-.659 1.591v2.927a2.25 2.25 0 0 1-1.244 2.013L9.75 21v-6.568a2.25 2.25 0 0 0-.659-1.591L3.659 7.409A2.25 2.25 0 0 1 3 5.818V4.774c0-.54.384-1.006.917-1.096A48.32 48.32 0 0 1 12 3Z"
               ></path>
             </svg>
-
-            <div className="txt-wrapper">
-              <div className="txt-1">
-                <span className="btn-letter">F</span>
-                <span className="btn-letter">i</span>
-                <span className="btn-letter">l</span>
-                <span className="btn-letter">t</span>
-                <span className="btn-letter">e</span>
-                <span className="btn-letter">r</span>
-              </div>
-              <div className="txt-2">
-                <span className="btn-letter">F</span>
-                <span className="btn-letter">i</span>
-                <span className="btn-letter">l</span>
-                <span className="btn-letter">t</span>
-                <span className="btn-letter">e</span>
-                <span className="btn-letter">r</span>
-                <span className="btn-letter">i</span>
-                <span className="btn-letter">n</span>
-                <span className="btn-letter">g</span>
-              </div>
-            </div>
           </button>
         </div>
 
