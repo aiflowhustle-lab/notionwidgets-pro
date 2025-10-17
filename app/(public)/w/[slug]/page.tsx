@@ -207,7 +207,7 @@ export default function PublicWidgetPage() {
         {/* View Toggle Icons - Between filters and cards */}
         <div className="max-w-6xl mx-auto mb-1 flex justify-between items-center px-4">
           {/* Grid Icon - Show All Cards (9 dots) - Third right of first card */}
-          <div className="flex-1 flex justify-end">
+          <div className="flex-1 flex justify-center">
             <button
               onClick={() => handleViewChange('all')}
               className={`p-2 transition-all flex items-center justify-center ${
