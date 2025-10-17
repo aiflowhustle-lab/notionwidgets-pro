@@ -18,7 +18,7 @@ const mockWidget = {
   views: 0
 };
 
-const mockPosts = [
+const mockPosts: NotionPost[] = [
   {
     id: '1',
     title: 'Sample Instagram Post',
@@ -29,7 +29,7 @@ const mockPosts = [
     imageSource: 'link',
     images: [{
       url: 'https://images.unsplash.com/photo-1611162616475-46b635cb6868?w=400&h=400&fit=crop',
-      source: 'link',
+      source: 'link' as const,
       originalUrl: 'https://images.unsplash.com/photo-1611162616475-46b635cb6868?w=400&h=400&fit=crop'
     }],
     videos: []
@@ -45,8 +45,9 @@ const mockPosts = [
     images: [],
     videos: [{
       url: 'https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_1mb.mp4',
-      source: 'link',
-      originalUrl: 'https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_1mb.mp4'
+      source: 'link' as const,
+      originalUrl: 'https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_1mb.mp4',
+      type: 'video/mp4'
     }]
   },
   {
@@ -59,7 +60,7 @@ const mockPosts = [
     imageSource: 'link',
     images: [{
       url: 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=400&h=400&fit=crop',
-      source: 'link',
+      source: 'link' as const,
       originalUrl: 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=400&h=400&fit=crop'
     }],
     videos: []
