@@ -6,7 +6,7 @@ import { NotionPost, WidgetFilters } from '@/types';
 import WidgetCard from '@/components/WidgetCard';
 import FilterBar from '@/components/FilterBar';
 import { IPhone17Mockup } from '@/components/IPhone17Mockup';
-import { Image, Loader2, AlertCircle } from 'lucide-react';
+import { Image, Loader2, AlertCircle, Smartphone, Monitor } from 'lucide-react';
 
 interface WidgetData {
   widget: {
@@ -32,6 +32,7 @@ export default function PublicWidgetPage() {
   const [viewMode, setViewMode] = useState<'all' | 'videos'>('all');
   const [currentView, setCurrentView] = useState<'all' | 'videos'>('all');
   const [isInIframe, setIsInIframe] = useState(false);
+  const [isMobileView, setIsMobileView] = useState(true);
   const isFilterChanging = useRef(false);
   const isLoadingRef = useRef(false);
 
@@ -189,11 +190,21 @@ export default function PublicWidgetPage() {
 
   const { widget, posts, availablePlatforms, availableStatuses } = data;
 
-  return (
-    <IPhone17Mockup>
-      <div className="min-h-screen bg-white">
-        {/* Main Content */}
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+  const widgetContent = (
+    <div className="min-h-screen bg-white">
+      {/* View Toggle Button */}
+      <div className="fixed top-4 right-4 z-50">
+        <button
+          onClick={() => setIsMobileView(!isMobileView)}
+          className="p-3 bg-black text-white rounded-full shadow-lg hover:bg-gray-800 transition-colors"
+          title={isMobileView ? 'Switch to Desktop View' : 'Switch to Mobile View'}
+        >
+          {isMobileView ? <Monitor className="w-5 h-5" /> : <Smartphone className="w-5 h-5" />}
+        </button>
+      </div>
+
+      {/* Main Content */}
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
         {/* Filters */}
         <div className="max-w-3xl mx-auto mb-1">
           <FilterBar
@@ -284,6 +295,14 @@ export default function PublicWidgetPage() {
         )}
         </div>
       </div>
+    </div>
+  );
+
+  return isMobileView ? (
+    <IPhone17Mockup>
+      {widgetContent}
     </IPhone17Mockup>
+  ) : (
+    widgetContent
   );
 }
