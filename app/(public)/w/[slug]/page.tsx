@@ -206,10 +206,10 @@ export default function PublicWidgetPage() {
 
         {/* View Toggle Icons - Between filters and cards */}
         <div className="max-w-3xl mx-auto mb-4 flex items-center">
-          {/* Grid Icon - Show All Cards (9 dots) - Left side with margin */}
+          {/* Grid Icon - Show All Cards (9 dots) - Far left */}
           <button
             onClick={() => handleViewChange('all')}
-            className={`p-2 transition-all flex items-center justify-center mr-16 ${
+            className={`p-2 transition-all flex items-center justify-center mr-2 ${
               currentView === 'all'
                 ? 'text-black shadow-[0_4px_0_0_rgba(0,0,0,1)]'
                 : 'text-black hover:text-gray-600'
@@ -229,7 +229,7 @@ export default function PublicWidgetPage() {
             </svg>
           </button>
 
-          {/* Reels Icon - Show Only Videos - Center */}
+          {/* Reels Icon - Show Only Videos - Close to grid icon */}
           <button
             onClick={() => handleViewChange('videos')}
             className={`p-2 transition-all flex items-center justify-center ${
