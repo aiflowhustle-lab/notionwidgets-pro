@@ -205,11 +205,11 @@ export default function PublicWidgetPage() {
         </div>
 
         {/* View Toggle Icons - Between filters and cards */}
-        <div className="max-w-3xl mx-auto mb-4 flex justify-between items-center">
-          {/* Grid Icon - Show All Cards (9 dots) - Left side */}
+        <div className="max-w-3xl mx-auto mb-4 flex items-center">
+          {/* Grid Icon - Show All Cards (9 dots) - Left side with margin */}
           <button
             onClick={() => handleViewChange('all')}
-            className={`p-2 transition-all flex items-center justify-center ${
+            className={`p-2 transition-all flex items-center justify-center mr-16 ${
               currentView === 'all'
                 ? 'text-black shadow-[0_4px_0_0_rgba(0,0,0,1)]'
                 : 'text-black hover:text-gray-600'
@@ -243,9 +243,6 @@ export default function PublicWidgetPage() {
               <path d="M13.34 4.13L20.26 16H4v-1C4 9.48 8.05 4.92 13.34 4.13zM33.26 16L22.57 16 15.57 4 26.26 4zM46 15v1H35.57l-7-12H35C41.08 4 46 8.92 46 15zM4 18v17c0 6.08 4.92 11 11 11h20c6.08 0 11-4.92 11-11V18H4zM31 32.19l-7.99 4.54C21.68 37.49 20 36.55 20 35.04v-9.08c0-1.51 1.68-2.45 3.01-1.69L31 28.81C32.33 29.56 32.33 31.44 31 32.19z"></path>
             </svg>
           </button>
-
-          {/* Empty div to balance the layout */}
-          <div></div>
         </div>
 
         {/* Content Grid - 2x3 Layout */}
