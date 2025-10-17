@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { X, RotateCcw, Filter } from 'lucide-react';
+import { X, RotateCcw, Filter, Grid3X3, Video } from 'lucide-react';
 import { WidgetFilters } from '@/types';
 
 interface FilterBarProps {
@@ -9,6 +9,7 @@ interface FilterBarProps {
   availablePlatforms: string[];
   availableStatuses: string[];
   onRefresh?: () => void;
+  onViewChange?: (view: 'all' | 'videos') => void;
   className?: string;
   currentFilters?: WidgetFilters;
 }
@@ -18,11 +19,13 @@ export default function FilterBar({
   availablePlatforms, 
   availableStatuses,
   onRefresh,
+  onViewChange,
   className = '',
   currentFilters = {}
 }: FilterBarProps) {
   const [filters, setFilters] = useState<WidgetFilters>(currentFilters);
   const [showFilters, setShowFilters] = useState(false);
+  const [currentView, setCurrentView] = useState<'all' | 'videos'>('all');
   const isInitialMount = useRef(true);
 
   // Sync internal state with currentFilters prop
@@ -49,6 +52,13 @@ export default function FilterBar({
 
   const clearFilters = () => {
     setFilters({});
+  };
+
+  const handleViewChange = (view: 'all' | 'videos') => {
+    setCurrentView(view);
+    if (onViewChange) {
+      onViewChange(view);
+    }
   };
 
   const hasActiveFilters = Object.values(filters).some(value => value !== undefined);
@@ -88,6 +98,35 @@ export default function FilterBar({
             <span>Clear</span>
           </button>
         )}
+
+        {/* View Toggle Buttons */}
+        <div className="flex items-center space-x-1 ml-2">
+          {/* Grid Icon - Show All Cards */}
+          <button
+            onClick={() => handleViewChange('all')}
+            className={`p-1.5 rounded-md transition-colors flex items-center justify-center ${
+              currentView === 'all'
+                ? 'bg-blue-600 text-white'
+                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+            }`}
+            title="Show all cards"
+          >
+            <Grid3X3 className="w-4 h-4" />
+          </button>
+
+          {/* Video Icon - Show Only Videos */}
+          <button
+            onClick={() => handleViewChange('videos')}
+            className={`p-1.5 rounded-md transition-colors flex items-center justify-center ${
+              currentView === 'videos'
+                ? 'bg-blue-600 text-white'
+                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+            }`}
+            title="Show only videos"
+          >
+            <Video className="w-4 h-4" />
+          </button>
+        </div>
       </div>
 
       {/* Collapsible Filter Dropdowns */}

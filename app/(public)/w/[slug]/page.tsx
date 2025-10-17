@@ -28,6 +28,7 @@ export default function PublicWidgetPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [filters, setFilters] = useState<WidgetFilters>({});
+  const [viewMode, setViewMode] = useState<'all' | 'videos'>('all');
   const [isInIframe, setIsInIframe] = useState(false);
   const isFilterChanging = useRef(false);
   const isLoadingRef = useRef(false);
@@ -138,6 +139,18 @@ export default function PublicWidgetPage() {
     loadWidgetData(false, newFilters);
   };
 
+  const handleViewChange = (view: 'all' | 'videos') => {
+    setViewMode(view);
+  };
+
+  // Filter posts based on view mode
+  const filteredPosts = data?.posts.filter(post => {
+    if (viewMode === 'videos') {
+      return post.videos && post.videos.length > 0;
+    }
+    return true; // Show all posts for 'all' view
+  }) || [];
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -188,6 +201,7 @@ export default function PublicWidgetPage() {
               availablePlatforms={availablePlatforms}
               availableStatuses={availableStatuses}
               onRefresh={() => loadWidgetData(true)}
+              onViewChange={handleViewChange}
               currentFilters={filters}
             />
           </div>
@@ -196,21 +210,25 @@ export default function PublicWidgetPage() {
         </div>
 
         {/* Images Grid */}
-        {posts.length === 0 ? (
+        {filteredPosts.length === 0 ? (
           <div className="text-center py-12">
             <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
               <Image className="w-12 h-12 text-gray-400" />
             </div>
-            <h3 className="text-lg font-medium text-gray-900 mb-2">No images found</h3>
+            <h3 className="text-lg font-medium text-gray-900 mb-2">
+              {viewMode === 'videos' ? 'No videos found' : 'No images found'}
+            </h3>
             <p className="text-gray-600">
               {Object.values(filters).some(v => v !== undefined)
-                ? 'Try adjusting your filters to see more images.'
-                : 'This widget doesn\'t have any images yet.'}
+                ? 'Try adjusting your filters to see more content.'
+                : viewMode === 'videos' 
+                  ? 'This widget doesn\'t have any videos yet.'
+                  : 'This widget doesn\'t have any images yet.'}
             </p>
           </div>
         ) : (
           <div className="grid grid-cols-3 gap-1 max-w-3xl mx-auto">
-            {posts.map((post) => (
+            {filteredPosts.map((post) => (
               <WidgetCard
                 key={post.id}
                 post={post}
