@@ -209,7 +209,7 @@ export default function PublicWidgetPage() {
           {/* Grid Icon - Show All Cards (9 dots) - Left side */}
           <button
             onClick={() => handleViewChange('all')}
-            className={`p-2 transition-all flex items-center justify-center ml-4 ${
+            className={`p-2 transition-all flex items-center justify-center ml-12 ${
               currentView === 'all'
                 ? 'text-black shadow-[0_4px_0_0_rgba(0,0,0,1)]'
                 : 'text-black hover:text-gray-600'
