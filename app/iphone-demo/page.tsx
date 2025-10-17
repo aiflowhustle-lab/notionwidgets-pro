@@ -26,6 +26,7 @@ const mockPosts = [
     status: 'Done',
     pinned: true,
     publishDate: new Date().toISOString(),
+    imageSource: 'link',
     images: [{
       url: 'https://images.unsplash.com/photo-1611162616475-46b635cb6868?w=400&h=400&fit=crop',
       source: 'link',
@@ -40,6 +41,7 @@ const mockPosts = [
     status: 'In progress',
     pinned: false,
     publishDate: new Date().toISOString(),
+    imageSource: 'link',
     images: [],
     videos: [{
       url: 'https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_1mb.mp4',
@@ -54,6 +56,7 @@ const mockPosts = [
     status: 'Done',
     pinned: false,
     publishDate: new Date().toISOString(),
+    imageSource: 'link',
     images: [{
       url: 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=400&h=400&fit=crop',
       source: 'link',

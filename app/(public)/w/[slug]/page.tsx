@@ -5,6 +5,7 @@ import { useParams } from 'next/navigation';
 import { NotionPost, WidgetFilters } from '@/types';
 import WidgetCard from '@/components/WidgetCard';
 import FilterBar from '@/components/FilterBar';
+import { IPhone17Mockup } from '@/components/IPhone17Mockup';
 import { Image, Loader2, AlertCircle } from 'lucide-react';
 
 interface WidgetData {
@@ -189,9 +190,10 @@ export default function PublicWidgetPage() {
   const { widget, posts, availablePlatforms, availableStatuses } = data;
 
   return (
-    <div className="min-h-screen bg-white">
-      {/* Main Content */}
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+    <IPhone17Mockup>
+      <div className="min-h-screen bg-white">
+        {/* Main Content */}
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
         {/* Filters */}
         <div className="max-w-3xl mx-auto mb-1">
           <FilterBar
@@ -280,7 +282,8 @@ export default function PublicWidgetPage() {
             ))}
           </div>
         )}
+        </div>
       </div>
-    </div>
+    </IPhone17Mockup>
   );
 }
