@@ -29,6 +29,7 @@ export default function PublicWidgetPage() {
   const [error, setError] = useState<string | null>(null);
   const [filters, setFilters] = useState<WidgetFilters>({});
   const [viewMode, setViewMode] = useState<'all' | 'videos'>('all');
+  const [currentView, setCurrentView] = useState<'all' | 'videos'>('all');
   const [isInIframe, setIsInIframe] = useState(false);
   const isFilterChanging = useRef(false);
   const isLoadingRef = useRef(false);
@@ -141,6 +142,7 @@ export default function PublicWidgetPage() {
 
   const handleViewChange = (view: 'all' | 'videos') => {
     setViewMode(view);
+    setCurrentView(view);
   };
 
   // Filter posts based on view mode
