@@ -95,9 +95,9 @@
   user-select: none;
   display: flex;
   justify-content: center;
-  padding: 0.5em 0.5em 0.5em 1.1em;
+  padding: 0.25em 0.25em 0.25em 0.55em;
   font-family: "Poppins", "Inter", "Segoe UI", sans-serif;
-  font-size: 1em;
+  font-size: 0.5em;
   font-weight: 400;
 
   background-color: var(--button-color);
@@ -193,7 +193,8 @@
 
 .btn-svg {
   flex-grow: 1;
-  height: 24px;
+  height: 12px;
+  width: 12px;
   margin-right: 0.5rem;
   fill: #e8e8e8;
   animation: flicker 2s linear infinite;
@@ -418,9 +419,9 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 0.5em;
+  padding: 0.25em;
   font-family: "Poppins", "Inter", "Segoe UI", sans-serif;
-  font-size: 1em;
+  font-size: 0.5em;
   font-weight: 400;
 
   background-color: var(--button-color);
@@ -497,7 +498,8 @@
 }
 
 .btn-icon .btn-svg {
-  height: 24px;
+  height: 12px;
+  width: 12px;
   fill: #e8e8e8;
   animation: flicker 2s linear infinite;
   animation-delay: 0.5s;
