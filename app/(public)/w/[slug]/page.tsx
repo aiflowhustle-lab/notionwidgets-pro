@@ -122,26 +122,9 @@ export default function PublicWidgetPage() {
 
   // Data loading is now handled in the filters useEffect above
 
-  // Detect if we're in an iframe and optimize for mobile
+  // Detect if we're in an iframe
   useEffect(() => {
-    const inIframe = window !== window.top;
-    setIsInIframe(inIframe);
-    
-    // Add mobile-specific optimizations for iframe
-    if (inIframe) {
-      // Prevent zoom on mobile
-      document.addEventListener('touchstart', function(e) {
-        if (e.touches.length > 1) {
-          e.preventDefault();
-        }
-      }, { passive: false });
-      
-      // Optimize for mobile viewport
-      const viewport = document.querySelector('meta[name="viewport"]');
-      if (viewport) {
-        viewport.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no');
-      }
-    }
+    setIsInIframe(window !== window.top);
   }, []);
 
   const handleFiltersChange = (newFilters: WidgetFilters) => {

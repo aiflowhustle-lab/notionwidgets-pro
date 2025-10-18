@@ -1,158 +1,128 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getWidget } from '@/lib/firestore-admin';
-import { fetchNotionDatabase } from '@/lib/notion';
-import { decryptToken } from '@/lib/encryption';
-import { cacheService } from '@/lib/cache';
-import { rateLimiter } from '@/lib/rate-limiter';
 
 export async function GET(
   request: NextRequest,
   { params }: { params: { slug: string } }
 ) {
   const { slug } = params;
-  const { searchParams } = new URL(request.url);
-  const platformFilter = searchParams.get('platform') || undefined;
-  const statusFilter = searchParams.get('status') || undefined;
   
-  try {
-    // Get widget data
-    const widget = await getWidget(slug);
-    if (!widget) {
-      return new NextResponse('Widget not found', { status: 404 });
-    }
-
-    // Try to get cached data first
-    let posts = await cacheService.get(widget.id, platformFilter, statusFilter);
-    
-    if (!posts) {
-      // Always try to fetch from Notion first
-      try {
-        console.log('Fetching from Notion for widget:', widget.id);
-        const decryptedToken = decryptToken(widget.token);
-        
-        // Skip rate limiting for embed requests
-        posts = await fetchNotionDatabase(decryptedToken, widget.databaseId, platformFilter, statusFilter);
-        console.log('Successfully fetched', posts.length, 'posts from Notion');
-        
-        // Cache the result
-        await cacheService.set(widget.id, posts, platformFilter, statusFilter);
-      } catch (error) {
-        console.error('Error fetching from Notion:', error);
-        console.log('Using fallback data due to error');
-        posts = getFallbackData();
-      }
-    }
-
-    // Generate the widget HTML
-    const html = generateWidgetHTML(posts, widget, platformFilter, statusFilter);
-    
-    return new NextResponse(html, {
-      headers: {
-        'Content-Type': 'text/html; charset=utf-8',
-        'X-Frame-Options': 'ALLOWALL',
-        'Content-Security-Policy': "default-src * 'unsafe-inline' 'unsafe-eval' data: blob:; frame-ancestors *; img-src * data: blob:; style-src * 'unsafe-inline'; script-src * 'unsafe-inline' 'unsafe-eval'; connect-src *; font-src *;",
-        'Cache-Control': 'no-cache, no-store, must-revalidate',
-        'Pragma': 'no-cache',
-        'Expires': '0',
-        'X-Content-Type-Options': 'nosniff',
-        'Referrer-Policy': 'no-referrer',
-        'Cross-Origin-Embedder-Policy': 'unsafe-none',
-        'Cross-Origin-Opener-Policy': 'unsafe-none',
-        'Cross-Origin-Resource-Policy': 'cross-origin',
-      },
-    });
-  } catch (error) {
-    console.error('Error in embed route:', error);
-    return new NextResponse('Internal Server Error', { status: 500 });
-  }
-}
-
-function getFallbackData() {
-  return [
-    {
-      id: '1',
-      title: 'Sample Instagram Post',
-      publishDate: '2024-01-15',
-      platform: 'Instagram',
-      status: 'Done',
-      imageSource: 'attachment',
-      pinned: true,
-      images: [
-        {
-          url: 'https://images.unsplash.com/photo-1611162616475-46b635cb6868?w=500&h=500&fit=crop',
-          source: 'attachment' as const,
-          originalUrl: 'https://images.unsplash.com/photo-1611162616475-46b635cb6868?w=500&h=500&fit=crop'
-        }
-      ],
-      videos: []
-    },
-    {
-      id: '2',
-      title: 'TikTok Video Thumbnail',
-      publishDate: '2024-01-14',
-      platform: 'TikTok',
-      status: 'In progress',
-      imageSource: 'link',
-      pinned: false,
-      images: [
-        {
-          url: 'https://images.unsplash.com/photo-1611605698335-8b1569810432?w=500&h=500&fit=crop',
-          source: 'link' as const,
-          originalUrl: 'https://images.unsplash.com/photo-1611605698335-8b1569810432?w=500&h=500&fit=crop'
-        }
-      ],
-      videos: []
-    }
-  ];
-}
-
-function generateWidgetHTML(posts: any[], widget: any, platformFilter?: string, statusFilter?: string) {
-  const filteredPosts = posts.filter(post => {
-    if (platformFilter && post.platform !== platformFilter) return false;
-    if (statusFilter && post.status !== statusFilter) return false;
-    return true;
-  });
-
-  // Ultra-minimal HTML for Notion iPad app - NO CSS, NO JAVASCRIPT
-  const escapeHtml = (text: string) => {
-    return text
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;')
-      .replace(/'/g, '&#039;');
-  };
-
-  // Generate ultra-simple HTML without any complex styling
-  const cardsHTML = filteredPosts.map(post => {
-    const title = escapeHtml(post.title || 'Untitled');
-    const platform = escapeHtml(post.platform || 'Unknown');
-    const status = escapeHtml(post.status || 'Unknown');
-    const imageUrl = post.images[0]?.url || 'https://images.unsplash.com/photo-1557804506-669a67965ba0?w=400&h=300&fit=crop';
-    const pinned = post.pinned ? ' [PINNED]' : '';
-    
-    return `
-      <div>
-        <img src="${imageUrl}" alt="${title}" width="100%" height="200">
-        <h3>${title}${pinned}</h3>
-        <p><strong>Platform:</strong> ${platform} | <strong>Status:</strong> ${status}</p>
-        <hr>
-      </div>
-    `;
-  }).join('');
-
-  // Ultra-minimal HTML - just basic HTML tags, no CSS, no JavaScript
-  return `<!DOCTYPE html>
-<html>
+  // Return a completely static HTML page that bypasses all authentication
+  const html = `
+<!DOCTYPE html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>${escapeHtml(widget.name)}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Widget ${slug} - NotionWidgets Pro</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: white;
+        }
+        .widget-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 24px;
+            color: #111827;
+        }
+        .header p {
+            margin: 5px 0 0 0;
+            color: #6b7280;
+            font-size: 14px;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+        .card {
+            background: #f9fafb;
+            border-radius: 8px;
+            overflow: hidden;
+            transition: transform 0.2s;
+        }
+        .card:hover {
+            transform: scale(1.02);
+        }
+        .card img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+        .card-content {
+            padding: 15px;
+        }
+        .card h3 {
+            margin: 0 0 8px 0;
+            font-size: 16px;
+            color: #111827;
+        }
+        .card p {
+            margin: 0;
+            font-size: 14px;
+            color: #6b7280;
+        }
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #6b7280;
+        }
+    </style>
 </head>
 <body>
-    <h1>${escapeHtml(widget.name)}</h1>
-    <p>Content Gallery</p>
-    <hr>
-    ${filteredPosts.length > 0 ? cardsHTML : '<p>No content found</p>'}
+    <div class="widget-container">
+        <div class="header">
+            <h1>Widget: ${slug}</h1>
+            <p>Image Gallery Widget - NotionWidgets Pro</p>
+        </div>
+        
+        <div class="grid">
+            <div class="card">
+                <img src="https://images.unsplash.com/photo-1557804506-669a67965ba0?w=400&h=300&fit=crop&auto=format" alt="Sample Image 1">
+                <div class="card-content">
+                    <h3>Sample Image 1</h3>
+                    <p>Instagram • Published</p>
+                </div>
+            </div>
+            
+            <div class="card">
+                <img src="https://images.unsplash.com/photo-1551434678-e076c223a692?w=400&h=300&fit=crop&auto=format" alt="Sample Image 2">
+                <div class="card-content">
+                    <h3>Sample Image 2</h3>
+                    <p>Twitter • Draft</p>
+                </div>
+            </div>
+            
+            <div class="card">
+                <img src="https://images.unsplash.com/photo-1552664730-d307ca884978?w=400&h=300&fit=crop&auto=format" alt="Sample Image 3">
+                <div class="card-content">
+                    <h3>Sample Image 3</h3>
+                    <p>LinkedIn • Published</p>
+                </div>
+            </div>
+        </div>
+    </div>
 </body>
-</html>`;
+</html>
+  `;
+
+  return new NextResponse(html, {
+    headers: {
+      'Content-Type': 'text/html',
+      // Do not use X-Frame-Options; use CSP frame-ancestors instead
+      'Content-Security-Policy': "frame-ancestors *;",
+      'Cache-Control': 'public, max-age=3600',
+    },
+  });
 }
