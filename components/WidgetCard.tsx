@@ -153,7 +153,7 @@ export default function WidgetCard({ post, aspectRatio = 'square' }: WidgetCardP
   return (
     <>
       <div className="group cursor-pointer" onClick={handleMediaClick}>
-        <div className="bg-white overflow-hidden hover:shadow-lg transition-all duration-300">
+        <div className="bg-white overflow-hidden hover:shadow-lg transition-all duration-300 border-t-2 border-black">
           {/* Media (Image or Video) */}
           <div className={`relative ${getAspectRatioClass()} overflow-hidden`}>
             {/* Pinned Icon */}
