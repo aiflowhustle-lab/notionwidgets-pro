@@ -224,7 +224,11 @@ export default function PublicWidgetPage() {
             onFiltersChange={handleFiltersChange}
             availablePlatforms={availablePlatforms}
             availableStatuses={availableStatuses}
-            onRefresh={() => loadWidgetData(true)}
+            onRefresh={() => {
+              console.log('Refresh requested - clearing filters');
+              setFilters({});
+              loadWidgetData(true, {});
+            }}
             onViewChange={handleViewChange}
             currentFilters={filters}
           />
