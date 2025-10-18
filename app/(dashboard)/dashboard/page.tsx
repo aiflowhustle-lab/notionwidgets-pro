@@ -286,20 +286,6 @@ export default function DashboardPage() {
                       View
                     </button>
                     <button
-                      onClick={() => copyWidgetUrl(widget.slug)}
-                      className="px-3 py-2 text-sm bg-white/10 text-white rounded-lg hover:bg-white/20 transition-colors"
-                      title="Copy URL"
-                    >
-                      <Copy className="w-4 h-4" />
-                    </button>
-                    <button
-                      onClick={() => copyEmbedCode(widget.slug)}
-                      className="px-3 py-2 text-sm bg-white/10 text-white rounded-lg hover:bg-white/20 transition-colors"
-                      title="Copy Embed Code"
-                    >
-                      <Copy className="w-4 h-4" />
-                    </button>
-                    <button
                       onClick={() => handleDeleteWidget(widget.id)}
                       className="px-3 py-2 text-sm bg-white/10 text-white rounded-lg hover:bg-white/20 transition-colors"
                       title="Delete Widget"
