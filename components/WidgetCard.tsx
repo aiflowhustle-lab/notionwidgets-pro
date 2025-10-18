@@ -167,7 +167,7 @@ export default function WidgetCard({ post, aspectRatio = 'square' }: WidgetCardP
 
             {/* Select All Icon - Show on all cards except videos */}
             {!hasVideo && (
-              <div className="absolute top-2 left-2 z-10">
+              <div className="absolute top-2 left-2 z-10 flex items-center gap-2">
                 <div className="text-white">
                   <svg width="18" height="18" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink" data-iconid="select-all-off" data-svgname="Select all off">
                     <title>ic_fluent_select_all_off_24_filled</title>
@@ -179,16 +179,22 @@ export default function WidgetCard({ post, aspectRatio = 'square' }: WidgetCardP
                     </g>
                   </svg>
                 </div>
+                <div className="text-white text-xs">
+                  {post.publishDate ? formatDate(post.publishDate) : 'No date'}
+                </div>
               </div>
             )}
 
             {/* Reels Icon - Show on videos only */}
             {hasVideo && (
-              <div className="absolute top-2 left-2 z-10">
+              <div className="absolute top-2 left-2 z-10 flex items-center gap-2">
                 <div className="text-white">
                   <svg className="w-4 h-4 scale-110" viewBox="0 0 50 50" fill="currentColor">
                     <path d="M13.34 4.13L20.26 16H4v-1C4 9.48 8.05 4.92 13.34 4.13zM33.26 16L22.57 16 15.57 4 26.26 4zM46 15v1H35.57l-7-12H35C41.08 4 46 8.92 46 15zM4 18v17c0 6.08 4.92 11 11 11h20c6.08 0 11-4.92 11-11V18H4zM31 32.19l-7.99 4.54C21.68 37.49 20 36.55 20 35.04v-9.08c0-1.51 1.68-2.45 3.01-1.69L31 28.81C32.33 29.56 32.33 31.44 31 32.19z"></path>
                   </svg>
+                </div>
+                <div className="text-white text-xs">
+                  {post.publishDate ? formatDate(post.publishDate) : 'No date'}
                 </div>
               </div>
             )}
@@ -245,10 +251,7 @@ export default function WidgetCard({ post, aspectRatio = 'square' }: WidgetCardP
               {/* Title and date overlay - Bottom 25% of card */}
               <div className="absolute bottom-0 left-0 right-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-black h-[25%] flex flex-col justify-end pb-2 p-4 z-10">
                 <div className="text-white">
-                  <div className="text-xs text-white/70 mb-1">
-                    {post.publishDate ? formatDate(post.publishDate) : 'No date'}
-                  </div>
-                  <h3 className="text-sm font-medium line-clamp-2">
+                  <h3 className="text-xs font-medium line-clamp-2">
                     {post.title || 'Untitled'}
                   </h3>
                 </div>
