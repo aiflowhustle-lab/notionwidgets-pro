@@ -172,14 +172,14 @@ export default function IPhone17Mockup({ className = "", widgetSlug = "demo" }: 
             {/* Dynamic Island */}
             
 
-            {/* Widget Content Area */}
-            <div className="w-full h-full bg-white overflow-y-auto">
+            {/* White space content area */}
+            <div className="w-full h-full bg-white">
               {loading ? (
                 <div className="flex items-center justify-center h-full">
                   <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-black"></div>
                 </div>
               ) : data ? (
-                <div className="p-4 space-y-4">
+                <div className="p-4 space-y-4 h-full overflow-y-auto">
                   {/* Header */}
                   <div className="text-center">
                     <h1 className="text-lg font-bold text-black mb-1">
