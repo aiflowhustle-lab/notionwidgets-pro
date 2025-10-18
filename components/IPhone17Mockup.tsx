@@ -46,7 +46,7 @@ export default function IPhone17Mockup({ className = "", widgetSlug = "demo" }: 
           publishDate: new Date().toISOString(),
           images: [{ 
             url: "https://images.unsplash.com/photo-1558655146-d09347e92766?w=400&h=400&fit=crop", 
-            source: "link",
+            source: "link" as const,
             originalUrl: "https://images.unsplash.com/photo-1558655146-d09347e92766?w=400&h=400&fit=crop"
           }],
           videos: [],
@@ -62,6 +62,8 @@ export default function IPhone17Mockup({ className = "", widgetSlug = "demo" }: 
           images: [],
           videos: [{ 
             url: "https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_1mb.mp4",
+            source: "link" as const,
+            type: "video/mp4",
             thumbnail: "https://images.unsplash.com/photo-1558655146-d09347e92766?w=400&h=400&fit=crop"
           }],
           pinned: false,
@@ -75,7 +77,7 @@ export default function IPhone17Mockup({ className = "", widgetSlug = "demo" }: 
           publishDate: new Date().toISOString(),
           images: [{ 
             url: "https://images.unsplash.com/photo-1558655146-d09347e92766?w=400&h=400&fit=crop", 
-            source: "link",
+            source: "link" as const,
             originalUrl: "https://images.unsplash.com/photo-1558655146-d09347e92766?w=400&h=400&fit=crop"
           }],
           videos: [],
@@ -90,7 +92,7 @@ export default function IPhone17Mockup({ className = "", widgetSlug = "demo" }: 
           publishDate: new Date().toISOString(),
           images: [{ 
             url: "https://images.unsplash.com/photo-1558655146-d09347e92766?w=400&h=400&fit=crop", 
-            source: "link",
+            source: "link" as const,
             originalUrl: "https://images.unsplash.com/photo-1558655146-d09347e92766?w=400&h=400&fit=crop"
           }],
           videos: [],
@@ -105,7 +107,7 @@ export default function IPhone17Mockup({ className = "", widgetSlug = "demo" }: 
           publishDate: new Date().toISOString(),
           images: [{ 
             url: "https://images.unsplash.com/photo-1558655146-d09347e92766?w=400&h=400&fit=crop", 
-            source: "link",
+            source: "link" as const,
             originalUrl: "https://images.unsplash.com/photo-1558655146-d09347e92766?w=400&h=400&fit=crop"
           }],
           videos: [],
@@ -120,7 +122,7 @@ export default function IPhone17Mockup({ className = "", widgetSlug = "demo" }: 
           publishDate: new Date().toISOString(),
           images: [{ 
             url: "https://images.unsplash.com/photo-1558655146-d09347e92766?w=400&h=400&fit=crop", 
-            source: "link",
+            source: "link" as const,
             originalUrl: "https://images.unsplash.com/photo-1558655146-d09347e92766?w=400&h=400&fit=crop"
           }],
           videos: [],
