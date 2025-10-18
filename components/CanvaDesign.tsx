@@ -39,8 +39,8 @@ export default function CanvaDesign({ canvaUrl, title, className = '', onClick, 
       className={`relative group cursor-pointer ${className}`}
       onClick={handleClick}
     >
-      {/* Canva Design Preview */}
-      <div className="relative w-full h-full bg-gradient-to-br from-orange-100 to-pink-100 overflow-hidden">
+      {/* Canva Design Preview - Portrait 4:5 aspect ratio */}
+      <div className="relative w-full bg-gradient-to-br from-orange-100 to-pink-100 overflow-hidden" style={{ aspectRatio: '4/5' }}>
         {!imageError ? (
           <div className="relative w-full h-full overflow-hidden">
             <iframe
@@ -51,17 +51,14 @@ export default function CanvaDesign({ canvaUrl, title, className = '', onClick, 
               sandbox="allow-scripts allow-same-origin allow-popups"
               loading="lazy"
               style={{
-                width: '150%',
-                height: '120%',
-                left: '-25%',
-                top: '-10%',
-                transform: 'scale(1)',
-                transformOrigin: 'center center'
+                width: '100%',
+                height: '100%',
+                objectFit: 'cover'
               }}
             />
           </div>
         ) : (
-          <div className="w-full h-full flex flex-col items-center justify-center p-4 bg-gradient-to-br from-orange-100 to-pink-100">
+          <div className="w-full h-full flex flex-col items-center justify-center p-4 bg-gradient-to-br from-orange-100 to-pink-100" style={{ aspectRatio: '4/5' }}>
             <div className="w-16 h-16 bg-orange-200 rounded-full flex items-center justify-center mb-3">
               <ExternalLink className="w-8 h-8 text-orange-600" />
             </div>
