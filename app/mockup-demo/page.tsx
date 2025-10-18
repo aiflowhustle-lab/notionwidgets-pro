@@ -94,11 +94,11 @@ export default function MockupDemoPage() {
             <div className="flex-1"></div>
           </div>
 
-          {/* Sample Content Grid */}
-          <div className="grid grid-cols-3 gap-1 max-w-3xl mx-auto">
+          {/* Sample Content Grid - 3 cards per row */}
+          <div className="grid grid-cols-3 gap-1 w-full max-w-3xl mx-auto">
             {[1, 2, 3, 4, 5, 6].map((i) => (
-              <div key={i} className="aspect-square bg-gray-200 rounded-lg flex items-center justify-center">
-                <span className="text-gray-500 text-sm">Card {i}</span>
+              <div key={i} className="aspect-square bg-gray-200 rounded-lg flex items-center justify-center hover:bg-gray-300 transition-colors">
+                <span className="text-gray-500 text-sm font-medium">Card {i}</span>
               </div>
             ))}
           </div>

@@ -18,9 +18,9 @@ export function IPhone17Mockup({ children, className = '' }: IPhone17MockupProps
             {/* Dynamic Island */}
             <div className="absolute top-6 left-1/2 -translate-x-1/2 w-[126px] bg-black rounded-full z-10 leading-[1.725/rem] h-6" />
 
-            {/* Widget content area - maintains original size and features */}
-            <div className="w-full h-full bg-white overflow-auto">
-              <div className={`w-full h-full ${className}`}>
+            {/* Widget content area - allows horizontal scrolling for 3-card layout */}
+            <div className="w-full h-full bg-white overflow-x-auto overflow-y-auto">
+              <div className={`min-w-[600px] h-full ${className}`}>
                 {children}
               </div>
             </div>
