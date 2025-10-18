@@ -138,7 +138,7 @@ export default function FilterBar({
 
       {/* Collapsible Filter Dropdowns */}
       {showFilters && (
-        <div className="mt-4 flex items-center space-x-3">
+        <div className="mt-4 flex items-center justify-center space-x-3">
           {/* Platform Filter */}
           <select
             value={filters.platform || ''}
