@@ -249,8 +249,8 @@ export default function WidgetCard({ post, aspectRatio = 'square' }: WidgetCardP
             {/* Overlay with content on hover - Bottom 20% */}
             <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-60 transition-all duration-300">
               {/* Title and date overlay - Bottom 20% of card */}
-              <div className="absolute bottom-0 left-0 right-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-black h-[20%] flex flex-col justify-end z-10">
-                <div className="text-white px-2 py-1 sm:px-3 sm:py-2">
+              <div className="absolute bottom-0 left-0 right-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-black h-[20%] flex items-center justify-center z-10">
+                <div className="text-white px-2 py-1 sm:px-3 sm:py-2 text-center">
                   <h3 className="text-[8px] sm:text-[10px] md:text-[11px] font-medium line-clamp-2 leading-tight">
                     {post.title || 'Untitled'}
                   </h3>
