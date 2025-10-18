@@ -155,7 +155,7 @@ export default function DashboardPage() {
             Welcome back, {user?.displayName || 'User'}!
           </h1>
           <p className="text-white/70 mt-2">
-            Manage your Notion image widgets and create new ones.
+            Manage your Notion widgets and create new ones.
           </p>
         </div>
 
