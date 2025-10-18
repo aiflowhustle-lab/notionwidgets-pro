@@ -28,6 +28,10 @@
     {
       "source": "/embed/:slug",
       "destination": "/api/widget/:slug/embed"
+    },
+    {
+      "source": "/embed/:slug.html",
+      "destination": "/embed/:slug.html"
     }
   ]
 }
