@@ -10,7 +10,7 @@
       "headers": [
         {
           "key": "Content-Security-Policy",
-          "value": "frame-ancestors 'self' https://www.notion.so https://notion.so https://*.notion.so https://*.vercel.app https://vercel.app https://notion.site https://*.notion.site;"
+          "value": "frame-ancestors 'self' https://www.notion.so https://notion.so https://*.notion.so https://*.vercel.app https://vercel.app;"
         }
       ]
     },
@@ -19,17 +19,15 @@
       "headers": [
         {
           "key": "Content-Security-Policy",
-          "value": "frame-ancestors 'self' https://www.notion.so https://notion.so https://*.notion.so https://*.vercel.app https://vercel.app https://notion.site https://*.notion.site;"
-        },
-        {
-          "key": "X-Frame-Options",
-          "value": "SAMEORIGIN"
-        },
-        {
-          "key": "Referrer-Policy",
-          "value": "strict-origin-when-cross-origin"
+          "value": "frame-ancestors 'self' https://www.notion.so https://notion.so https://*.notion.so https://*.vercel.app https://vercel.app;"
         }
       ]
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/embed/:slug",
+      "destination": "/api/widget/:slug/embed"
     }
   ]
 }
