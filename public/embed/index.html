@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notion Widget Embed</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        html, body {
+            height: 100%;
+            overflow: hidden;
+        }
+        
+        #widget-iframe {
+            width: 100vw;
+            height: 100vh;
+            border: none;
+            display: block;
+        }
+        
+        /* Loading spinner */
+        .loading {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 1000;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        
+        .spinner {
+            width: 20px;
+            height: 20px;
+            border: 2px solid #f3f3f3;
+            border-top: 2px solid #3498db;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div id="loading" class="loading">
+        <div class="spinner"></div>
+        <div>Loading widget...</div>
+    </div>
+    
+    <iframe 
+        id="widget-iframe"
+        src="https://notionwidgets-pro-two.vercel.app/w/premium-soe9vv"
+        allow="fullscreen"
+        allowfullscreen
+        sandbox="allow-scripts allow-same-origin allow-popups allow-forms"
+        loading="eager"
+        onload="hideLoading()"
+        onerror="showError()"
+    ></iframe>
+
+    <script>
+        function hideLoading() {
+            const loading = document.getElementById('loading');
+            if (loading) {
+                loading.style.display = 'none';
+            }
+        }
+        
+        function showError() {
+            const loading = document.getElementById('loading');
+            if (loading) {
+                loading.innerHTML = '<div style="color: #ff6b6b;">Failed to load widget</div>';
+            }
+        }
+        
+        // Handle iframe communication
+        window.addEventListener('message', function(event) {
+            // Forward messages from iframe to parent (Notion)
+            if (event.origin === 'https://notionwidgets-pro-two.vercel.app') {
+                window.parent.postMessage(event.data, '*');
+            }
+        });
+        
+        // Ensure iframe loads properly on mobile
+        document.addEventListener('DOMContentLoaded', function() {
+            const iframe = document.getElementById('widget-iframe');
+            if (iframe) {
+                iframe.style.width = '100vw';
+                iframe.style.height = '100vh';
+            }
+        });
+    </script>
+</body>
+</html>
