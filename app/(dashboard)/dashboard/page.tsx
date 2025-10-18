@@ -276,6 +276,26 @@ export default function DashboardPage() {
                       <p>4. Click "Create embed"</p>
                     </div>
                   </div>
+
+                  {/* iPad Compatible URL */}
+                  <div className="mb-4 p-3 bg-white/5 rounded-lg">
+                    <h4 className="text-sm font-medium text-white mb-2">iPad Notion App Compatible</h4>
+                    <div className="flex">
+                      <input
+                        type="text"
+                        value={`${window.location.origin}/embed/${widget.slug}`}
+                        readOnly
+                        className="flex-1 px-2 py-1 text-xs bg-white/10 text-white rounded-l border border-white/20 focus:outline-none"
+                      />
+                      <button
+                        onClick={() => copyWidgetUrl(`embed/${widget.slug}`)}
+                        className="px-3 py-1 bg-white/20 text-white rounded-r border border-l-0 border-white/20 hover:bg-white/30 transition-colors text-xs"
+                      >
+                        Copy
+                      </button>
+                    </div>
+                    <p className="text-xs text-white/60 mt-1">Use this URL for iPad Notion app embedding</p>
+                  </div>
                   
                   <div className="flex space-x-2">
                     <button
