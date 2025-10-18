@@ -25,7 +25,6 @@ export default function CreateWidgetModal({ onClose, onSuccess }: CreateWidgetMo
     },
   });
   const [showToken, setShowToken] = useState(false);
-  const [showAdvanced, setShowAdvanced] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -108,7 +107,7 @@ export default function CreateWidgetModal({ onClose, onSuccess }: CreateWidgetMo
                 type="text"
                 value={formData.name}
                 onChange={(e) => handleInputChange('name', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
                 placeholder="My Image Gallery"
                 required
               />
@@ -134,7 +133,7 @@ export default function CreateWidgetModal({ onClose, onSuccess }: CreateWidgetMo
                   type={showToken ? 'text' : 'password'}
                   value={formData.token}
                   onChange={(e) => handleInputChange('token', e.target.value)}
-                  className="w-full px-3 py-2 pr-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 pr-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
                   placeholder="secret_..."
                   required
                 />
@@ -167,7 +166,7 @@ export default function CreateWidgetModal({ onClose, onSuccess }: CreateWidgetMo
                 type="text"
                 value={formData.databaseId}
                 onChange={(e) => handleInputChange('databaseId', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
                 placeholder="286696474ba4818e9699c5e4a99f410a"
                 required
               />
@@ -176,84 +175,6 @@ export default function CreateWidgetModal({ onClose, onSuccess }: CreateWidgetMo
               </p>
             </div>
 
-            {/* Advanced Settings Toggle */}
-            <div>
-              <button
-                type="button"
-                onClick={() => setShowAdvanced(!showAdvanced)}
-                className="text-sm text-blue-600 hover:text-blue-800 font-medium"
-              >
-                {showAdvanced ? 'Hide' : 'Show'} Advanced Settings
-              </button>
-            </div>
-
-            {/* Advanced Settings */}
-            {showAdvanced && (
-              <div className="space-y-4 p-4 bg-gray-50 rounded-lg">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Grid Columns
-                  </label>
-                  <select
-                    value={formData.settings?.gridColumns || 3}
-                    onChange={(e) => handleInputChange('settings.gridColumns', parseInt(e.target.value))}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  >
-                    <option value={2}>2 Columns</option>
-                    <option value={3}>3 Columns</option>
-                    <option value={4}>4 Columns</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Default Platform Filter
-                  </label>
-                  <select
-                    value={formData.settings?.defaultPlatform || ''}
-                    onChange={(e) => handleInputChange('settings.defaultPlatform', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  >
-                    <option value="">All Platforms</option>
-                    <option value="Instagram">Instagram</option>
-                    <option value="TikTok">TikTok</option>
-                    <option value="Others">Others</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Default Status Filter
-                  </label>
-                  <select
-                    value={formData.settings?.defaultStatus || ''}
-                    onChange={(e) => handleInputChange('settings.defaultStatus', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  >
-                    <option value="">All Statuses</option>
-                    <option value="Not started">Not started</option>
-                    <option value="In progress">In progress</option>
-                    <option value="Done">Done</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Aspect Ratio
-                  </label>
-                  <select
-                    value={formData.settings?.aspectRatio || 'square'}
-                    onChange={(e) => handleInputChange('settings.aspectRatio', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  >
-                    <option value="square">Square (1:1)</option>
-                    <option value="portrait">Portrait (3:4)</option>
-                    <option value="landscape">Landscape (4:3)</option>
-                    <option value="auto">Auto</option>
-                  </select>
-                </div>
-              </div>
-            )}
 
             {/* Error Message */}
             {error && (
