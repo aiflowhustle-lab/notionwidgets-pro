@@ -32,6 +32,10 @@
     {
       "source": "/embed/:slug.html",
       "destination": "/embed/:slug.html"
+    },
+    {
+      "source": "/w/:slug.html",
+      "destination": "/w/:slug.html"
     }
   ]
 }
