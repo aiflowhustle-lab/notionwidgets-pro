@@ -1,43 +1,23 @@
-'use client';
+import { notFound } from 'next/navigation';
 
-import { useParams } from 'next/navigation';
-import { useEffect, useState } from 'react';
+interface EmbedPageProps {
+  params: {
+    slug: string;
+  };
+}
 
-export default function EmbedPage() {
-  const params = useParams();
-  const slug = params.slug as string;
-  const [mounted, setMounted] = useState(false);
+export async function generateMetadata({ params }: EmbedPageProps) {
+  return {
+    title: `Widget Embed - ${params.slug}`,
+    description: 'Notion Widget Embed',
+  };
+}
 
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+export default function EmbedPage({ params }: EmbedPageProps) {
+  const { slug } = params;
 
-  if (!mounted) {
-    return (
-      <div style={{
-        position: 'fixed',
-        top: '50%',
-        left: '50%',
-        transform: 'translate(-50%, -50%)',
-        zIndex: 1000,
-        background: 'rgba(0, 0, 0, 0.8)',
-        color: 'white',
-        padding: '20px',
-        borderRadius: '8px',
-        fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
-      }}>
-        <div style={{
-          width: '20px',
-          height: '20px',
-          border: '2px solid #f3f3f3',
-          borderTop: '2px solid #3498db',
-          borderRadius: '50%',
-          animation: 'spin 1s linear infinite',
-          margin: '0 auto 10px'
-        }}></div>
-        <div>Loading widget...</div>
-      </div>
-    );
+  if (!slug) {
+    notFound();
   }
 
   return (
@@ -69,7 +49,7 @@ export default function EmbedPage() {
       
       <iframe 
         className="widget-iframe"
-        src={`${window.location.origin}/w/${slug}`}
+        src={`/w/${slug}`}
         allow="fullscreen"
         allowFullScreen
         sandbox="allow-scripts allow-same-origin allow-popups allow-forms"

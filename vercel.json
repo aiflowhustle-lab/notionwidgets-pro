@@ -32,10 +32,4 @@
       ]
     }
   ],
-  "rewrites": [
-    {
-      "source": "/embed/:slug",
-      "destination": "/api/widget/:slug/embed"
-    }
-  ]
 }
