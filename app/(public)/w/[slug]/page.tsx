@@ -50,117 +50,94 @@ export default function PublicWidgetPage() {
       setLoading(true);
       setError(null);
       
-      const searchParams = new URLSearchParams();
-      if (currentFilters.platform) searchParams.set('platform', currentFilters.platform);
-      if (currentFilters.status) searchParams.set('status', currentFilters.status);
-      if (forceRefresh) searchParams.set('force_refresh', 'true');
-      
-      const apiUrl = `${window.location.origin}/api/widgets/${slug}/data?${searchParams.toString()}`;
-      console.log('Fetching from API:', apiUrl);
-      
-      const response = await fetch(apiUrl);
-      
-      if (!response.ok) {
-        if (response.status === 404) {
-          throw new Error('Widget not found');
-        }
-        throw new Error('Failed to load widget data');
+      const queryParams = new URLSearchParams();
+      if (currentFilters.platform) {
+        queryParams.append('platform', currentFilters.platform);
+      }
+      if (currentFilters.status) {
+        queryParams.append('status', currentFilters.status);
       }
       
-      const widgetData = await response.json();
-      console.log('Received data:', widgetData);
-      setData(widgetData);
-    } catch (error) {
-      console.error('Error loading widget data:', error);
-      setError(error instanceof Error ? error.message : 'Failed to load widget data');
+      const url = `/api/widgets/${slug}/data${queryParams.toString() ? `?${queryParams.toString()}` : ''}`;
+      console.log('Fetching from URL:', url);
+      
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        cache: forceRefresh ? 'no-cache' : 'default',
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to load widget: ${response.status} ${response.statusText}`);
+      }
+
+      const result = await response.json();
+      console.log('Widget data loaded:', result);
+      
+      setData(result);
+      setViewMode('all');
+      setCurrentView('all');
+    } catch (err) {
+      console.error('Error loading widget data:', err);
+      setError(err instanceof Error ? err.message : 'Failed to load widget');
     } finally {
       setLoading(false);
       isLoadingRef.current = false;
     }
-  }, [slug]);
+  }, [slug, filters]);
 
-  // Load filters from URL on component mount
-  useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const platform = urlParams.get('platform') || '';
-    const status = urlParams.get('status') || '';
-    
-    if (platform || status) {
-      setFilters({
-        platform: platform || undefined,
-        status: status || undefined,
-      });
-    }
+  const handleFiltersChange = useCallback((newFilters: WidgetFilters) => {
+    console.log('Filters changed:', newFilters);
+    setFilters(newFilters);
+    isFilterChanging.current = true;
+    loadWidgetData(true, newFilters);
+  }, [loadWidgetData]);
+
+  const handleRefresh = useCallback(() => {
+    console.log('Manual refresh triggered');
+    loadWidgetData(true);
+  }, [loadWidgetData]);
+
+  const handleViewModeChange = useCallback((mode: 'all' | 'videos') => {
+    console.log('View mode changed to:', mode);
+    setViewMode(mode);
+    setCurrentView(mode);
   }, []);
 
-  // Load data when component mounts
+  // Check if we're in an iframe
+  useEffect(() => {
+    const checkIframe = () => {
+      try {
+        return window.self !== window.top;
+      } catch (e) {
+        return true;
+      }
+    };
+    
+    setIsInIframe(checkIframe());
+  }, []);
+
+  // Load widget data on mount
   useEffect(() => {
     loadWidgetData();
   }, [loadWidgetData]);
 
-  // Detect if we're in an iframe
-  useEffect(() => {
-    setIsInIframe(window !== window.top);
-  }, []);
-
-  const handleFiltersChange = (newFilters: WidgetFilters) => {
-    console.log('Filter change requested:', newFilters);
-    
-    // Only proceed if filters actually changed
-    const currentPlatform = filters.platform || '';
-    const currentStatus = filters.status || '';
-    const newPlatform = newFilters.platform || '';
-    const newStatus = newFilters.status || '';
-    
-    if (currentPlatform === newPlatform && currentStatus === newStatus) {
-      console.log('Filters unchanged, skipping update');
-      return;
-    }
-    
-    setFilters(newFilters);
-    
-    // Update URL parameters
-    const url = new URL(window.location.href);
-    if (newFilters.platform) {
-      url.searchParams.set('platform', newFilters.platform);
-    } else {
-      url.searchParams.delete('platform');
-    }
-    
-    if (newFilters.status) {
-      url.searchParams.set('status', newFilters.status);
-    } else {
-      url.searchParams.delete('status');
-    }
-    
-    console.log('Updating URL to:', url.toString());
-    // Update URL without page refresh
-    window.history.replaceState({}, '', url.toString());
-    
-    // Immediately load data with new filters
-    console.log('Loading data immediately with new filters:', newFilters);
-    loadWidgetData(false, newFilters);
-  };
-
-  const handleViewChange = (view: 'all' | 'videos') => {
-    setViewMode(view);
-    setCurrentView(view);
-  };
-
-  // Filter posts based on view mode
+  // Filter posts based on current view
   const filteredPosts = data?.posts.filter(post => {
-    if (viewMode === 'videos') {
+    if (currentView === 'videos') {
       return post.videos && post.videos.length > 0;
     }
-    return true; // Show all posts for 'all' view
+    return true;
   }) || [];
 
-  if (loading) {
+  if (loading && !data) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-white flex items-center justify-center">
         <div className="text-center">
-          <Loader2 className="w-12 h-12 animate-spin text-blue-600 mx-auto mb-4" />
-          <p className="text-gray-600">Loading widget...</p>
+          <Loader2 className="mx-auto h-8 w-8 animate-spin text-gray-400" />
+          <p className="mt-2 text-sm text-gray-500">Loading widget...</p>
         </div>
       </div>
     );
@@ -168,14 +145,14 @@ export default function PublicWidgetPage() {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center max-w-md mx-auto p-6">
-          <AlertCircle className="w-16 h-16 text-red-500 mx-auto mb-4" />
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">Widget Not Found</h1>
-          <p className="text-gray-600 mb-6">{error}</p>
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <div className="text-center">
+          <AlertCircle className="mx-auto h-12 w-12 text-red-400" />
+          <h3 className="mt-2 text-sm font-medium text-gray-900">Error loading widget</h3>
+          <p className="mt-1 text-sm text-gray-500">{error}</p>
           <button
-            onClick={() => window.location.reload()}
-            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            onClick={() => loadWidgetData(true)}
+            className="mt-4 px-4 py-2 bg-black text-white rounded-md hover:bg-gray-800 transition-colors"
           >
             Try Again
           </button>
@@ -190,7 +167,7 @@ export default function PublicWidgetPage() {
 
   const { widget, posts, availablePlatforms, availableStatuses } = data;
 
-  const widgetContent = (
+  const renderWidgetContent = () => (
     <div className="min-h-screen bg-white">
       {/* View Toggle Button */}
       <div className="fixed top-4 right-4 z-50">
@@ -211,79 +188,78 @@ export default function PublicWidgetPage() {
             onFiltersChange={handleFiltersChange}
             availablePlatforms={availablePlatforms}
             availableStatuses={availableStatuses}
-            onRefresh={() => loadWidgetData(true)}
-            onViewChange={handleViewChange}
             currentFilters={filters}
+            onRefresh={handleRefresh}
           />
         </div>
 
-        {/* View Toggle Icons - Between filters and cards */}
-        <div className="max-w-6xl mx-auto mb-1 flex justify-between items-center px-4">
-          {/* Grid Icon - Show All Cards (9 dots) - Third right of first card */}
-          <div className="flex-1 flex justify-end">
+        {/* View Mode Toggle */}
+        <div className="max-w-3xl mx-auto mb-4 flex justify-center">
+          <div className="flex space-x-4">
             <button
-              onClick={() => handleViewChange('all')}
-              className={`p-2 transition-all flex items-center justify-center mr-5 ${
+              onClick={() => setCurrentView('all')}
+              className={`px-6 py-2 rounded-full transition-all ${
                 currentView === 'all'
-                  ? 'text-black shadow-[0_2px_0_0_rgba(0,0,0,1)] scale-x-130'
-                  : 'text-black hover:text-gray-600'
+                  ? 'text-black shadow-[0_2px_0_0_rgba(0,0,0,1)]'
+                  : 'text-gray-500 hover:text-black'
               }`}
-              title="Show all cards"
             >
-              <svg className="w-6 h-6" viewBox="0 0 24 24" fill="currentColor">
-                <rect x="2" y="2" width="5" height="5"/>
-                <rect x="9.5" y="2" width="5" height="5"/>
-                <rect x="17" y="2" width="5" height="5"/>
-                <rect x="2" y="9.5" width="5" height="5"/>
-                <rect x="9.5" y="9.5" width="5" height="5"/>
-                <rect x="17" y="9.5" width="5" height="5"/>
-                <rect x="2" y="17" width="5" height="5"/>
-                <rect x="9.5" y="17" width="5" height="5"/>
-                <rect x="17" y="17" width="5" height="5"/>
-              </svg>
+              <div className="flex items-center space-x-2">
+                <svg
+                  className="w-5 h-5"
+                  fill="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <rect x="2" y="2" width="5" height="5"/>
+                  <rect x="9.5" y="2" width="5" height="5"/>
+                  <rect x="17" y="2" width="5" height="5"/>
+                  <rect x="2" y="9.5" width="5" height="5"/>
+                  <rect x="9.5" y="9.5" width="5" height="5"/>
+                  <rect x="17" y="9.5" width="5" height="5"/>
+                  <rect x="2" y="17" width="5" height="5"/>
+                  <rect x="9.5" y="17" width="5" height="5"/>
+                  <rect x="17" y="17" width="5" height="5"/>
+                </svg>
+                <span>All Posts</span>
+              </div>
             </button>
-          </div>
-
-          {/* Reels Icon - Show Only Videos - Third right of second card */}
-          <div className="flex-1 flex justify-center">
             <button
-              onClick={() => handleViewChange('videos')}
-              className={`p-2 transition-all flex items-center justify-center ${
+              onClick={() => setCurrentView('videos')}
+              className={`px-6 py-2 rounded-full transition-all ${
                 currentView === 'videos'
-                  ? 'text-black shadow-[0_2px_0_0_rgba(0,0,0,1)] scale-x-130'
-                  : 'text-black hover:text-gray-600'
+                  ? 'text-black shadow-[0_2px_0_0_rgba(0,0,0,1)]'
+                  : 'text-gray-500 hover:text-black'
               }`}
-              title="Show only videos"
             >
-              <svg className="w-6 h-6" viewBox="0 0 50 50" fill="currentColor">
-                <path d="M13.34 4.13L20.26 16H4v-1C4 9.48 8.05 4.92 13.34 4.13zM33.26 16L22.57 16 15.57 4 26.26 4zM46 15v1H35.57l-7-12H35C41.08 4 46 8.92 46 15zM4 18v17c0 6.08 4.92 11 11 11h20c6.08 0 11-4.92 11-11V18H4zM31 32.19l-7.99 4.54C21.68 37.49 20 36.55 20 35.04v-9.08c0-1.51 1.68-2.45 3.01-1.69L31 28.81C32.33 29.56 32.33 31.44 31 32.19z"></path>
-              </svg>
+              <div className="flex items-center space-x-2">
+                <svg
+                  className="w-5 h-5"
+                  fill="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path d="M8 5v14l11-7z"/>
+                </svg>
+                <span>Videos</span>
+              </div>
             </button>
           </div>
-
-          {/* Empty space for third card */}
-          <div className="flex-1"></div>
         </div>
 
-        {/* Content Grid - 2x3 Layout */}
+        {/* Posts Grid */}
         {filteredPosts.length === 0 ? (
           <div className="text-center py-12">
-            <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <Image className="w-12 h-12 text-gray-400" />
-            </div>
-            <h3 className="text-lg font-medium text-gray-900 mb-2">
-              {viewMode === 'videos' ? 'No videos found' : 'No images found'}
-            </h3>
-            <p className="text-gray-600">
-              {Object.values(filters).some(v => v !== undefined)
+            <Image className="mx-auto h-12 w-12 text-gray-400" />
+            <h3 className="mt-2 text-sm font-medium text-gray-900">No posts found</h3>
+            <p className="mt-1 text-sm text-gray-500">
+              {currentView === 'all' 
                 ? 'Try adjusting your filters to see more content.'
-                : viewMode === 'videos' 
+                : currentView === 'videos' 
                   ? 'This widget doesn\'t have any videos yet.'
                   : 'This widget doesn\'t have any images yet.'}
             </p>
           </div>
         ) : (
-          <div className="grid grid-cols-3 gap-1 max-w-3xl mx-auto">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {filteredPosts.map((post) => (
               <WidgetCard
                 key={post.id}
@@ -293,16 +269,17 @@ export default function PublicWidgetPage() {
             ))}
           </div>
         )}
-        </div>
       </div>
     </div>
   );
 
-  return isMobileView ? (
-    <IPhone17Mockup>
-      {widgetContent}
-    </IPhone17Mockup>
-  ) : (
-    widgetContent
-  );
+  if (isMobileView) {
+    return (
+      <IPhone17Mockup>
+        {renderWidgetContent()}
+      </IPhone17Mockup>
+    );
+  }
+
+  return renderWidgetContent();
 }
