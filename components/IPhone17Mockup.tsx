@@ -44,9 +44,14 @@ export default function IPhone17Mockup({ className = "", widgetSlug = "demo" }: 
           platform: "Instagram",
           status: "Done",
           publishDate: new Date().toISOString(),
-          images: [{ url: "https://images.unsplash.com/photo-1558655146-d09347e92766?w=400&h=400&fit=crop", source: "link" }],
+          images: [{ 
+            url: "https://images.unsplash.com/photo-1558655146-d09347e92766?w=400&h=400&fit=crop", 
+            source: "link",
+            originalUrl: "https://images.unsplash.com/photo-1558655146-d09347e92766?w=400&h=400&fit=crop"
+          }],
           videos: [],
-          pinned: true
+          pinned: true,
+          imageSource: "link"
         },
         {
           id: "2", 
@@ -55,8 +60,12 @@ export default function IPhone17Mockup({ className = "", widgetSlug = "demo" }: 
           status: "Done",
           publishDate: new Date().toISOString(),
           images: [],
-          videos: [{ url: "https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_1mb.mp4" }],
-          pinned: false
+          videos: [{ 
+            url: "https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_1mb.mp4",
+            thumbnail: "https://images.unsplash.com/photo-1558655146-d09347e92766?w=400&h=400&fit=crop"
+          }],
+          pinned: false,
+          imageSource: "link"
         },
         {
           id: "3",
@@ -64,9 +73,59 @@ export default function IPhone17Mockup({ className = "", widgetSlug = "demo" }: 
           platform: "Instagram", 
           status: "In progress",
           publishDate: new Date().toISOString(),
-          images: [{ url: "https://images.unsplash.com/photo-1558655146-d09347e92766?w=400&h=400&fit=crop", source: "link" }],
+          images: [{ 
+            url: "https://images.unsplash.com/photo-1558655146-d09347e92766?w=400&h=400&fit=crop", 
+            source: "link",
+            originalUrl: "https://images.unsplash.com/photo-1558655146-d09347e92766?w=400&h=400&fit=crop"
+          }],
           videos: [],
-          pinned: false
+          pinned: false,
+          imageSource: "link"
+        },
+        {
+          id: "4",
+          title: "Another Post",
+          platform: "Instagram", 
+          status: "Done",
+          publishDate: new Date().toISOString(),
+          images: [{ 
+            url: "https://images.unsplash.com/photo-1558655146-d09347e92766?w=400&h=400&fit=crop", 
+            source: "link",
+            originalUrl: "https://images.unsplash.com/photo-1558655146-d09347e92766?w=400&h=400&fit=crop"
+          }],
+          videos: [],
+          pinned: false,
+          imageSource: "link"
+        },
+        {
+          id: "5",
+          title: "More Content",
+          platform: "TikTok", 
+          status: "Done",
+          publishDate: new Date().toISOString(),
+          images: [{ 
+            url: "https://images.unsplash.com/photo-1558655146-d09347e92766?w=400&h=400&fit=crop", 
+            source: "link",
+            originalUrl: "https://images.unsplash.com/photo-1558655146-d09347e92766?w=400&h=400&fit=crop"
+          }],
+          videos: [],
+          pinned: false,
+          imageSource: "link"
+        },
+        {
+          id: "6",
+          title: "Final Post",
+          platform: "Instagram", 
+          status: "Not started",
+          publishDate: new Date().toISOString(),
+          images: [{ 
+            url: "https://images.unsplash.com/photo-1558655146-d09347e92766?w=400&h=400&fit=crop", 
+            source: "link",
+            originalUrl: "https://images.unsplash.com/photo-1558655146-d09347e92766?w=400&h=400&fit=crop"
+          }],
+          videos: [],
+          pinned: false,
+          imageSource: "link"
         }
       ],
       availablePlatforms: ["Instagram", "TikTok", "Others"],
@@ -178,7 +237,7 @@ export default function IPhone17Mockup({ className = "", widgetSlug = "demo" }: 
                   </div>
 
                   {/* Widget Cards Grid */}
-                  <div className="grid grid-cols-2 gap-2">
+                  <div className="grid grid-cols-3 gap-1">
                     {filteredPosts.map((post) => (
                       <WidgetCard
                         key={post.id}
