@@ -123,8 +123,8 @@ export default function FilterBar({
           </button>
         </div>
 
-        {/* Clear Filters Button - Always visible when filters are active */}
-        {hasActiveFilters && (
+        {/* Clear Filters Button - Hidden */}
+        {/* {hasActiveFilters && (
           <button
             onClick={clearFilters}
             className="px-3 py-1.5 bg-red-100 text-red-700 text-sm rounded-md hover:bg-red-200 transition-colors flex items-center space-x-1"
@@ -132,7 +132,7 @@ export default function FilterBar({
             <X className="w-3 h-3" />
             <span>Clear</span>
           </button>
-        )}
+        )} */}
 
       </div>
 
