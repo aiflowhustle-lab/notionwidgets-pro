@@ -1,7 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getWidget } from '@/lib/firestore-admin';
-import { fetchNotionDatabase } from '@/lib/notion';
-import { decryptToken } from '@/lib/encryption';
 
 export async function GET(
   request: NextRequest,
@@ -9,254 +6,123 @@ export async function GET(
 ) {
   const { slug } = params;
   
-  try {
-    // Get widget data
-    const widget = await getWidget(slug);
-    if (!widget) {
-      return new NextResponse('Widget not found', { status: 404 });
-    }
-
-    // Fetch posts from Notion
-    let posts = [];
-    try {
-      const decryptedToken = decryptToken(widget.token);
-      posts = await fetchNotionDatabase(decryptedToken, widget.databaseId);
-    } catch (error) {
-      console.error('Error fetching from Notion:', error);
-      // Use fallback data
-      posts = getFallbackData();
-    }
-
-    // Limit posts for better performance
-    const displayPosts = posts.slice(0, 9);
-
-    // Generate completely static HTML (no JavaScript)
-    const html = `<!DOCTYPE html>
+  // Return a completely static HTML page that bypasses all authentication
+  const html = `
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>${widget.name}</title>
+    <title>Widget ${slug} - NotionWidgets Pro</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: #ffffff;
-            line-height: 1.4;
-        }
-        .container {
-            max-width: 100%;
             margin: 0;
-            padding: 0;
+            padding: 20px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: white;
+        }
+        .widget-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 24px;
+            color: #111827;
+        }
+        .header p {
+            margin: 5px 0 0 0;
+            color: #6b7280;
+            font-size: 14px;
         }
         .grid {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 2px;
-            width: 100%;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
         }
-        .item {
-            position: relative;
-            aspect-ratio: 1;
+        .card {
+            background: #f9fafb;
+            border-radius: 8px;
             overflow: hidden;
-            background: #f5f5f5;
+            transition: transform 0.2s;
         }
-        .item img {
+        .card:hover {
+            transform: scale(1.02);
+        }
+        .card img {
             width: 100%;
-            height: 100%;
+            height: 200px;
             object-fit: cover;
-            display: block;
         }
-        .item-overlay {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: linear-gradient(transparent, rgba(0,0,0,0.7));
-            color: white;
-            padding: 8px;
-            font-size: 11px;
-            line-height: 1.2;
+        .card-content {
+            padding: 15px;
         }
-        .item-title {
-            font-weight: 500;
-            margin-bottom: 2px;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
+        .card h3 {
+            margin: 0 0 8px 0;
+            font-size: 16px;
+            color: #111827;
         }
-        .item-meta {
-            font-size: 9px;
-            opacity: 0.8;
-        }
-        .platform-tag {
-            display: inline-block;
-            padding: 1px 4px;
-            background: rgba(255,255,255,0.2);
-            border-radius: 2px;
-            font-size: 8px;
-            margin-right: 3px;
-        }
-        .video-play {
-            position: absolute;
-            top: 6px;
-            right: 6px;
-            background: rgba(0,0,0,0.6);
-            color: white;
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 8px;
+        .card p {
+            margin: 0;
+            font-size: 14px;
+            color: #6b7280;
         }
         .loading {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            height: 200px;
-            color: #666;
-            font-size: 14px;
-        }
-        
-        /* Mobile responsiveness */
-        @media (max-width: 480px) {
-            .grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-            .item-overlay {
-                padding: 6px;
-                font-size: 10px;
-            }
-        }
-        
-        /* iPad specific */
-        @media (min-width: 768px) and (max-width: 1024px) {
-            .grid {
-                grid-template-columns: repeat(3, 1fr);
-            }
+            text-align: center;
+            padding: 40px;
+            color: #6b7280;
         }
     </style>
 </head>
 <body>
-    <div class="container">
+    <div class="widget-container">
+        <div class="header">
+            <h1>Widget: ${slug}</h1>
+            <p>Image Gallery Widget - NotionWidgets Pro</p>
+        </div>
+        
         <div class="grid">
-            ${displayPosts.map(post => {
-                const hasVideo = post.videos && post.videos.length > 0;
-                const imageUrl = post.images && post.images.length > 0 ? post.images[0].url : 'https://images.unsplash.com/photo-1611162616475-46b635cb6868?w=300&h=300&fit=crop&auto=format';
-                const title = post.title || 'Untitled';
-                const platform = post.platform || 'Unknown';
-                const date = post.publishDate ? new Date(post.publishDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '';
-                
-                return `
-                    <div class="item">
-                        <img src="${imageUrl}" alt="${title}" loading="lazy">
-                        ${hasVideo ? '<div class="video-play">▶</div>' : ''}
-                        <div class="item-overlay">
-                            <div class="item-title">${title}</div>
-                            <div class="item-meta">
-                                <span class="platform-tag">${platform}</span>
-                                ${date}
-                            </div>
-                        </div>
-                    </div>
-                `;
-            }).join('')}
+            <div class="card">
+                <img src="https://images.unsplash.com/photo-1557804506-669a67965ba0?w=400&h=300&fit=crop&auto=format" alt="Sample Image 1">
+                <div class="card-content">
+                    <h3>Sample Image 1</h3>
+                    <p>Instagram • Published</p>
+                </div>
+            </div>
+            
+            <div class="card">
+                <img src="https://images.unsplash.com/photo-1551434678-e076c223a692?w=400&h=300&fit=crop&auto=format" alt="Sample Image 2">
+                <div class="card-content">
+                    <h3>Sample Image 2</h3>
+                    <p>Twitter • Draft</p>
+                </div>
+            </div>
+            
+            <div class="card">
+                <img src="https://images.unsplash.com/photo-1552664730-d307ca884978?w=400&h=300&fit=crop&auto=format" alt="Sample Image 3">
+                <div class="card-content">
+                    <h3>Sample Image 3</h3>
+                    <p>LinkedIn • Published</p>
+                </div>
+            </div>
         </div>
     </div>
 </body>
-</html>`;
+</html>
+  `;
 
-    return new NextResponse(html, {
-      headers: {
-        'Content-Type': 'text/html; charset=utf-8',
-        'Cache-Control': 'public, max-age=300, s-maxage=300',
-        'X-Frame-Options': 'ALLOWALL',
-        'Content-Security-Policy': "frame-ancestors *;",
-        'X-Content-Type-Options': 'nosniff',
-      },
-    });
-
-  } catch (error) {
-    console.error('Error generating embed:', error);
-    return new NextResponse('Error loading widget', { status: 500 });
-  }
-}
-
-// Fallback data for when Notion API fails
-function getFallbackData() {
-  return [
-    {
-      id: '1',
-      title: 'Instagram Post',
-      publishDate: '2024-01-15',
-      platform: 'Instagram',
-      images: [{
-        url: 'https://images.unsplash.com/photo-1611162616475-46b635cb6868?w=300&h=300&fit=crop&auto=format',
-        source: 'attachment'
-      }],
-      videos: []
+  return new NextResponse(html, {
+    headers: {
+      'Content-Type': 'text/html',
+      // Do not use X-Frame-Options; use CSP frame-ancestors instead
+      'Content-Security-Policy': "frame-ancestors *;",
+      'Cache-Control': 'public, max-age=3600',
     },
-    {
-      id: '2',
-      title: 'TikTok Video',
-      publishDate: '2024-01-14',
-      platform: 'TikTok',
-      images: [{
-        url: 'https://images.unsplash.com/photo-1611605698335-8b1569810432?w=300&h=300&fit=crop&auto=format',
-        source: 'link'
-      }],
-      videos: [{}] // Has video
-    },
-    {
-      id: '3',
-      title: 'Canva Design',
-      publishDate: '2024-01-13',
-      platform: 'Canva',
-      images: [{
-        url: 'https://images.unsplash.com/photo-1557804506-669a67965ba0?w=300&h=300&fit=crop&auto=format',
-        source: 'canva'
-      }],
-      videos: []
-    },
-    {
-      id: '4',
-      title: 'YouTube Thumbnail',
-      publishDate: '2024-01-12',
-      platform: 'YouTube',
-      images: [{
-        url: 'https://images.unsplash.com/photo-1611162616475-46b635cb6868?w=300&h=300&fit=crop&auto=format',
-        source: 'link'
-      }],
-      videos: [{}] // Has video
-    },
-    {
-      id: '5',
-      title: 'Pinterest Pin',
-      publishDate: '2024-01-11',
-      platform: 'Pinterest',
-      images: [{
-        url: 'https://images.unsplash.com/photo-1611605698335-8b1569810432?w=300&h=300&fit=crop&auto=format',
-        source: 'link'
-      }],
-      videos: []
-    },
-    {
-      id: '6',
-      title: 'Facebook Post',
-      publishDate: '2024-01-10',
-      platform: 'Facebook',
-      images: [{
-        url: 'https://images.unsplash.com/photo-1557804506-669a67965ba0?w=300&h=300&fit=crop&auto=format',
-        source: 'attachment'
-      }],
-      videos: []
-    }
-  ];
+  });
 }

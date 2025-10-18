@@ -124,8 +124,7 @@ export default function PublicWidgetPage() {
 
   // Detect if we're in an iframe
   useEffect(() => {
-    const inIframe = window !== window.top;
-    setIsInIframe(inIframe);
+    setIsInIframe(window !== window.top);
   }, []);
 
   const handleFiltersChange = (newFilters: WidgetFilters) => {
