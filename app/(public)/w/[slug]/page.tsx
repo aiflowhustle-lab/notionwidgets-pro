@@ -34,16 +34,23 @@ export default function PublicWidgetPage() {
   const isFilterChanging = useRef(false);
   const isLoadingRef = useRef(false);
 
-  // Load filters from localStorage on mount
+  // Load filters from localStorage on mount and load data with those filters
   useEffect(() => {
     const savedFilters = localStorage.getItem(`widget-filters-${slug}`);
     if (savedFilters) {
       try {
         const parsedFilters = JSON.parse(savedFilters);
         setFilters(parsedFilters);
+        // Load data with the saved filters
+        loadWidgetData(false, parsedFilters);
       } catch (error) {
         console.error('Error parsing saved filters:', error);
+        // Load data with empty filters if parsing fails
+        loadWidgetData(false, {});
       }
+    } else {
+      // Load data with empty filters if no saved filters
+      loadWidgetData(false, {});
     }
   }, [slug]);
 
@@ -113,10 +120,7 @@ export default function PublicWidgetPage() {
     }
   }, []);
 
-  // Load data when component mounts
-  useEffect(() => {
-    loadWidgetData();
-  }, [loadWidgetData]);
+  // Data loading is now handled in the filters useEffect above
 
   // Detect if we're in an iframe
   useEffect(() => {
