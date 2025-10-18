@@ -34,6 +34,28 @@ export default function PublicWidgetPage() {
   const isFilterChanging = useRef(false);
   const isLoadingRef = useRef(false);
 
+  // Load filters from localStorage on mount
+  useEffect(() => {
+    const savedFilters = localStorage.getItem(`widget-filters-${slug}`);
+    if (savedFilters) {
+      try {
+        const parsedFilters = JSON.parse(savedFilters);
+        setFilters(parsedFilters);
+      } catch (error) {
+        console.error('Error parsing saved filters:', error);
+      }
+    }
+  }, [slug]);
+
+  // Save filters to localStorage whenever they change
+  useEffect(() => {
+    if (Object.keys(filters).length > 0) {
+      localStorage.setItem(`widget-filters-${slug}`, JSON.stringify(filters));
+    } else {
+      localStorage.removeItem(`widget-filters-${slug}`);
+    }
+  }, [filters, slug]);
+
   const loadWidgetData = useCallback(async (forceRefresh = false, currentFilters = filters) => {
     // Prevent multiple simultaneous loads
     if (isLoadingRef.current && !forceRefresh) {

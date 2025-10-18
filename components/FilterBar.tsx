@@ -30,7 +30,9 @@ export default function FilterBar({
 
   // Sync internal state with currentFilters prop
   useEffect(() => {
-    setFilters(currentFilters);
+    if (Object.keys(currentFilters).length > 0) {
+      setFilters(currentFilters);
+    }
   }, [currentFilters]);
 
   useEffect(() => {
