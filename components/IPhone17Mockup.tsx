@@ -170,9 +170,9 @@ export default function IPhone17Mockup({ className = "", widgetSlug = "demo" }: 
           {/* Inner bezel */}
           <div className="relative w-full h-full bg-white rounded-[48px] overflow-hidden">
             {/* Dynamic Island */}
-            <div className="absolute top-4 left-1/2 transform -translate-x-1/2 w-32 h-8 bg-black rounded-full z-10" />
             
-            {/* Widget Content */}
+
+            {/* Widget Content Area */}
             <div className="w-full h-full bg-white overflow-y-auto">
               {loading ? (
                 <div className="flex items-center justify-center h-full">
