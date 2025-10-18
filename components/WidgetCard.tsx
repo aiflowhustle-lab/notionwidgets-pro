@@ -209,12 +209,12 @@ export default function WidgetCard({ post, aspectRatio = 'square' }: WidgetCardP
                     video.currentTime = 0.1;
                   }}
                 />
-                {/* Play button overlay */}
-                <div className="absolute inset-0 flex items-center justify-center">
+                {/* Play button overlay - Hidden */}
+                {/* <div className="absolute inset-0 flex items-center justify-center">
                   <div className="w-12 h-12 bg-black bg-opacity-60 rounded-full flex items-center justify-center">
                     <Play className="w-6 h-6 text-white ml-1" />
                   </div>
-                </div>
+                </div> */}
               </div>
             ) : hasImage && !imageError ? (
               // Image display
@@ -243,7 +243,7 @@ export default function WidgetCard({ post, aspectRatio = 'square' }: WidgetCardP
             {/* Overlay with content on hover - Bottom 20% */}
             <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-60 transition-all duration-300 flex flex-col justify-end">
               {/* Title and date overlay - Bottom 20% of card */}
-              <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-black bg-opacity-80 h-[20%] flex flex-col justify-center p-4">
+              <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-black h-[20%] flex flex-col justify-center p-4">
                 <div className="text-white">
                   <div className="text-xs text-white/70 mb-1">
                     {post.publishDate ? formatDate(post.publishDate) : 'No date'}
