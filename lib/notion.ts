@@ -10,23 +10,8 @@ function convertCanvaUrlToImages(canvaUrl: string): NotionImage[] {
   if (designIdMatch) {
     const designId = designIdMatch[1];
     
-    // For Canva design URLs, we need to use the Canva API or a different approach
-    // Since we can't directly convert design URLs to image URLs without API access,
-    // we'll use a placeholder that indicates it's a Canva design
-    // The user should use direct image URLs from Canva instead of design URLs
-    
-    console.log('Canva design URL detected:', canvaUrl, 'Design ID:', designId);
-    
-    // Return a placeholder that shows it's a Canva design
-    return [{
-      url: `https://via.placeholder.com/500x500/FF6B6B/FFFFFF?text=Canva+Design`,
-      source: 'canva',
-      originalUrl: canvaUrl,
-    }];
-  }
-  
-  // If it's already a direct image URL or doesn't match the pattern, use as-is
-  if (canvaUrl.includes('canva.com') && (canvaUrl.includes('/image') || canvaUrl.includes('.png') || canvaUrl.includes('.jpg') || canvaUrl.includes('.jpeg'))) {
+    // For now, return the original Canva URL as a single image
+    // Canva designs are typically single items, not multiple pages
     return [{
       url: canvaUrl,
       source: 'canva',
