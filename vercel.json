@@ -2,9 +2,6 @@
   "functions": {
     "app/api/widget/[slug]/embed/route.ts": {
       "maxDuration": 10
-    },
-    "app/w/[slug]/embed-static/route.ts": {
-      "maxDuration": 10
     }
   },
   "headers": [
@@ -13,7 +10,7 @@
       "headers": [
         {
           "key": "Content-Security-Policy",
-          "value": "frame-ancestors *;"
+          "value": "frame-ancestors 'self' https://www.notion.so https://notion.so https://*.notion.so https://*.vercel.app https://vercel.app;"
         }
       ]
     },
@@ -22,16 +19,7 @@
       "headers": [
         {
           "key": "Content-Security-Policy",
-          "value": "frame-ancestors *;"
-        }
-      ]
-    },
-    {
-      "source": "/w/(.*)/embed-static",
-      "headers": [
-        {
-          "key": "Content-Security-Policy",
-          "value": "frame-ancestors *;"
+          "value": "frame-ancestors 'self' https://www.notion.so https://notion.so https://*.notion.so https://*.vercel.app https://vercel.app;"
         }
       ]
     }
