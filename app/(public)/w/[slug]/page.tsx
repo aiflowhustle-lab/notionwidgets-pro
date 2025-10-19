@@ -1,9 +1,5 @@
 import { headers } from 'next/headers';
 import { notFound } from 'next/navigation';
-import { getWidget } from '@/lib/firestore-admin';
-import { decryptToken } from '@/lib/encryption';
-import { fetchNotionDatabase } from '@/lib/notion';
-import { NotionPost } from '@/types';
 import DynamicWidgetPage from './DynamicWidgetPage';
 
 interface WidgetPageProps {
@@ -64,63 +60,46 @@ export default async function WidgetPage({ params }: WidgetPageProps) {
 // Static HTML version for mobile/tablet/Notion
 async function StaticWidgetPage({ slug }: { slug: string }) {
   try {
-    // Fetch widget from Firestore
-    const widget = await getWidget(slug);
+    // Fetch widget data from the existing API endpoint
+    const baseUrl = process.env.VERCEL_URL 
+      ? `https://${process.env.VERCEL_URL}` 
+      : process.env.NODE_ENV === 'production'
+      ? 'https://notionwidgets-pro-two.vercel.app'
+      : 'http://localhost:3001';
     
-    if (!widget) {
-      return (
-        <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-          <div className="text-center max-w-md mx-auto p-6">
-            <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <span className="text-2xl">⚠️</span>
+    const apiUrl = `${baseUrl}/api/widgets/${slug}/data`;
+    
+    console.log('Fetching from API:', apiUrl);
+    
+    const response = await fetch(apiUrl, {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      if (response.status === 404) {
+        return (
+          <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+            <div className="text-center max-w-md mx-auto p-6">
+              <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <span className="text-2xl">⚠️</span>
+              </div>
+              <h1 className="text-2xl font-bold text-gray-900 mb-2">Widget Not Found</h1>
+              <p className="text-gray-600">The widget "{slug}" could not be found.</p>
             </div>
-            <h1 className="text-2xl font-bold text-gray-900 mb-2">Widget Not Found</h1>
-            <p className="text-gray-600">The widget "{slug}" could not be found.</p>
           </div>
-        </div>
-      );
+        );
+      }
+      
+      throw new Error(`API request failed with status ${response.status}`);
     }
 
-    // Decrypt Notion token
-    let decryptedToken: string;
-    try {
-      decryptedToken = decryptToken(widget.token);
-    } catch (error) {
-      console.error('Error decrypting token:', error);
-      return (
-        <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-          <div className="text-center max-w-md mx-auto p-6">
-            <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <span className="text-2xl">🔐</span>
-            </div>
-            <h1 className="text-2xl font-bold text-gray-900 mb-2">Authentication Error</h1>
-            <p className="text-gray-600">Unable to decrypt widget credentials.</p>
-          </div>
-        </div>
-      );
-    }
-
-    // Fetch data from Notion API
-    let posts: NotionPost[];
-    try {
-      posts = await fetchNotionDatabase(decryptedToken, widget.databaseId);
-    } catch (error) {
-      console.error('Error fetching Notion data:', error);
-      return (
-        <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-          <div className="text-center max-w-md mx-auto p-6">
-            <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <span className="text-2xl">📡</span>
-            </div>
-            <h1 className="text-2xl font-bold text-gray-900 mb-2">Data Error</h1>
-            <p className="text-gray-600">Unable to fetch data from Notion.</p>
-          </div>
-        </div>
-      );
-    }
+    const data = await response.json();
+    const { widget, posts } = data;
 
     // Process all images and create HTML
-    const allImages = posts.flatMap(post => post.images);
+    const allImages = posts.flatMap((post: any) => post.images);
     
     return (
       <div className="min-h-screen bg-gray-50">
