@@ -14,7 +14,7 @@ interface WidgetPageProps {
 
 // Check if the request is from an iPad or mobile device
 function isMobileDevice(userAgent: string): boolean {
-  const mobileRegex = /iPad|iPhone|iPod|Android|Mobile|webOS|BlackBerry|IEMobile|Opera Mini/i;
+  const mobileRegex = /iPad|iPhone|iPod|Android|Mobile|webOS|BlackBerry|IEMobile|Opera Mini|Tablet/i;
   return mobileRegex.test(userAgent);
 }
 
@@ -22,7 +22,8 @@ function isMobileDevice(userAgent: string): boolean {
 function isNotionRequest(userAgent: string, referer: string): boolean {
   return userAgent.includes('Notion') || 
          referer.includes('notion.so') || 
-         referer.includes('notion.site');
+         referer.includes('notion.site') ||
+         referer.includes('notion.com');
 }
 
 export default async function WidgetPage({ params }: WidgetPageProps) {
@@ -38,10 +39,18 @@ export default async function WidgetPage({ params }: WidgetPageProps) {
     const isMobile = isMobileDevice(userAgent);
     const isNotion = isNotionRequest(userAgent, referer);
     
+    console.log('User Agent:', userAgent);
+    console.log('Referer:', referer);
+    console.log('Is Mobile:', isMobile);
+    console.log('Is Notion:', isNotion);
+    
     // If it's mobile/tablet or Notion, serve static HTML
     if (isMobile || isNotion) {
+      console.log('Serving static version for mobile/Notion');
       return await StaticWidgetPage({ slug });
     }
+    
+    console.log('Serving dynamic version for desktop');
     
     // Otherwise, serve the dynamic React component
     return <DynamicWidgetPage slug={slug} />;
