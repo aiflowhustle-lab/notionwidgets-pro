@@ -42,7 +42,7 @@ export default function DashboardPage() {
   const handleWidgetCreated = (newWidget: Widget) => {
     setWidgets(prev => [newWidget, ...prev]);
     setShowCreateModal(false);
-    router.push(`/dashboard/widget/${newWidget.slug}`);
+    // Stay on dashboard to show the new widget in the cards view
   };
 
   const handleDeleteWidget = async (widgetId: string) => {
