@@ -43,22 +43,22 @@ export default function SignInPage() {
     <div className="w-full max-w-md bg-white rounded-xl shadow-lg p-8">
       <div className="text-center mb-8">
         <div className="flex items-center justify-center space-x-2 mb-4">
-          <div className="w-10 h-10 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
-            <Image className="w-6 h-6 text-white" />
+          <div className="w-10 h-10 bg-black rounded-lg flex items-center justify-center">
+            <span className="font-mono text-xs font-bold text-white">NW</span>
           </div>
-          <span className="text-2xl font-bold gradient-text">NotionWidgets Pro</span>
+          <span className="text-2xl font-bold text-black">NotionWidgets Pro</span>
         </div>
-        <h1 className="text-2xl font-bold text-gray-900 mb-2">Welcome Back</h1>
+        <h1 className="text-2xl font-bold text-black mb-2">Welcome Back</h1>
         <p className="text-gray-600">Sign in to access your dashboard</p>
       </div>
 
       <button
         onClick={handleSignIn}
         disabled={isSigningIn}
-        className="w-full flex items-center justify-center px-4 py-3 border border-gray-300 rounded-lg shadow-sm bg-white text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+        className="w-full flex items-center justify-center px-4 py-3 border border-black rounded-lg shadow-sm bg-black text-white hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
       >
         {isSigningIn ? (
-          <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-blue-600"></div>
+          <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
         ) : (
           <>
             <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24">
@@ -87,7 +87,7 @@ export default function SignInPage() {
       <div className="mt-6 text-center">
         <button
           onClick={() => router.push('/')}
-          className="text-sm text-gray-600 hover:text-gray-900 flex items-center justify-center mx-auto"
+          className="text-sm text-gray-600 hover:text-black flex items-center justify-center mx-auto"
         >
           <ArrowLeft className="w-4 h-4 mr-1" />
           Back to Home
