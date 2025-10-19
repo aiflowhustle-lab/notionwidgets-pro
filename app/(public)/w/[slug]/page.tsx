@@ -121,7 +121,7 @@ async function StaticWidgetPage({ slug }: { slug: string }) {
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-              {allImages.map((img, index) => (
+              {allImages.map((img: any, index: number) => (
                 <div key={index} className="group relative aspect-square overflow-hidden rounded-lg bg-white shadow-sm hover:shadow-md transition-shadow">
                   <img 
                     src={img.url} 
