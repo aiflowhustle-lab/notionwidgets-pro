@@ -48,12 +48,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           <div className="flex justify-between h-16">
             <div className="flex items-center">
               <div className="flex items-center space-x-2">
-                <div className="w-8 h-8 rounded-lg overflow-hidden">
-                  <img 
-                    src="/logo.svg" 
-                    alt="NotionWidgets Pro" 
-                    className="w-full h-full object-cover"
-                  />
+                <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center">
+                  <span className="font-mono text-xs font-bold text-black">NW</span>
                 </div>
                 <span className="text-xl font-bold text-white">NotionWidgets Pro</span>
               </div>
