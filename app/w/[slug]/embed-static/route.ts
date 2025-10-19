@@ -359,9 +359,13 @@ export async function GET(
       return new NextResponse(errorHTML, {
         status: 404,
         headers: {
-          'Content-Type': 'text/html',
+          'Content-Type': 'text/html; charset=utf-8',
           'Content-Security-Policy': "frame-ancestors *;",
+          'X-Frame-Options': 'ALLOWALL',
           'Cache-Control': 'public, max-age=300',
+          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Methods': 'GET, OPTIONS',
+          'Access-Control-Allow-Headers': 'Content-Type',
         },
       });
     }
@@ -414,9 +418,13 @@ export async function GET(
 
     return new NextResponse(html, {
       headers: {
-        'Content-Type': 'text/html',
+        'Content-Type': 'text/html; charset=utf-8',
         'Content-Security-Policy': "frame-ancestors *;",
+        'X-Frame-Options': 'ALLOWALL',
         'Cache-Control': 'public, max-age=3600',
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'GET, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type',
       },
     });
   } catch (error) {
@@ -471,9 +479,13 @@ export async function GET(
     return new NextResponse(errorHTML, {
       status: 500,
       headers: {
-        'Content-Type': 'text/html',
+        'Content-Type': 'text/html; charset=utf-8',
         'Content-Security-Policy': "frame-ancestors *;",
+        'X-Frame-Options': 'ALLOWALL',
         'Cache-Control': 'public, max-age=300',
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'GET, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type',
       },
     });
   }
