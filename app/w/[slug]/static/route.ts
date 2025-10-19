@@ -1,8 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getWidget } from '@/lib/firestore-admin';
-import { decryptToken } from '@/lib/encryption';
-import { fetchNotionDatabase } from '@/lib/notion';
-import { NotionPost } from '@/types';
 
 export async function GET(
   request: NextRequest,
@@ -11,231 +7,95 @@ export async function GET(
   const { slug } = params;
   
   try {
-    // Fetch widget from Firestore
-    const widget = await getWidget(slug);
+    // Fetch widget data from the existing API endpoint
+    const baseUrl = request.nextUrl.origin;
+    const apiUrl = `${baseUrl}/api/widgets/${slug}/data`;
     
-    if (!widget) {
-      return new NextResponse(`
-        <!DOCTYPE html>
-        <html lang="en">
-        <head>
-          <meta charset="UTF-8">
-          <meta name="viewport" content="width=device-width, initial-scale=1.0">
-          <title>Widget Not Found</title>
-          <style>
-            * { margin: 0; padding: 0; box-sizing: border-box; }
-            body { 
-              font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-              background: #f9fafb;
-              padding: 16px;
-              display: flex;
-              align-items: center;
-              justify-content: center;
-              min-height: 100vh;
-            }
-            .error-container {
-              text-align: center;
-              max-width: 400px;
-              padding: 40px;
-              background: white;
-              border-radius: 8px;
-              box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-            }
-            .error-icon {
-              width: 64px;
-              height: 64px;
-              margin: 0 auto 16px;
-              background: #fef2f2;
-              border-radius: 50%;
-              display: flex;
-              align-items: center;
-              justify-content: center;
-              color: #dc2626;
-              font-size: 24px;
-            }
-            .error-title {
-              font-size: 24px;
-              font-weight: 600;
-              color: #111827;
-              margin-bottom: 8px;
-            }
-            .error-message {
-              color: #6b7280;
-              font-size: 16px;
-            }
-          </style>
-        </head>
-        <body>
-          <div class="error-container">
-            <div class="error-icon">⚠️</div>
-            <h1 class="error-title">Widget Not Found</h1>
-            <p class="error-message">The widget "${slug}" could not be found.</p>
-          </div>
-        </body>
-        </html>
-      `, {
-        status: 404,
-        headers: {
-          'Content-Type': 'text/html; charset=utf-8',
-          'Cache-Control': 'public, max-age=300, s-maxage=300',
-          'X-Frame-Options': 'ALLOWALL',
-          'Access-Control-Allow-Origin': '*',
-        },
-      });
+    const response = await fetch(apiUrl, {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      if (response.status === 404) {
+        return new NextResponse(`
+          <!DOCTYPE html>
+          <html lang="en">
+          <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Widget Not Found</title>
+            <style>
+              * { margin: 0; padding: 0; box-sizing: border-box; }
+              body { 
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+                background: #f9fafb;
+                padding: 16px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                min-height: 100vh;
+              }
+              .error-container {
+                text-align: center;
+                max-width: 400px;
+                padding: 40px;
+                background: white;
+                border-radius: 8px;
+                box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+              }
+              .error-icon {
+                width: 64px;
+                height: 64px;
+                margin: 0 auto 16px;
+                background: #fef2f2;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: #dc2626;
+                font-size: 24px;
+              }
+              .error-title {
+                font-size: 24px;
+                font-weight: 600;
+                color: #111827;
+                margin-bottom: 8px;
+              }
+              .error-message {
+                color: #6b7280;
+                font-size: 16px;
+              }
+            </style>
+          </head>
+          <body>
+            <div class="error-container">
+              <div class="error-icon">⚠️</div>
+              <h1 class="error-title">Widget Not Found</h1>
+              <p class="error-message">The widget "${slug}" could not be found.</p>
+            </div>
+          </body>
+          </html>
+        `, {
+          status: 404,
+          headers: {
+            'Content-Type': 'text/html; charset=utf-8',
+            'Cache-Control': 'public, max-age=300, s-maxage=300',
+            'X-Frame-Options': 'ALLOWALL',
+            'Access-Control-Allow-Origin': '*',
+          },
+        });
+      }
+      
+      throw new Error(`API request failed with status ${response.status}`);
     }
 
-    // Decrypt Notion token
-    let decryptedToken: string;
-    try {
-      decryptedToken = decryptToken(widget.token);
-    } catch (error) {
-      console.error('Error decrypting token:', error);
-      return new NextResponse(`
-        <!DOCTYPE html>
-        <html lang="en">
-        <head>
-          <meta charset="UTF-8">
-          <meta name="viewport" content="width=device-width, initial-scale=1.0">
-          <title>Widget Error</title>
-          <style>
-            * { margin: 0; padding: 0; box-sizing: border-box; }
-            body { 
-              font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-              background: #f9fafb;
-              padding: 16px;
-              display: flex;
-              align-items: center;
-              justify-content: center;
-              min-height: 100vh;
-            }
-            .error-container {
-              text-align: center;
-              max-width: 400px;
-              padding: 40px;
-              background: white;
-              border-radius: 8px;
-              box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-            }
-            .error-icon {
-              width: 64px;
-              height: 64px;
-              margin: 0 auto 16px;
-              background: #fef2f2;
-              border-radius: 50%;
-              display: flex;
-              align-items: center;
-              justify-content: center;
-              color: #dc2626;
-              font-size: 24px;
-            }
-            .error-title {
-              font-size: 24px;
-              font-weight: 600;
-              color: #111827;
-              margin-bottom: 8px;
-            }
-            .error-message {
-              color: #6b7280;
-              font-size: 16px;
-            }
-          </style>
-        </head>
-        <body>
-          <div class="error-container">
-            <div class="error-icon">🔐</div>
-            <h1 class="error-title">Authentication Error</h1>
-            <p class="error-message">Unable to decrypt widget credentials.</p>
-          </div>
-        </body>
-        </html>
-      `, {
-        status: 500,
-        headers: {
-          'Content-Type': 'text/html; charset=utf-8',
-          'Cache-Control': 'public, max-age=300, s-maxage=300',
-          'X-Frame-Options': 'ALLOWALL',
-          'Access-Control-Allow-Origin': '*',
-        },
-      });
-    }
-
-    // Fetch data from Notion API
-    let posts: NotionPost[];
-    try {
-      posts = await fetchNotionDatabase(decryptedToken, widget.databaseId);
-    } catch (error) {
-      console.error('Error fetching Notion data:', error);
-      return new NextResponse(`
-        <!DOCTYPE html>
-        <html lang="en">
-        <head>
-          <meta charset="UTF-8">
-          <meta name="viewport" content="width=device-width, initial-scale=1.0">
-          <title>Widget Error</title>
-          <style>
-            * { margin: 0; padding: 0; box-sizing: border-box; }
-            body { 
-              font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-              background: #f9fafb;
-              padding: 16px;
-              display: flex;
-              align-items: center;
-              justify-content: center;
-              min-height: 100vh;
-            }
-            .error-container {
-              text-align: center;
-              max-width: 400px;
-              padding: 40px;
-              background: white;
-              border-radius: 8px;
-              box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-            }
-            .error-icon {
-              width: 64px;
-              height: 64px;
-              margin: 0 auto 16px;
-              background: #fef2f2;
-              border-radius: 50%;
-              display: flex;
-              align-items: center;
-              justify-content: center;
-              color: #dc2626;
-              font-size: 24px;
-            }
-            .error-title {
-              font-size: 24px;
-              font-weight: 600;
-              color: #111827;
-              margin-bottom: 8px;
-            }
-            .error-message {
-              color: #6b7280;
-              font-size: 16px;
-            }
-          </style>
-        </head>
-        <body>
-          <div class="error-container">
-            <div class="error-icon">📡</div>
-            <h1 class="error-title">Data Error</h1>
-            <p class="error-message">Unable to fetch data from Notion.</p>
-          </div>
-        </body>
-        </html>
-      `, {
-        status: 500,
-        headers: {
-          'Content-Type': 'text/html; charset=utf-8',
-          'Cache-Control': 'public, max-age=300, s-maxage=300',
-          'X-Frame-Options': 'ALLOWALL',
-          'Access-Control-Allow-Origin': '*',
-        },
-      });
-    }
-
+    const data = await response.json();
+    const { widget, posts } = data;
+    
     // Process all images and create HTML
-    const allImages = posts.flatMap(post => post.images);
+    const allImages = posts.flatMap((post: any) => post.images);
     
     // Generate HTML
     const html = `
@@ -380,7 +240,7 @@ export async function GET(
       </div>
     ` : `
       <div class="grid">
-        ${allImages.map(img => `
+        ${allImages.map((img: any) => `
           <div class="card">
             <img src="${img.url}" alt="${img.originalUrl || 'Image'}" loading="lazy">
             <div class="card-content">
