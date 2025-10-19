@@ -1,167 +1,316 @@
-import { headers } from 'next/headers';
-import { notFound } from 'next/navigation';
-import DynamicWidgetPage from './DynamicWidgetPage';
+'use client';
 
-interface WidgetPageProps {
-  params: {
+import { useState, useEffect, useCallback, useRef } from 'react';
+import { useParams } from 'next/navigation';
+import { NotionPost, WidgetFilters } from '@/types';
+import WidgetCard from '@/components/WidgetCard';
+import FilterBar from '@/components/FilterBar';
+import { Image, Loader2, AlertCircle } from 'lucide-react';
+
+interface WidgetData {
+  widget: {
+    id: string;
+    name: string;
     slug: string;
+    settings: any;
+    views: number;
   };
+  posts: NotionPost[];
+  availablePlatforms: string[];
+  availableStatuses: string[];
 }
 
-// Check if the request is from an iPad or mobile device
-function isMobileDevice(userAgent: string): boolean {
-  const mobileRegex = /iPad|iPhone|iPod|Android|Mobile|webOS|BlackBerry|IEMobile|Opera Mini|Tablet/i;
-  return mobileRegex.test(userAgent);
-}
-
-// Check if the request is from Notion (iframe)
-function isNotionRequest(userAgent: string, referer: string): boolean {
-  return userAgent.includes('Notion') || 
-         referer.includes('notion.so') || 
-         referer.includes('notion.site') ||
-         referer.includes('notion.com');
-}
-
-export default async function WidgetPage({ params }: WidgetPageProps) {
-  const { slug } = params;
+export default function PublicWidgetPage() {
+  const params = useParams();
+  const slug = params.slug as string;
   
-  try {
-    // Get request headers
-    const headersList = await headers();
-    const userAgent = headersList.get('user-agent') || '';
-    const referer = headersList.get('referer') || '';
-    
-    // Check if this is a mobile/tablet device or Notion request
-    const isMobile = isMobileDevice(userAgent);
-    const isNotion = isNotionRequest(userAgent, referer);
-    
-    console.log('User Agent:', userAgent);
-    console.log('Referer:', referer);
-    console.log('Is Mobile:', isMobile);
-    console.log('Is Notion:', isNotion);
-    
-    // If it's mobile/tablet or Notion, serve static HTML
-    if (isMobile || isNotion) {
-      console.log('Serving static version for mobile/Notion');
-      return await StaticWidgetPage({ slug });
+  const [data, setData] = useState<WidgetData | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [filters, setFilters] = useState<WidgetFilters>({});
+  const [viewMode, setViewMode] = useState<'all' | 'videos'>('all');
+  const [currentView, setCurrentView] = useState<'all' | 'videos'>('all');
+  const [isInIframe, setIsInIframe] = useState(false);
+  const isFilterChanging = useRef(false);
+  const isLoadingRef = useRef(false);
+
+  // Load filters from localStorage on mount and load data with those filters
+  useEffect(() => {
+    const savedFilters = localStorage.getItem(`widget-filters-${slug}`);
+    if (savedFilters) {
+      try {
+        const parsedFilters = JSON.parse(savedFilters);
+        setFilters(parsedFilters);
+        // Load data with the saved filters
+        loadWidgetData(false, parsedFilters);
+      } catch (error) {
+        console.error('Error parsing saved filters:', error);
+        // Load data with empty filters if parsing fails
+        loadWidgetData(false, {});
+      }
+    } else {
+      // Load data with empty filters if no saved filters
+      loadWidgetData(false, {});
+    }
+  }, [slug]);
+
+  // Save filters to localStorage whenever they change
+  useEffect(() => {
+    if (Object.keys(filters).length > 0) {
+      localStorage.setItem(`widget-filters-${slug}`, JSON.stringify(filters));
+    } else {
+      localStorage.removeItem(`widget-filters-${slug}`);
+    }
+  }, [filters, slug]);
+
+  const loadWidgetData = useCallback(async (forceRefresh = false, currentFilters = filters) => {
+    // Prevent multiple simultaneous loads
+    if (isLoadingRef.current && !forceRefresh) {
+      console.log('Already loading, skipping duplicate request');
+      return;
     }
     
-    console.log('Serving dynamic version for desktop');
+    console.log('Loading widget data with filters:', currentFilters, 'forceRefresh:', forceRefresh);
+    isLoadingRef.current = true;
     
-    // Otherwise, serve the dynamic React component
-    return <DynamicWidgetPage slug={slug} />;
-    
-  } catch (error) {
-    console.error('Error in widget page:', error);
-    notFound();
-  }
-}
-
-// Static HTML version for mobile/tablet/Notion
-async function StaticWidgetPage({ slug }: { slug: string }) {
-  try {
-    // Fetch widget data from the existing API endpoint
-    const baseUrl = process.env.VERCEL_URL 
-      ? `https://${process.env.VERCEL_URL}` 
-      : process.env.NODE_ENV === 'production'
-      ? 'https://notionwidgets-pro-two.vercel.app'
-      : 'http://localhost:3001';
-    
-    const apiUrl = `${baseUrl}/api/widgets/${slug}/data`;
-    
-    console.log('Fetching from API:', apiUrl);
-    
-    const response = await fetch(apiUrl, {
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
-
-    if (!response.ok) {
-      if (response.status === 404) {
-        return (
-          <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-            <div className="text-center max-w-md mx-auto p-6">
-              <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <span className="text-2xl">⚠️</span>
-              </div>
-              <h1 className="text-2xl font-bold text-gray-900 mb-2">Widget Not Found</h1>
-              <p className="text-gray-600">The widget "{slug}" could not be found.</p>
-            </div>
-          </div>
-        );
+    try {
+      setLoading(true);
+      setError(null);
+      
+      const searchParams = new URLSearchParams();
+      if (currentFilters.platform) searchParams.set('platform', currentFilters.platform);
+      if (currentFilters.status) searchParams.set('status', currentFilters.status);
+      if (forceRefresh) searchParams.set('force_refresh', 'true');
+      
+      const apiUrl = `${window.location.origin}/api/widgets/${slug}/data?${searchParams.toString()}`;
+      console.log('Fetching from API:', apiUrl);
+      
+      const response = await fetch(apiUrl);
+      
+      if (!response.ok) {
+        if (response.status === 404) {
+          throw new Error('Widget not found');
+        }
+        throw new Error('Failed to load widget data');
       }
       
-      throw new Error(`API request failed with status ${response.status}`);
+      const widgetData = await response.json();
+      console.log('Received data:', widgetData);
+      setData(widgetData);
+    } catch (error) {
+      console.error('Error loading widget data:', error);
+      setError(error instanceof Error ? error.message : 'Failed to load widget data');
+    } finally {
+      setLoading(false);
+      isLoadingRef.current = false;
     }
+  }, [slug]);
 
-    const data = await response.json();
-    const { widget, posts } = data;
-
-    // Process all images and create HTML
-    const allImages = posts.flatMap((post: any) => post.images);
+  // Load filters from URL on component mount
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const platform = urlParams.get('platform') || '';
+    const status = urlParams.get('status') || '';
     
+    if (platform || status) {
+      setFilters({
+        platform: platform || undefined,
+        status: status || undefined,
+      });
+    }
+  }, []);
+
+  // Data loading is now handled in the filters useEffect above
+
+  // Detect if we're in an iframe
+  useEffect(() => {
+    setIsInIframe(window !== window.top);
+  }, []);
+
+  const handleFiltersChange = (newFilters: WidgetFilters) => {
+    console.log('Filter change requested:', newFilters);
+    
+    // Only proceed if filters actually changed
+    const currentPlatform = filters.platform || '';
+    const currentStatus = filters.status || '';
+    const newPlatform = newFilters.platform || '';
+    const newStatus = newFilters.status || '';
+    
+    if (currentPlatform === newPlatform && currentStatus === newStatus) {
+      console.log('Filters unchanged, skipping update');
+      return;
+    }
+    
+    setFilters(newFilters);
+    
+    // Update URL parameters
+    const url = new URL(window.location.href);
+    if (newFilters.platform) {
+      url.searchParams.set('platform', newFilters.platform);
+    } else {
+      url.searchParams.delete('platform');
+    }
+    
+    if (newFilters.status) {
+      url.searchParams.set('status', newFilters.status);
+    } else {
+      url.searchParams.delete('status');
+    }
+    
+    console.log('Updating URL to:', url.toString());
+    // Update URL without page refresh
+    window.history.replaceState({}, '', url.toString());
+    
+    // Immediately load data with new filters
+    console.log('Loading data immediately with new filters:', newFilters);
+    loadWidgetData(false, newFilters);
+  };
+
+  const handleViewChange = (view: 'all' | 'videos') => {
+    setViewMode(view);
+    setCurrentView(view);
+  };
+
+  // Filter posts based on view mode
+  const filteredPosts = data?.posts.filter(post => {
+    if (viewMode === 'videos') {
+      return post.videos && post.videos.length > 0;
+    }
+    return true; // Show all posts for 'all' view
+  }) || [];
+
+  if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50">
-        <div className="max-w-6xl mx-auto px-4 py-8">
-          {/* Header */}
-          <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">{widget.name}</h1>
-            <p className="text-gray-600">NotionWidgets Pro - iPad Compatible</p>
-          </div>
-          
-          {/* Content */}
-          {allImages.length === 0 ? (
-            <div className="text-center py-12">
-              <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <span className="text-4xl">📷</span>
-              </div>
-              <h2 className="text-xl font-semibold text-gray-900 mb-2">No Images Found</h2>
-              <p className="text-gray-600">This widget doesn't have any images yet.</p>
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-              {allImages.map((img: any, index: number) => (
-                <div key={index} className="group relative aspect-square overflow-hidden rounded-lg bg-white shadow-sm hover:shadow-md transition-shadow">
-                  <img 
-                    src={img.url} 
-                    alt={img.originalUrl || 'Image'} 
-                    loading="lazy"
-                    className="w-full h-full object-cover"
-                  />
-                  <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all duration-200 flex items-end">
-                    <div className="w-full p-3 transform translate-y-full group-hover:translate-y-0 transition-transform duration-200">
-                      <div className="text-white text-sm font-medium">
-                        {img.source === 'canva' ? 'Canva Design' : 'Image'}
-                      </div>
-                      <div className="text-white text-xs opacity-90">
-                        {img.source.toUpperCase()}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <Loader2 className="w-12 h-12 animate-spin text-blue-600 mx-auto mb-4" />
+          <p className="text-gray-600">Loading widget...</p>
         </div>
       </div>
     );
+  }
 
-  } catch (error) {
-    console.error('Unexpected error in static widget page:', error);
+  if (error) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center max-w-md mx-auto p-6">
-          <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <span className="text-2xl">⚠️</span>
-          </div>
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">Something went wrong</h1>
-          <p className="text-gray-600">An unexpected error occurred while loading the widget.</p>
+          <AlertCircle className="w-16 h-16 text-red-500 mx-auto mb-4" />
+          <h1 className="text-2xl font-bold text-gray-900 mb-2">Widget Not Found</h1>
+          <p className="text-gray-600 mb-6">{error}</p>
+          <button
+            onClick={() => window.location.reload()}
+            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          >
+            Try Again
+          </button>
         </div>
       </div>
     );
   }
-}
 
-// Force this route to be dynamic
-export const dynamic = 'force-dynamic';
+  if (!data) {
+    return null;
+  }
+
+  const { widget, posts, availablePlatforms, availableStatuses } = data;
+
+  return (
+    <div className="min-h-screen bg-white">
+      {/* Main Content */}
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+        {/* Filters */}
+        <div className="max-w-3xl mx-auto mb-1">
+          <FilterBar
+            onFiltersChange={handleFiltersChange}
+            availablePlatforms={availablePlatforms}
+            availableStatuses={availableStatuses}
+            onRefresh={() => {
+              console.log('Refresh requested - clearing filters');
+              setFilters({});
+              loadWidgetData(true, {});
+            }}
+            onViewChange={handleViewChange}
+            currentFilters={filters}
+          />
+        </div>
+
+        {/* View Toggle Icons - Between filters and cards */}
+        <div className="max-w-6xl mx-auto mb-1 flex justify-between items-center px-4">
+          {/* Grid Icon - Show All Cards (9 dots) - Third right of first card */}
+          <div className="flex-1 flex justify-end">
+            <button
+              onClick={() => handleViewChange('all')}
+              className={`p-2 transition-all flex items-center justify-center mr-5 ${
+                currentView === 'all'
+                  ? 'text-black shadow-[0_2px_0_0_rgba(0,0,0,1)] scale-x-130'
+                  : 'text-black hover:text-gray-600'
+              }`}
+              title="Show all cards"
+            >
+              <svg className="w-7 h-7" viewBox="0 0 24 24" fill="currentColor">
+                <rect x="2" y="2" width="5" height="5"/>
+                <rect x="9.5" y="2" width="5" height="5"/>
+                <rect x="17" y="2" width="5" height="5"/>
+                <rect x="2" y="9.5" width="5" height="5"/>
+                <rect x="9.5" y="9.5" width="5" height="5"/>
+                <rect x="17" y="9.5" width="5" height="5"/>
+                <rect x="2" y="17" width="5" height="5"/>
+                <rect x="9.5" y="17" width="5" height="5"/>
+                <rect x="17" y="17" width="5" height="5"/>
+              </svg>
+            </button>
+          </div>
+
+          {/* Reels Icon - Show Only Videos - Third right of second card */}
+          <div className="flex-1 flex justify-center">
+            <button
+              onClick={() => handleViewChange('videos')}
+              className={`p-2 transition-all flex items-center justify-center ${
+                currentView === 'videos'
+                  ? 'text-black shadow-[0_2px_0_0_rgba(0,0,0,1)] scale-x-130'
+                  : 'text-black hover:text-gray-600'
+              }`}
+              title="Show only videos"
+            >
+              <svg className="w-7 h-7" viewBox="0 0 50 50" fill="currentColor">
+                <path d="M13.34 4.13L20.26 16H4v-1C4 9.48 8.05 4.92 13.34 4.13zM33.26 16L22.57 16 15.57 4 26.26 4zM46 15v1H35.57l-7-12H35C41.08 4 46 8.92 46 15zM4 18v17c0 6.08 4.92 11 11 11h20c6.08 0 11-4.92 11-11V18H4zM31 32.19l-7.99 4.54C21.68 37.49 20 36.55 20 35.04v-9.08c0-1.51 1.68-2.45 3.01-1.69L31 28.81C32.33 29.56 32.33 31.44 31 32.19z"></path>
+              </svg>
+            </button>
+          </div>
+
+          {/* Empty space for third card */}
+          <div className="flex-1"></div>
+        </div>
+
+        {/* Content Grid - 2x3 Layout */}
+        {filteredPosts.length === 0 ? (
+          <div className="text-center py-12">
+            <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <Image className="w-12 h-12 text-gray-400" />
+            </div>
+            <h3 className="text-lg font-medium text-gray-900 mb-2">
+              {viewMode === 'videos' ? 'No videos found' : 'No images found'}
+            </h3>
+            <p className="text-gray-600">
+              {Object.values(filters).some(v => v !== undefined)
+                ? 'Try adjusting your filters to see more content.'
+                : viewMode === 'videos' 
+                  ? 'This widget doesn\'t have any videos yet.'
+                  : 'This widget doesn\'t have any images yet.'}
+            </p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-3 gap-1 max-w-3xl mx-auto">
+            {filteredPosts.map((post) => (
+              <WidgetCard
+                key={post.id}
+                post={post}
+                aspectRatio={widget.settings?.aspectRatio || 'square'}
+              />
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
