@@ -54,6 +54,10 @@
     {
       "source": "/embed/:slug",
       "destination": "/api/widget/:slug/embed"
+    },
+    {
+      "source": "/w/:slug.svg",
+      "destination": "/w/:slug/snapshot"
     }
   ]
 }
