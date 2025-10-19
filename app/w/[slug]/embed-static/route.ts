@@ -360,7 +360,7 @@ export async function GET(
         status: 404,
         headers: {
           'Content-Type': 'text/html',
-          'Content-Security-Policy': "frame-ancestors https://www.notion.so https://notion.so https://*.notion.so https://*.notion.site;",
+          'Content-Security-Policy': "frame-ancestors *;",
           'Cache-Control': 'public, max-age=300',
         },
       });
@@ -415,7 +415,7 @@ export async function GET(
     return new NextResponse(html, {
       headers: {
         'Content-Type': 'text/html',
-        'Content-Security-Policy': "frame-ancestors https://www.notion.so https://notion.so https://*.notion.so https://*.notion.site;",
+        'Content-Security-Policy': "frame-ancestors *;",
         'Cache-Control': 'public, max-age=3600',
       },
     });
@@ -472,7 +472,7 @@ export async function GET(
       status: 500,
       headers: {
         'Content-Type': 'text/html',
-        'Content-Security-Policy': "frame-ancestors https://www.notion.so https://notion.so https://*.notion.so https://*.notion.site;",
+        'Content-Security-Policy': "frame-ancestors *;",
         'Cache-Control': 'public, max-age=300',
       },
     });
