@@ -124,6 +124,16 @@ export default function DashboardPage() {
     }
   };
 
+  const copyStaticUrl = async (slug: string) => {
+    const url = `${window.location.origin}/w/${slug}/static`;
+    try {
+      await navigator.clipboard.writeText(url);
+      // You could add a toast notification here
+    } catch (error) {
+      console.error('Failed to copy static URL:', error);
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-black text-white">
@@ -247,22 +257,50 @@ export default function DashboardPage() {
                     </div>
                   </div>
 
-                  {/* Widget URL Copy Section */}
-                  <div className="mb-4 p-3 bg-white/5 rounded-lg">
-                    <h4 className="text-sm font-medium text-white mb-2">Copy Your Widget URL</h4>
-                    <div className="flex">
-                      <input
-                        type="text"
-                        value={`${window.location.origin}/w/${widget.slug}`}
-                        readOnly
-                        className="flex-1 px-2 py-1 text-xs bg-white/10 text-white rounded-l border border-white/20 focus:outline-none"
-                      />
-                      <button
-                        onClick={() => copyWidgetUrl(widget.slug)}
-                        className="px-3 py-1 bg-white/20 text-white rounded-r border border-l-0 border-white/20 hover:bg-white/30 transition-colors text-xs"
-                      >
-                        Copy
-                      </button>
+                  {/* Widget URLs Section */}
+                  <div className="mb-4 space-y-3">
+                    {/* Standard URL */}
+                    <div className="p-3 bg-white/5 rounded-lg">
+                      <h4 className="text-sm font-medium text-white mb-2">Standard URL (Desktop/Web)</h4>
+                      <div className="flex">
+                        <input
+                          type="text"
+                          value={`${window.location.origin}/w/${widget.slug}`}
+                          readOnly
+                          className="flex-1 px-2 py-1 text-xs bg-white/10 text-white rounded-l border border-white/20 focus:outline-none"
+                        />
+                        <button
+                          onClick={() => copyWidgetUrl(widget.slug)}
+                          className="px-3 py-1 bg-white/20 text-white rounded-r border border-l-0 border-white/20 hover:bg-white/30 transition-colors text-xs"
+                        >
+                          Copy
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* iPad Compatible URL */}
+                    <div className="p-3 bg-blue-500/10 border border-blue-500/20 rounded-lg">
+                      <h4 className="text-sm font-medium text-white mb-2 flex items-center">
+                        <span className="mr-2">📱</span>
+                        iPad Compatible URL (Static)
+                      </h4>
+                      <div className="flex">
+                        <input
+                          type="text"
+                          value={`${window.location.origin}/w/${widget.slug}/static`}
+                          readOnly
+                          className="flex-1 px-2 py-1 text-xs bg-white/10 text-white rounded-l border border-white/20 focus:outline-none"
+                        />
+                        <button
+                          onClick={() => copyStaticUrl(widget.slug)}
+                          className="px-3 py-1 bg-blue-500/20 text-white rounded-r border border-l-0 border-white/20 hover:bg-blue-500/30 transition-colors text-xs"
+                        >
+                          Copy
+                        </button>
+                      </div>
+                      <p className="text-xs text-blue-300/80 mt-1">
+                        Use this URL for iPad/iPhone Notion app compatibility
+                      </p>
                     </div>
                   </div>
 
@@ -272,7 +310,11 @@ export default function DashboardPage() {
                     <div className="text-xs text-white/70 space-y-1">
                       <p>1. Type <code className="bg-white/10 px-1 rounded">/embed</code> in Notion</p>
                       <p>2. Click "Embed link"</p>
-                      <p>3. Paste your widget URL</p>
+                      <p>3. Paste your widget URL:</p>
+                      <ul className="ml-4 space-y-1">
+                        <li>• <strong>Desktop/Web:</strong> Use Standard URL</li>
+                        <li>• <strong>iPad/iPhone:</strong> Use iPad Compatible URL</li>
+                      </ul>
                       <p>4. Click "Create embed"</p>
                     </div>
                   </div>
