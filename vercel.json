@@ -6,24 +6,11 @@
   },
   "headers": [
     {
-      "source": "/(.*)",
-      "headers": [
-        {
-          "key": "Referrer-Policy",
-          "value": "no-referrer"
-        },
-        {
-          "key": "Content-Security-Policy",
-          "value": "frame-ancestors https://www.notion.so https://notion.so https://*.notion.so https://*.notion.site"
-        }
-      ]
-    },
-    {
       "source": "/api/widget/(.*)/embed",
       "headers": [
         {
           "key": "Content-Security-Policy",
-          "value": "frame-ancestors https://www.notion.so https://notion.so https://*.notion.so https://*.notion.site"
+          "value": "frame-ancestors 'self' https://www.notion.so https://notion.so https://*.notion.so https://*.vercel.app https://vercel.app;"
         }
       ]
     },
@@ -32,20 +19,7 @@
       "headers": [
         {
           "key": "Content-Security-Policy",
-          "value": "frame-ancestors https://www.notion.so https://notion.so https://*.notion.so https://*.notion.site"
-        }
-      ]
-    },
-    {
-      "source": "/w/(.*)/embed-static",
-      "headers": [
-        {
-          "key": "Content-Security-Policy",
-          "value": "frame-ancestors https://www.notion.so https://notion.so https://*.notion.so https://*.notion.site"
-        },
-        {
-          "key": "Cache-Control",
-          "value": "public, max-age=300, s-maxage=300"
+          "value": "frame-ancestors 'self' https://www.notion.so https://notion.so https://*.notion.so https://*.vercel.app https://vercel.app;"
         }
       ]
     }
@@ -54,10 +28,6 @@
     {
       "source": "/embed/:slug",
       "destination": "/api/widget/:slug/embed"
-    },
-    {
-      "source": "/w/:slug.svg",
-      "destination": "/w/:slug/snapshot"
     }
   ]
 }
